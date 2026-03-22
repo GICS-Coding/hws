@@ -1,0 +1,572 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+body {
+    padding: 20px;
+    color: #333;
+    min-height: 100vh;
+    position: relative;
+}
+
+.header {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: left;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.homework-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    overflow: hidden;
+    table-layout: fixed;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.homework-table th, .homework-table td {
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    font-size: 1.125rem;
+    vertical-align: top;
+    line-height: 1.2;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.homework-table th {
+    background: rgba(52, 152, 219, 0.7);
+    color: white;
+    text-align: center;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.homework-table th:first-child,
+.subject-cell {
+    width: 20%;
+}
+
+.homework-table th:last-child,
+.homework-items-container {
+    width: 80%;
+}
+
+.homework-items-container {
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+.homework-table td {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.subject-cell {
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle !important;
+}
+
+.homework-item {
+    margin-bottom: 4px;
+    padding: 3px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.8);
+    color: #333;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.homework-item:last-child {
+    border-bottom: none;
+}
+
+.compact .homework-item {
+    margin-bottom: 2px;
+    padding: 2px 5px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 8px;
+    border-bottom: none;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.button-container {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    display: flex;
+    gap: 15px;
+    z-index: 100;
+}
+
+.action-button {
+    padding: 12px 25px;
+    color: #333;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.add-button {
+    background: rgba(149, 165, 166, 0.7);
+}
+
+.modify-button {
+    background: rgba(149, 165, 166, 0.7);
+}
+
+.delete-button {
+    background: rgba(231, 76, 60, 0.7);
+}
+
+.action-button:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.add-button:hover {
+    background: rgba(127, 140, 141, 0.8);
+}
+
+.modify-button:hover {
+    background: rgba(127, 140, 141, 0.8);
+}
+
+.delete-button:hover {
+    background: rgba(192, 57, 43, 0.8);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    opacity: 1;
+    align-items: center;
+}
+
+.modal-content {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding: 25px;
+    border-radius: 20px;
+    width: 450px;
+    border: 2px solid transparent;
+    box-shadow: none;
+    transform: translateY(100vh);
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.modal-content.is-static {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal.show .modal-content {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    color: #333;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.8);
+    transition: color 0.3s ease;
+}
+
+.close-button:hover {
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.form-group select, .form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    color: #333;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8.5L1.5 4h9L6 8.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 12px;
+    padding-right: 40px;
+}
+
+.form-group select:focus, .form-group input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.form-group select option {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: #333;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 1rem;
+}
+
+.form-group select option:hover,
+.form-group select option:focus {
+    background: rgba(52, 152, 219, 0.8);
+    color: white;
+}
+
+.form-group select option:checked {
+    background: rgba(52, 152, 219, 0.6);
+    color: white;
+}
+
+/* 复选框样式 - 匹配全局玻璃效果 */
+.form-group input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-group input[type="checkbox"]:checked {
+    background: rgba(52, 152, 219, 0.7);
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
+}
+
+.form-group input[type="checkbox"]:checked::before {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.form-group input[type="checkbox"]:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+.form-group input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 纯白背景模式下的复选框样式 */
+body.liquid-glass-disabled .form-group input[type="checkbox"] {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+body.liquid-glass-disabled .form-group input[type="checkbox"]:checked {
+    background: rgba(52, 152, 219, 0.8);
+    border-color: rgba(52, 152, 219, 0.9);
+}
+
+body.liquid-glass-disabled .form-group input[type="checkbox"]:checked::before {
+    color: white;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.submit-button {
+    padding: 10px 20px;
+    background: rgba(46, 204, 113, 0.7);
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.submit-button:hover {
+    background: rgba(39, 174, 96, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+}
+
+.cancel-button {
+    padding: 10px 20px;
+    background: rgba(149, 165, 166, 0.7);
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-button:hover {
+    background: rgba(127, 140, 141, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(149, 165, 166, 0.3);
+}
+
+.delete-confirm-button {
+    padding: 10px 20px;
+    background: rgba(231, 76, 60, 0.7);
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.delete-confirm-button:hover {
+    background: rgba(192, 57, 43, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+}
+
+.footer-image {
+    margin-top: 20px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+}
+
+.footer-image img {
+    height: 100%;
+    cursor: pointer;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.footer-image img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-height: 900px) {
+    .homework-table td {
+        max-height: 120px;
+        overflow-y: auto;
+    }
+    
+    .compact .homework-items-container {
+        white-space: nowrap;
+        overflow-x: auto;
+    }
+}
+
+/* 表格行样式 */
+.homework-table tr {
+    transition: all 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 隐藏行时完全不占用空间 */
+.homework-table tr.hidden {
+    display: none !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    line-height: 0 !important;
+    visibility: collapse; /* 表格特有的隐藏属性 */
+    opacity: 0;
+}
+
+/* Liquid Glass 背景控制 */
+body.liquid-glass-disabled {
+    background: #ffffff !important;
+    background-size: auto !important;
+    animation: none !important;
+}
+
+body.liquid-glass-disabled::before,
+body.liquid-glass-disabled::after {
+    display: none !important;
+}
+
+body.liquid-glass-enabled {
+    background: url('img/bgimg.png') center/contain no-repeat fixed !important;
+    background-size: contain !important;
+    background-color: #ffffff !important;
+    position: relative;
+}
+
+body.liquid-glass-enabled::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3); /* 降低透明度为30% */
+    z-index: -1;
+}
+
+/* 纯白背景模式下的表单样式 */
+body.liquid-glass-disabled .modal-title,
+body.liquid-glass-disabled .form-group label,
+body.liquid-glass-disabled .action-button,
+body.liquid-glass-disabled .submit-button,
+body.liquid-glass-disabled .cancel-button,
+body.liquid-glass-disabled .delete-confirm-button,
+body.liquid-glass-disabled .modal-content p {
+    color: #333333 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 确保表单输入框在纯白背景模式下显示黑色文字 */
+body.liquid-glass-disabled .form-group select,
+body.liquid-glass-disabled .form-group input,
+body.liquid-glass-disabled .form-group textarea {
+    color: #333333 !important;
+}
+
+/* 确保表单输入框占位符文字在纯白背景模式下显示灰色 */
+body.liquid-glass-disabled .form-group input::placeholder,
+body.liquid-glass-disabled .form-group textarea::placeholder {
+    color: #666666 !important;
+}
+
+/* 靠下显示样式 */
+.homework-table.bottom-display {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    width: calc(100% - 40px);
+    z-index: 100;
+    margin-bottom: 0;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.homework-table.bottom-display th,
+.homework-table.bottom-display td {
+    padding: 8px;
+    font-size: 1rem;
+}
+
+.homework-table.bottom-display .homework-item {
+    margin-bottom: 3px;
+    padding: 2px;
+    font-size: 0.95rem;
+}
+
+/* 靠下显示时的紧凑模式 */
+.homework-table.bottom-display.compact .homework-items-container {
+    max-height: 80px;
+    overflow-y: auto;
+}
+
+.homework-table.bottom-display.compact .homework-item {
+    margin-bottom: 1px;
+    padding: 1px 3px;
+    font-size: 0.9rem;
+}

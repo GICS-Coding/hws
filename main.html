@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业</title>
+    <link rel="icon" href="ico.png" type="image/jpeg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">作业王v1.3.0-大家的最爱</div>
+    <!-- 公告展示区 -->
+    <div id="notice-display" style="display:none;"></div>
+    <!-- 公告居中弹窗 -->
+    <div id="notice-center-modal">
+        <div class="modal-content" style="padding:32px 28px;max-width:480px;">
+            <button id="notice-center-close" style="position:absolute;top:18px;right:18px;">&times;</button>
+            <h2 style="font-size:1.35rem;color:white;margin-bottom:18px;text-shadow:0 2px 4px rgba(0,0,0,0.3);">公告</h2>
+            <div id="notice-center-text" style="font-size:1.15rem;color:white;word-break:break-all;white-space:pre-wrap;text-shadow:0 1px 2px rgba(0,0,0,0.3);"></div>
+        </div>
+    </div>
+    <!-- 右上角保存按钮 -->
+    <div id="top-btns">
+        <button id="save-btn" class="action-button">保存</button>
+    </div>
+    
+    <!-- 保存选择对话框 -->
+    <div class="modal" id="save-select-modal">
+        <div class="modal-content" style="width:340px;">
+            <div class="modal-header">
+                <h2 class="modal-title">保存选项</h2>
+                <button class="close-button" id="save-select-close">&times;</button>
+            </div>
+            <div class="form-group" style="padding:15px 0;">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                    <input type="checkbox" id="save-homework-checkbox" checked style="width:18px;height:18px;">
+                    <span>保存作业内容</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:10px;">
+                    <input type="checkbox" id="save-notice-checkbox" checked style="width:18px;height:18px;">
+                    <span>保存公告内容</span>
+                </label>
+            </div>
+            <div class="modal-footer" style="flex-direction:row;justify-content:center;gap:20px;">
+                <button class="cancel-button" id="save-select-cancel">取消</button>
+                <button class="submit-button" id="save-select-confirm">确定保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保存确认对话框 -->
+    <div class="modal" id="save-confirm-modal">
+        <div class="modal-content" style="width:340px;">
+            <div class="modal-header">
+                <h2 class="modal-title">保存确认</h2>
+                <button class="close-button" id="save-confirm-close">&times;</button>
+            </div>
+            <div class="form-group" style="text-align:center;padding:20px 0;">
+                <p style="font-size:1.1rem;color:white;margin:0;text-shadow:0 1px 2px rgba(0,0,0,0.3);">确定要保存作业到文件吗？</p>
+            </div>
+            <div class="modal-footer" style="flex-direction:row;justify-content:center;gap:20px;">
+                <button class="cancel-button" id="save-cancel-button">取消</button>
+                <button class="submit-button" id="save-confirm-button">确定保存</button>
+            </div>
+        </div>
+    </div>
+    <!-- 左下角公告按钮 -->
+    <div id="bottom-notice-btn">公告</div>
+    <!-- 公告写字板模态框 -->
+    <div class="modal" id="notice-modal">
+        <div class="modal-content" style="width:420px;min-height:320px;max-width:480px;">
+            <div class="modal-header">
+                <h2 class="modal-title">公告编辑</h2>
+                <button class="close-button" id="notice-close">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="notice-textarea">公告内容（最多1000字符）</label>
+                <textarea id="notice-textarea" maxlength="1000" style="width:100%;height:120px;resize:vertical;font-size:1.1rem;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);color:white;"></textarea>
+                <div id="notice-count" style="text-align:right;color:rgba(255,255,255,0.7);font-size:0.95rem;margin-top:4px;text-shadow:0 1px 2px rgba(0,0,0,0.3);">0/1000</div>
+            </div>
+            <div class="modal-footer">
+                <button class="submit-button" id="notice-save">保存公告</button>
+                <button class="cancel-button" id="notice-cancel">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 悬浮球 -->
+    <div id="floating-ball"></div>
+
+    <!-- 操作选择对话框 -->
+    <div class="modal" id="operation-modal">
+        <div class="modal-content" style="width:340px;">
+            <div class="modal-header">
+                <h2 class="modal-title">选择操作</h2>
+                <button class="close-button" id="operation-close">&times;</button>
+            </div>
+            <div class="modal-footer" style="flex-direction:column;align-items:stretch;gap:15px;">
+                <button class="action-button add-button" id="op-add">添加作业</button>
+                <button class="action-button modify-button" id="op-modify">修改作业</button>
+                <button class="action-button delete-button" id="op-delete">删除作业</button>
+                <button class="action-button manage-button" id="op-manage">管理</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理对话框 -->
+    <div class="modal" id="manage-modal">
+        <div class="modal-content" style="width:420px;min-height:320px;max-width:480px;">
+            <div class="modal-header">
+                <h2 class="modal-title">管理设置</h2>
+                <button class="close-button" id="manage-close">&times;</button>
+            </div>
+            <div class="form-group" style="margin-top:15px;">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                    <input type="checkbox" id="manage-ad-toggle-checkbox" style="width:18px;height:18px;">
+                    <span>广告开关</span>
+                </label>
+            </div>
+            <div class="form-group" style="margin-top:15px;">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                    <input type="checkbox" id="manage-liquid-glass-toggle-checkbox" style="width:18px;height:18px;">
+                    <span>liquid glass开关</span>
+                </label>
+            </div>
+            <div class="form-group" style="margin-top:15px;">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                    <input type="checkbox" id="manage-bottom-display-checkbox" style="width:18px;height:18px;">
+                    <span>靠下显示</span>
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button class="submit-button" id="manage-save">保存设置</button>
+                <button class="cancel-button" id="manage-cancel">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <table class="homework-table">
+        <tr>
+            <th>科目</th>
+            <th>作业内容</th>
+        </tr>
+        <tr>
+            <td class="subject-cell">语文</td>
+            <td id="chinese-homework" class="homework-items-container"></td>
+        </tr>
+        <tr>
+            <td class="subject-cell">数学</td>
+            <td id="math-homework" class="homework-items-container"></td>
+        </tr>
+        <tr>
+            <td class="subject-cell">英语</td>
+            <td id="english-homework" class="homework-items-container"></td>
+        </tr>
+        <tr>
+            <td class="subject-cell">物理</td>
+            <td id="physics-homework" class="homework-items-container"></td>
+        </tr>
+        <tr>
+            <td class="subject-cell">化学</td>
+            <td id="chemistry-homework" class="homework-items-container"></td>
+        </tr>
+        <tr>
+            <td class="subject-cell">生物</td>
+            <td id="biology-homework" class="homework-items-container"></td>
+        </tr>
+        <tr>
+            <td class="subject-cell">政治</td>
+            <td id="politics-homework" class="homework-items-container"></td>
+        </tr>
+        <tr>
+            <td class="subject-cell">历史</td>
+            <td id="history-homework" class="homework-items-container"></td>
+        </tr>
+        <tr>
+            <td class="subject-cell">地理</td>
+            <td id="geography-homework" class="homework-items-container"></td>
+        </tr>
+        <tr>
+            <td class="subject-cell">其他</td>
+            <td id="other-homework" class="homework-items-container"></td>
+        </tr>
+    </table>
+    
+    <div class="button-container" style="display:none;">
+        <button class="action-button add-button" id="add-homework-btn">添加作业</button>
+        <button class="action-button modify-button" id="modify-homework-btn">修改作业</button>
+        <button class="action-button delete-button" id="delete-homework-btn">删除作业</button>
+    </div>
+    
+    <!-- 添加作业模态框 -->
+    <div class="modal" id="add-homework-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">添加新作业</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="subject-select">选择科目</label>
+                <select id="subject-select">
+                    <option value="chinese">语文</option>
+                    <option value="math">数学</option>
+                    <option value="english">英语</option>
+                    <option value="physics">物理</option>
+                    <option value="chemistry">化学</option>
+                    <option value="biology">生物</option>
+                    <option value="politics">政治</option>
+                    <option value="history">历史</option>
+                    <option value="geography">地理</option>
+                    <option value="other">其他</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="homework-input">作业内容</label>
+                <input type="text" id="homework-input" placeholder="请输入作业内容">
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-button" id="add-cancel-button">取消</button>
+                <button class="submit-button" id="submit-homework">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 修改作业模态框 -->
+    <div class="modal" id="modify-homework-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">修改作业</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="modify-subject-select">选择科目</label>
+                <select id="modify-subject-select">
+                    <option value="chinese">语文</option>
+                    <option value="math">数学</option>
+                    <option value="english">英语</option>
+                    <option value="physics">物理</option>
+                    <option value="chemistry">化学</option>
+                    <option value="biology">生物</option>
+                    <option value="politics">政治</option>
+                    <option value="history">历史</option>
+                    <option value="geography">地理</option>
+                    <option value="other">其他</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="homework-item-select">选择作业项</label>
+                <select id="homework-item-select"></select>
+            </div>
+            <div class="form-group">
+                <label for="modify-homework-input">作业内容</label>
+                <input type="text" id="modify-homework-input" placeholder="请输入修改后的作业内容">
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-button" id="modify-cancel-button">取消</button>
+                <button class="submit-button" id="submit-modify">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 删除作业模态框 -->
+    <div class="modal" id="delete-homework-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">删除作业</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="delete-subject-select">选择科目</label>
+                <select id="delete-subject-select">
+                    <option value="chinese">语文</option>
+                    <option value="math">数学</option>
+                    <option value="english">英语</option>
+                    <option value="physics">物理</option>
+                    <option value="chemistry">化学</option>
+                    <option value="biology">生物</option>
+                    <option value="politics">政治</option>
+                    <option value="history">历史</option>
+                    <option value="geography">地理</option>
+                    <option value="other">其他</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="delete-item-select">选择作业项</label>
+                <select id="delete-item-select"></select>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-button" id="delete-cancel-button">取消</button>
+                <button class="delete-confirm-button" id="confirm-delete">删除作业</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-image" id="ad-container" style="display:none;">
+        <img id="ad-image" alt="广告图片">
+    </div>
+
+    <script>
+    // 自适应文字颜色函数
+    function getAdaptiveTextColor(element) {
+        const computedStyle = window.getComputedStyle(element);
+        const bgColor = computedStyle.backgroundColor;
+        
+        // 提取RGB值
+        const rgb = bgColor.match(/\d+/g);
+        if (!rgb || rgb.length < 3) return '#333';
+        
+        const r = parseInt(rgb[0]), g = parseInt(rgb[1]), b = parseInt(rgb[2]);
+        
+        // 计算亮度 (相对亮度公式)
+        const brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        
+        // 如果背景较暗，返回白色文字，否则返回黑色文字
+        return brightness < 0.5 ? '#ffffff' : '#333333';
+    }
+
+    // 应用自适应文字颜色
+    function applyAdaptiveTextColors() {
+        const elements = document.querySelectorAll('.modal-title, .form-group label, .homework-item, .action-button, .submit-button, .cancel-button, .delete-confirm-button, .modal-content p');
+        
+        // 检查是否在纯白背景模式下
+        const isWhiteBackground = document.body.classList.contains('liquid-glass-disabled');
+        
+        elements.forEach(element => {
+            let textColor;
+            
+            if (isWhiteBackground) {
+                // 纯白背景模式下，表单元素统一显示黑色
+                if (element.classList.contains('modal-title') || 
+                    element.classList.contains('form-group') || 
+                    element.closest('.form-group') || 
+                    element.classList.contains('action-button') ||
+                    element.classList.contains('submit-button') ||
+                    element.classList.contains('cancel-button') ||
+                    element.classList.contains('delete-confirm-button')) {
+                    textColor = '#333333';
+                } else {
+                    // 其他元素保持自适应
+                    textColor = getAdaptiveTextColor(element);
+                }
+            } else {
+                // 动态背景模式下，保持自适应
+                textColor = getAdaptiveTextColor(element);
+            }
+            
+            element.style.color = textColor;
+            
+            // 根据文字颜色调整文字阴影
+            if (textColor === '#ffffff') {
+                element.style.textShadow = '0 1px 2px rgba(0, 0, 0, 0.3)';
+            } else {
+                element.style.textShadow = '0 1px 2px rgba(0, 0, 0, 0.1)';
+            }
+        });
+    }
+
+    // 公告居中弹窗样式
+    (function() {
+        const style = document.createElement('style');
+        style.innerHTML = `
+            #notice-center-modal {
+                display: none;
+                position: fixed;
+                top: 0; left: 0;
+                width: 100vw; height: 100vh;
+                background: rgba(0,0,0,0.3);
+                backdrop-filter: blur(5px);
+                -webkit-backdrop-filter: blur(5px);
+                z-index: 2000;
+                justify-content: center;
+                align-items: flex-end;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            #notice-center-modal.show {
+                opacity: 1;
+                align-items: center;
+            }
+            #notice-center-modal .modal-content {
+                background: transparent;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                border-radius: 20px;
+                border: 2px solid transparent;
+                box-shadow: none;
+                padding: 0;
+                min-width: 320px;
+                max-width: 90vw;
+                position: relative;
+                transform: translateY(100vh);
+                transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            }
+            #notice-center-modal .modal-content.is-static {
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                border: 2px solid rgba(255, 255, 255, 0.8);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            }
+            #notice-center-modal.show .modal-content {
+                transform: translateY(0);
+            }
+            #notice-center-close {
+                background: none;
+                border: none;
+                color: rgba(255, 255, 255, 0.8);
+                cursor: pointer;
+                font-size: 1.7rem;
+                transition: color 0.2s;
+            }
+            #notice-center-close:hover {
+                color: white;
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+        `;
+        document.head.appendChild(style);
+    })();
+        // 顶部按钮样式和公告写字板样式
+        (function() {
+            const style = document.createElement('style');
+        style.innerHTML = `
+            #notice-display {
+                margin: 18px 0 10px 0;
+                padding: 14px 22px;
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+                border-left: 5px solid rgba(52, 152, 219, 0.7);
+                border-radius: 12px;
+                font-size: 1.15rem;
+                color: #333;
+                min-height: 32px;
+                max-width: 900px;
+                word-break: break-all;
+                white-space: pre-wrap;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+        `;
+            document.head.appendChild(style);
+        })();
+        (function() {
+            const style = document.createElement('style');
+        style.innerHTML = `
+            #top-btns {
+                position: fixed;
+                top: 24px;
+                right: 38px;
+                display: flex;
+                gap: 18px;
+                z-index: 1020;
+            }
+            #save-btn {
+                color: #333;
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+                font-size: 1.25rem;
+                font-weight: bold;
+                padding: 8px 22px;
+                border-radius: 22px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                transition: all 0.3s ease;
+                user-select: none;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+            #save-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(1.05);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            }
+            #bottom-notice-btn {
+                position: fixed;
+                left: 32px;
+                bottom: 32px;
+                color: #333;
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+                font-size: 1.25rem;
+                font-weight: bold;
+                padding: 8px 22px;
+                border-radius: 22px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                transition: all 0.3s ease;
+                user-select: none;
+                z-index: 1020;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+            #bottom-notice-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(1.05);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            }
+            #notice-modal .modal-content {
+                min-width: 320px;
+                max-width: 480px;
+                min-height: 260px;
+            }
+            #notice-textarea {
+                box-sizing: border-box;
+            }
+        `;
+            document.head.appendChild(style);
+        })();
+        // 右上角保存按钮样式和点击事件
+        (function() {
+            const style = document.createElement('style');
+        style.innerHTML = `
+            #save-btn {
+                position: fixed;
+                top: 24px;
+                right: 38px;
+                color: #333;
+                background: white;
+                font-size: 1.25rem;
+                font-weight: bold;
+                padding: 8px 22px;
+                border-radius: 22px;
+                box-shadow: 0 2px 8px rgba(52,152,219,0.08);
+                cursor: pointer;
+                z-index: 1020;
+                border: 1px solid #3498db;
+                transition: background 0.2s, color 0.2s;
+            }
+            #save-btn:hover {
+                background: #3498db;
+                color: #fff;
+            }
+        `;
+            document.head.appendChild(style);
+        })();
+        // 悬浮球样式和交互
+        (function() {
+            const style = document.createElement('style');
+        style.innerHTML = `
+            #floating-ball {
+                position: fixed;
+                right: 32px;
+                bottom: 32px;
+                width: 60px;
+                height: 60px;
+                background: rgba(149, 165, 166, 0.7);
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+                border-radius: 50%;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                cursor: pointer;
+                z-index: 1010;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+            #floating-ball:hover {
+                transform: scale(1.18);
+                background: rgba(149, 165, 166, 0.8);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            }
+            #floating-ball::after {
+                content: '搞';
+                font-size: 2.2rem;
+                color: #333;
+                pointer-events: none;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+            #operation-modal .modal-content {
+                min-width: 320px;
+            }
+        `;
+            document.head.appendChild(style);
+        })();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 应用自适应文字颜色（仅初始应用一次）
+            applyAdaptiveTextColors();
+
+            // 公告居中弹窗显示逻辑
+            function showCenterNotice() {
+                const notice = localStorage.getItem('notice') || '';
+                if (notice.trim()) {
+                    document.getElementById('notice-center-text').textContent = notice;
+                    document.getElementById('notice-center-modal').style.display = 'flex';
+                }
+            }
+            function hideCenterNotice() {
+                document.getElementById('notice-center-modal').style.display = 'none';
+            }
+            // 公告弹窗关闭事件
+            document.getElementById('notice-center-close').addEventListener('click', hideCenterNotice);
+            document.getElementById('notice-center-modal').addEventListener('click', function(e) {
+                if (e.target === this) hideCenterNotice();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (document.getElementById('notice-center-modal').style.display === 'flex' && e.key === 'Escape') {
+                    hideCenterNotice();
+                }
+            });
+            // 公告内容显示逻辑
+            function updateNoticeDisplay() {
+                const notice = localStorage.getItem('notice') || '';
+                const display = document.getElementById('notice-display');
+                if (notice.trim()) {
+                    display.textContent = notice;
+                    display.style.display = '';
+                } else {
+                    display.textContent = '';
+                    display.style.display = 'none';
+                }
+            }
+            // 公告按钮点击事件（仍保留左键点击弹出居中公告弹窗）
+            document.getElementById('bottom-notice-btn').addEventListener('click', function() {
+                showCenterNotice();
+            });
+            // 公告展示区点击也可打开居中弹窗
+            document.getElementById('notice-display').addEventListener('click', function() {
+                showCenterNotice();
+            });
+
+            // 鼠标悬停时右键单击公告按钮打开写字板
+            document.getElementById('bottom-notice-btn').addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                const notice = localStorage.getItem('notice') || '';
+                document.getElementById('notice-textarea').value = notice;
+                document.getElementById('notice-count').textContent = `${notice.length}/1000`;
+                showModal('notice-modal');
+                document.getElementById('notice-textarea').focus();
+            });
+            // 页面加载时显示公告
+            updateNoticeDisplay();
+
+            // 广告轮播功能 - 优化性能
+            let currentAdIndex = 0;
+            const adImages = ['ad01.png', 'ad02.png'];
+            const adLinks = [
+                'https://www.apple.com.cn',
+                'http://playvalorant.com/zh-tw/'
+            ];
+            let adInterval = null;
+
+            function rotateAd() {
+                currentAdIndex = (currentAdIndex + 1) % adImages.length;
+                const adImage = document.getElementById('ad-image');
+                const adContainer = document.getElementById('ad-container');
+                
+                // 使用requestAnimationFrame优化动画性能
+                requestAnimationFrame(() => {
+                    adImage.src = `img/${adImages[currentAdIndex]}`;
+                    adImage.onclick = function() {
+                        window.open(adLinks[currentAdIndex], '_blank');
+                    };
+                    
+                    // 如果广告开关开启，显示广告
+                    const adEnabled = localStorage.getItem('adEnabled') === 'true';
+                    if (adEnabled) {
+                        adContainer.style.display = 'flex';
+                    }
+                });
+            }
+
+            function startAdRotation() {
+                // 初始化广告
+                rotateAd();
+                // 每分钟切换广告 - 使用setTimeout避免内存泄漏
+                if (adInterval) clearInterval(adInterval);
+                adInterval = setInterval(rotateAd, 60000);
+            }
+
+            function stopAdRotation() {
+                if (adInterval) {
+                    clearInterval(adInterval);
+                    adInterval = null;
+                }
+                document.getElementById('ad-container').style.display = 'none';
+            }
+
+            // 检查广告开关状态并启动轮播
+            const adEnabled = localStorage.getItem('adEnabled') === 'true';
+            if (adEnabled) {
+                startAdRotation();
+            } else {
+                // 初始不显示广告
+                document.getElementById('ad-container').style.display = 'none';
+            }
+
+            // 初始化广告开关状态
+            // 广告开关现在在管理对话框中设置
+
+            // 初始化liquid glass开关状态
+            const liquidGlassEnabled = localStorage.getItem('liquidGlassEnabled') !== 'false'; // 默认开启
+            
+            // 初始化靠下显示开关状态
+            const bottomDisplayEnabled = localStorage.getItem('bottomDisplayEnabled') === 'true'; // 默认关闭
+            
+            // 根据liquid glass开关状态设置背景
+            function setLiquidGlassBackground(enabled) {
+                const body = document.body;
+                if (enabled) {
+                    // 启用动态背景 - 使用CSS类
+                    body.classList.add('liquid-glass-enabled');
+                    body.classList.remove('liquid-glass-disabled');
+                } else {
+                    // 禁用动态背景，显示纯白色背景
+                    body.classList.add('liquid-glass-disabled');
+                    body.classList.remove('liquid-glass-enabled');
+                }
+            }
+            
+            // 根据靠下显示开关状态设置表格位置和公告位置
+            function setBottomDisplay(enabled) {
+                const table = document.querySelector('.homework-table');
+                const noticeDisplay = document.getElementById('notice-display');
+                const noticeBtn = document.getElementById('bottom-notice-btn');
+                
+                if (enabled) {
+                    table.classList.add('bottom-display');
+                    // 隐藏公告按钮
+                    noticeBtn.style.display = 'none';
+                    // 智能调整公告位置
+                    adjustNoticePosition();
+                } else {
+                    table.classList.remove('bottom-display');
+                    // 显示公告按钮
+                    noticeBtn.style.display = '';
+                    // 恢复公告默认位置
+                    noticeDisplay.style.position = '';
+                    noticeDisplay.style.bottom = '';
+                    noticeDisplay.style.margin = '18px 0 10px 0';
+                }
+            }
+            
+            // 智能调整公告位置
+            function adjustNoticePosition() {
+                const noticeDisplay = document.getElementById('notice-display');
+                const table = document.querySelector('.homework-table');
+                const bottomDisplayEnabled = localStorage.getItem('bottomDisplayEnabled') === 'true';
+                
+                if (!bottomDisplayEnabled) {
+                    return; // 如果靠下显示未开启，不调整位置
+                }
+                
+                // 检查是否有作业
+                const subjects = [
+                    'chinese', 'math', 'english', 'physics', 'chemistry', 
+                    'biology', 'politics', 'history', 'geography', 'other'
+                ];
+                
+                const hasHomework = subjects.some(subject => {
+                    const homeworks = JSON.parse(localStorage.getItem(subject) || '[]');
+                    return homeworks.length > 0;
+                });
+                
+                if (hasHomework) {
+                    // 有作业时，公告位于作业表单上方，保持原来距离
+                    noticeDisplay.style.position = '';
+                    noticeDisplay.style.bottom = '';
+                    noticeDisplay.style.margin = '18px 0 10px 0';
+                } else {
+                    // 没有作业时，公告靠下显示，位置与作业表单一致
+                    noticeDisplay.style.position = 'fixed';
+                    noticeDisplay.style.bottom = '20px';
+                    noticeDisplay.style.left = '20px';
+                    noticeDisplay.style.right = '20px';
+                    noticeDisplay.style.margin = '0';
+                    noticeDisplay.style.zIndex = '99'; // 确保在表格上方
+                }
+            }
+            
+            // 初始设置背景和表格位置
+            setLiquidGlassBackground(liquidGlassEnabled);
+            setBottomDisplay(bottomDisplayEnabled);
+            // 初始调整公告位置
+            adjustNoticePosition();
+
+            // 公告模态框关闭
+            document.getElementById('notice-close').addEventListener('click', function() {
+                document.getElementById('notice-modal').style.display = 'none';
+            });
+            document.getElementById('notice-cancel').addEventListener('click', function() {
+                document.getElementById('notice-modal').style.display = 'none';
+            });
+            // 公告保存
+            document.getElementById('notice-save').addEventListener('click', function() {
+                const val = document.getElementById('notice-textarea').value;
+                
+                localStorage.setItem('notice', val);
+                
+                document.getElementById('notice-modal').style.display = 'none';
+                updateNoticeDisplay();
+            });
+            // 公告字数统计
+            document.getElementById('notice-textarea').addEventListener('input', function() {
+                document.getElementById('notice-count').textContent = `${this.value.length}/1000`;
+            });
+
+            // 公告模态框键盘事件（Enter=换行，ESC=取消）
+            document.getElementById('notice-modal').addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.getElementById('notice-modal').style.display = 'none';
+                }
+            });
+
+            // 保存按钮显示优化（始终显示）
+            document.getElementById('save-btn').style.display = '';
+            document.getElementById('bottom-notice-btn').style.display = '';
+            // 保存按钮点击事件 - 显示选择对话框
+            document.getElementById('save-btn').addEventListener('click', function() {
+                showModal('save-select-modal');
+            });
+            // 初始化作业数据
+            const subjects = [
+                'chinese', 'math', 'english', 'physics', 'chemistry', 
+                'biology', 'politics', 'history', 'geography', 'other'
+            ];
+            
+            // 检查并清空每日数据
+            checkAndClearDailyData();
+            
+            // 从localStorage加载数据或初始化空数组
+            subjects.forEach(subject => {
+                if (!localStorage.getItem(subject)) {
+                    localStorage.setItem(subject, JSON.stringify([]));
+                }
+                renderHomework(subject);
+            });
+            
+            // 隐藏表头行如果所有科目都没有作业
+            function updateTableHeader() {
+                const hasAnyHomework = subjects.some(subject => {
+                    const homeworks = JSON.parse(localStorage.getItem(subject) || '[]');
+                    return homeworks.length > 0;
+                });
+                
+                const headerRow = document.querySelector('.homework-table tr:first-child');
+                if (hasAnyHomework) {
+                    headerRow.classList.remove('hidden');
+                } else {
+                    headerRow.classList.add('hidden');
+                }
+            }
+            
+            // 初始检查表头显示状态
+            updateTableHeader();
+            
+            // 检查是否需要紧凑显示
+            checkCompactView();
+            
+            // 悬浮球点击弹出操作对话框
+            document.getElementById('floating-ball').addEventListener('click', function() {
+                document.getElementById('operation-modal').style.display = 'flex';
+            });
+
+            // 操作对话框关闭
+            document.getElementById('operation-close').addEventListener('click', function() {
+                document.getElementById('operation-modal').style.display = 'none';
+            });
+
+            // 操作对话框按钮事件
+            document.getElementById('op-add').addEventListener('click', function() {
+                document.getElementById('operation-modal').style.display = 'none';
+                document.getElementById('add-homework-modal').style.display = 'flex';
+            });
+            document.getElementById('op-modify').addEventListener('click', function() {
+                document.getElementById('operation-modal').style.display = 'none';
+                updateHomeworkItems('modify-subject-select', 'homework-item-select');
+                document.getElementById('modify-homework-modal').style.display = 'flex';
+            });
+            document.getElementById('op-delete').addEventListener('click', function() {
+                document.getElementById('operation-modal').style.display = 'none';
+                updateHomeworkItems('delete-subject-select', 'delete-item-select');
+                document.getElementById('delete-homework-modal').style.display = 'flex';
+            });
+            document.getElementById('op-manage').addEventListener('click', function() {
+                hideModal('operation-modal');
+                // 加载当前设置状态
+                const adEnabled = localStorage.getItem('adEnabled') === 'true';
+                const liquidGlassEnabled = localStorage.getItem('liquidGlassEnabled') !== 'false';
+                const bottomDisplayEnabled = localStorage.getItem('bottomDisplayEnabled') === 'true';
+                
+                document.getElementById('manage-ad-toggle-checkbox').checked = adEnabled;
+                document.getElementById('manage-liquid-glass-toggle-checkbox').checked = liquidGlassEnabled;
+                document.getElementById('manage-bottom-display-checkbox').checked = bottomDisplayEnabled;
+                
+                setTimeout(() => showModal('manage-modal'), 300);
+            });
+
+            // 原有按钮事件（保留功能，按钮已隐藏）
+            document.getElementById('add-homework-btn').addEventListener('click', function() {
+                document.getElementById('add-homework-modal').style.display = 'flex';
+            });
+            document.getElementById('modify-homework-btn').addEventListener('click', function() {
+                updateHomeworkItems('modify-subject-select', 'homework-item-select');
+                document.getElementById('modify-homework-modal').style.display = 'flex';
+            });
+            document.getElementById('delete-homework-btn').addEventListener('click', function() {
+                updateHomeworkItems('delete-subject-select', 'delete-item-select');
+                document.getElementById('delete-homework-modal').style.display = 'flex';
+            });
+            
+            // 关闭模态框事件
+            document.querySelectorAll('.close-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+            
+            // 取消按钮事件
+            document.getElementById('add-cancel-button').addEventListener('click', function() {
+                document.getElementById('add-homework-modal').style.display = 'none';
+            });
+            document.getElementById('modify-cancel-button').addEventListener('click', function() {
+                document.getElementById('modify-homework-modal').style.display = 'none';
+            });
+            document.getElementById('delete-cancel-button').addEventListener('click', function() {
+                document.getElementById('delete-homework-modal').style.display = 'none';
+            });
+            document.getElementById('manage-cancel').addEventListener('click', function() {
+                hideModal('manage-modal');
+            });
+            document.getElementById('manage-close').addEventListener('click', function() {
+                hideModal('manage-modal');
+            });
+            // 管理设置保存
+            document.getElementById('manage-save').addEventListener('click', function() {
+                const adEnabled = document.getElementById('manage-ad-toggle-checkbox').checked;
+                const liquidGlassEnabled = document.getElementById('manage-liquid-glass-toggle-checkbox').checked;
+                const bottomDisplayEnabled = document.getElementById('manage-bottom-display-checkbox').checked;
+                
+                // 保存设置到localStorage
+                localStorage.setItem('adEnabled', adEnabled);
+                localStorage.setItem('liquidGlassEnabled', liquidGlassEnabled);
+                localStorage.setItem('bottomDisplayEnabled', bottomDisplayEnabled);
+                
+                // 根据广告开关状态控制广告显示
+                if (adEnabled) {
+                    startAdRotation();
+                } else {
+                    stopAdRotation();
+                }
+                
+                // 根据liquid glass开关状态设置背景
+                setLiquidGlassBackground(liquidGlassEnabled);
+                
+                // 根据靠下显示开关状态设置表格位置
+                setBottomDisplay(bottomDisplayEnabled);
+                
+                // 关闭管理对话框
+                hideModal('manage-modal');
+            });
+
+            // 保存选择对话框事件
+            document.getElementById('save-select-close').addEventListener('click', function() {
+                hideModal('save-select-modal');
+            });
+            document.getElementById('save-select-cancel').addEventListener('click', function() {
+                hideModal('save-select-modal');
+            });
+            document.getElementById('save-select-confirm').addEventListener('click', function() {
+                const saveHomework = document.getElementById('save-homework-checkbox').checked;
+                const saveNotice = document.getElementById('save-notice-checkbox').checked;
+                
+                if (saveHomework || saveNotice) {
+                    saveHomeworkToFile(saveHomework, saveNotice);
+                    hideModal('save-select-modal');
+                } else {
+                    alert('请至少选择一项内容进行保存');
+                }
+            });
+
+            // 保存确认对话框事件
+            document.getElementById('save-confirm-close').addEventListener('click', function() {
+                hideModal('save-confirm-modal');
+            });
+            document.getElementById('save-cancel-button').addEventListener('click', function() {
+                hideModal('save-confirm-modal');
+            });
+            document.getElementById('save-confirm-button').addEventListener('click', function() {
+                saveHomeworkToFile(true, true);
+                hideModal('save-confirm-modal');
+            });
+
+            // 悬浮球和操作对话框键盘事件
+            document.addEventListener('keydown', function(e) {
+                // 判断哪个模态框处于显示状态
+                const addModal = document.getElementById('add-homework-modal');
+                const modifyModal = document.getElementById('modify-homework-modal');
+                const deleteModal = document.getElementById('delete-homework-modal');
+                const opModal = document.getElementById('operation-modal');
+                const saveConfirmModal = document.getElementById('save-confirm-modal');
+                const manageModal = document.getElementById('manage-modal');
+
+                // ESC关闭模态框
+                if (e.key === 'Escape') {
+                    if (addModal.style.display === 'flex') addModal.style.display = 'none';
+                    if (modifyModal.style.display === 'flex') modifyModal.style.display = 'none';
+                    if (deleteModal.style.display === 'flex') deleteModal.style.display = 'none';
+                    if (opModal.style.display === 'flex') opModal.style.display = 'none';
+                    if (saveConfirmModal.style.display === 'flex') saveConfirmModal.style.display = 'none';
+                    if (manageModal.style.display === 'flex') manageModal.style.display = 'none';
+                }
+
+                // Enter键触发"确定"或"删除作业"
+                if (e.key === 'Enter') {
+                    if (addModal.style.display === 'flex') {
+                        document.getElementById('submit-homework').click();
+                    } else if (modifyModal.style.display === 'flex') {
+                        document.getElementById('submit-modify').click();
+                    } else if (deleteModal.style.display === 'flex') {
+                        document.getElementById('confirm-delete').click();
+                    } else if (opModal.style.display === 'flex') {
+                        // 默认触发第一个按钮（添加作业）
+                        document.getElementById('op-add').click();
+                    } else if (saveConfirmModal.style.display === 'flex') {
+                        // 触发保存确认
+                        document.getElementById('save-confirm-button').click();
+                    } else if (manageModal.style.display === 'flex') {
+                        // 触发管理设置保存
+                        document.getElementById('manage-save').click();
+                    }
+                }
+            });
+            
+            // 点击模态框外部关闭
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 添加作业提交
+            document.getElementById('submit-homework').addEventListener('click', function() {
+                const subject = document.getElementById('subject-select').value;
+                const homeworkInput = document.getElementById('homework-input');
+                const homeworkText = homeworkInput.value.trim();
+                
+                if (homeworkText) {
+                    // 获取现有作业
+                    const homeworks = JSON.parse(localStorage.getItem(subject));
+                    // 添加新作业
+                    homeworks.push(homeworkText);
+                    // 保存回localStorage
+                    localStorage.setItem(subject, JSON.stringify(homeworks));
+                    // 更新显示
+                    renderHomework(subject);
+                    // 清空输入框
+                    homeworkInput.value = '';
+                    // 关闭模态框
+                    document.getElementById('add-homework-modal').style.display = 'none';
+                    
+                    // 检查是否需要切换显示模式
+                    checkCompactView();
+                    // 更新表头显示状态
+                    updateTableHeader();
+                    // 智能调整公告位置
+                    adjustNoticePosition();
+                }
+            });
+            
+            // 修改科目选择更新作业项
+            document.getElementById('modify-subject-select').addEventListener('change', function() {
+                updateHomeworkItems('modify-subject-select', 'homework-item-select');
+            });
+            
+            // 修改作业项选择更新内容
+            document.getElementById('homework-item-select').addEventListener('change', function() {
+                const subject = document.getElementById('modify-subject-select').value;
+                const index = this.value;
+                const homeworks = JSON.parse(localStorage.getItem(subject));
+                
+                if (index !== '' && homeworks.length > 0) {
+                    document.getElementById('modify-homework-input').value = homeworks[index];
+                }
+            });
+            
+            // 修改作业提交
+            document.getElementById('submit-modify').addEventListener('click', function() {
+                const subject = document.getElementById('modify-subject-select').value;
+                const index = document.getElementById('homework-item-select').value;
+                const newHomework = document.getElementById('modify-homework-input').value.trim();
+                
+                if (newHomework && index !== '') {
+                    // 获取现有作业
+                    const homeworks = JSON.parse(localStorage.getItem(subject));
+                    // 修改作业
+                    homeworks[index] = newHomework;
+                    // 保存回localStorage
+                    localStorage.setItem(subject, JSON.stringify(homeworks));
+                    // 更新显示
+                    renderHomework(subject);
+                    // 关闭模态框
+                    document.getElementById('modify-homework-modal').style.display = 'none';
+                    // 智能调整公告位置
+                    adjustNoticePosition();
+                }
+            });
+            
+            // 删除科目选择更新作业项
+            document.getElementById('delete-subject-select').addEventListener('change', function() {
+                updateHomeworkItems('delete-subject-select', 'delete-item-select');
+            });
+            
+            // 删除作业
+            document.getElementById('confirm-delete').addEventListener('click', function() {
+                const subject = document.getElementById('delete-subject-select').value;
+                const index = document.getElementById('delete-item-select').value;
+                
+                if (index !== '') {
+                    // 获取现有作业
+                    const homeworks = JSON.parse(localStorage.getItem(subject));
+                    // 删除作业
+                    homeworks.splice(index, 1);
+                    // 保存回localStorage
+                    localStorage.setItem(subject, JSON.stringify(homeworks));
+                    // 更新显示
+                    renderHomework(subject);
+                    // 关闭模态框
+                    document.getElementById('delete-homework-modal').style.display = 'none';
+                    
+                    // 检查是否需要切换显示模式
+                    checkCompactView();
+                    // 更新表头显示状态
+                    updateTableHeader();
+                    // 智能调整公告位置
+                    adjustNoticePosition();
+                }
+            });
+            
+            // 窗口大小改变时检查显示模式
+            window.addEventListener('resize', checkCompactView);
+            
+            // 设置定时保存
+            setInterval(checkAutoSave, 60000); // 每分钟检查一次
+        });
+        
+    // 渲染指定科目的作业
+        function renderHomework(subject) {
+            const container = document.getElementById(`${subject}-homework`);
+            const row = container.closest('tr'); // 获取包含该科目的整行
+            const homeworks = JSON.parse(localStorage.getItem(subject));
+            
+            container.innerHTML = '';
+            
+            if (homeworks.length === 0) {
+                // 如果没有作业，隐藏整行
+                row.classList.add('hidden');
+                return;
+            }
+            
+            // 有作业时显示整行
+            row.classList.remove('hidden');
+            
+            homeworks.forEach((homework, index) => {
+                const homeworkItem = document.createElement('div');
+                homeworkItem.className = 'homework-item';
+                homeworkItem.textContent = `${index + 1}. ${homework}`;
+                container.appendChild(homeworkItem);
+            });
+        }
+        
+        // 检查是否需要紧凑显示
+        function checkCompactView() {
+            const table = document.querySelector('.homework-table');
+            const tableHeight = table.offsetHeight;
+            const windowHeight = window.innerHeight;
+            
+            if (tableHeight > windowHeight * 0.8) {
+                document.querySelectorAll('.homework-items-container').forEach(container => {
+                    container.classList.add('compact');
+                });
+            } else {
+                document.querySelectorAll('.homework-items-container').forEach(container => {
+                    container.classList.remove('compact');
+                });
+            }
+        }
+        
+        // 更新作业项选择框
+        function updateHomeworkItems(subjectSelectId, itemSelectId) {
+            const subject = document.getElementById(subjectSelectId).value;
+            const homeworks = JSON.parse(localStorage.getItem(subject));
+            const itemSelect = document.getElementById(itemSelectId);
+            
+            itemSelect.innerHTML = '';
+            
+            if (homeworks.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = '暂无作业';
+                itemSelect.appendChild(option);
+                return;
+            }
+            
+            homeworks.forEach((homework, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `作业 ${index + 1}`;
+                itemSelect.appendChild(option);
+            });
+            
+            // 默认选择第一项并更新内容（如果是修改模态框）
+            if (itemSelectId === 'homework-item-select') {
+                itemSelect.value = 0;
+                document.getElementById('modify-homework-input').value = homeworks[0];
+            }
+        }
+        
+        // 检查是否需要自动保存
+        function checkAutoSave() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            
+            // 每天晚上8点保存
+            if (hours === 20 && minutes === 0) {
+                saveHomeworkToFile();
+            }
+        }
+        
+        // 保存作业到文件
+        function saveHomeworkToFile(saveHomework = true, saveNotice = true) {
+            const subjects = [
+                'chinese', 'math', 'english', 'physics', 'chemistry', 
+                'biology', 'politics', 'history', 'geography', 'other'
+            ];
+            
+            const subjectNames = {
+                'chinese': '语文',
+                'math': '数学',
+                'english': '英语',
+                'physics': '物理',
+                'chemistry': '化学',
+                'biology': '生物',
+                'politics': '政治',
+                'history': '历史',
+                'geography': '地理',
+                'other': '其他'
+            };
+            
+            let content = "作业王1.2.4 gs pre_gs - 高中作业单 sk-da7ae86cd4874cad8bff2832eab49756\n";
+            content += "生成时间: " + new Date().toLocaleString() + "\n\n";
+            
+            // 保存作业内容
+            if (saveHomework) {
+                subjects.forEach(subject => {
+                    const homeworks = JSON.parse(localStorage.getItem(subject));
+                    content += `【${subjectNames[subject]}】\n`;
+                    
+                    if (homeworks.length === 0) {
+                        content += "  暂无作业\n";
+                    } else {
+                        homeworks.forEach((homework, index) => {
+                            content += `  ${index + 1}. ${homework}\n`;
+                        });
+                    }
+                    
+                    content += "\n";
+                });
+            }
+            
+            // 保存公告内容
+            if (saveNotice) {
+                const notice = localStorage.getItem('notice') || '';
+                if (notice.trim()) {
+                    content += "【公告】\n";
+                    content += `  ${notice}\n\n`;
+                }
+            }
+            
+            // 创建下载链接
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const filename = `${year}${month}${day}_homework.txt`;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // 检查并清空每日数据
+        function checkAndClearDailyData() {
+            const today = new Date().toDateString();
+            const lastClearDate = localStorage.getItem('lastClearDate');
+            
+            if (lastClearDate !== today) {
+                const subjects = [
+                    'chinese', 'math', 'english', 'physics', 'chemistry', 
+                    'biology', 'politics', 'history', 'geography', 'other'
+                ];
+                
+                // 清空所有科目数据
+                subjects.forEach(subject => {
+                    localStorage.setItem(subject, JSON.stringify([]));
+                });
+                
+                // 记录清空日期
+                localStorage.setItem('lastClearDate', today);
+            }
+        }
+
+        // 模态框动画控制
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = modal.querySelector('.modal-content');
+            if (content) {
+                content.classList.remove('is-static');
+            }
+            modal.style.display = 'flex';
+            // 强制重排以触发动画
+            modal.offsetHeight;
+            modal.classList.add('show');
+
+            if (content) {
+                const onTransitionEnd = function(e) {
+                    if (e.propertyName === 'transform') {
+                        content.classList.add('is-static');
+                        content.removeEventListener('transitionend', onTransitionEnd);
+                    }
+                };
+                content.addEventListener('transitionend', onTransitionEnd);
+            }
+        }
+
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = modal.querySelector('.modal-content');
+            if (content) {
+                content.classList.remove('is-static');
+            }
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        // 更新所有模态框显示逻辑以使用动画
+        document.addEventListener('DOMContentLoaded', function() {
+            // 更新公告居中弹窗显示逻辑
+            function showCenterNotice() {
+                const notice = localStorage.getItem('notice') || '';
+                if (notice.trim()) {
+                    document.getElementById('notice-center-text').textContent = notice;
+                    showModal('notice-center-modal');
+                }
+            }
+
+            function hideCenterNotice() {
+                hideModal('notice-center-modal');
+            }
+
+            // 更新其他模态框显示逻辑
+            document.getElementById('save-btn').addEventListener('click', function() {
+                showModal('save-select-modal');
+            });
+
+            document.getElementById('floating-ball').addEventListener('click', function() {
+                showModal('operation-modal');
+            });
+
+            // 更新所有模态框关闭逻辑
+            document.querySelectorAll('.close-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    hideModal(modal.id);
+                });
+            });
+
+            // 更新取消按钮逻辑
+            document.getElementById('add-cancel-button').addEventListener('click', function() {
+                hideModal('add-homework-modal');
+            });
+            document.getElementById('modify-cancel-button').addEventListener('click', function() {
+                hideModal('modify-homework-modal');
+            });
+            document.getElementById('delete-cancel-button').addEventListener('click', function() {
+                hideModal('delete-homework-modal');
+            });
+            document.getElementById('save-cancel-button').addEventListener('click', function() {
+                hideModal('save-confirm-modal');
+            });
+            document.getElementById('notice-cancel').addEventListener('click', function() {
+                hideModal('notice-modal');
+            });
+            document.getElementById('operation-close').addEventListener('click', function() {
+                hideModal('operation-modal');
+            });
+
+            // 更新操作对话框按钮事件
+            document.getElementById('op-add').addEventListener('click', function() {
+                hideModal('operation-modal');
+                setTimeout(() => showModal('add-homework-modal'), 300);
+            });
+            document.getElementById('op-modify').addEventListener('click', function() {
+                hideModal('operation-modal');
+                setTimeout(() => {
+                    updateHomeworkItems('modify-subject-select', 'homework-item-select');
+                    showModal('modify-homework-modal');
+                }, 300);
+            });
+            document.getElementById('op-delete').addEventListener('click', function() {
+                hideModal('operation-modal');
+                setTimeout(() => {
+                    updateHomeworkItems('delete-subject-select', 'delete-item-select');
+                    showModal('delete-homework-modal');
+                }, 300);
+            });
+
+            // 更新原有按钮事件
+            document.getElementById('add-homework-btn').addEventListener('click', function() {
+                showModal('add-homework-modal');
+            });
+            document.getElementById('modify-homework-btn').addEventListener('click', function() {
+                updateHomeworkItems('modify-subject-select', 'homework-item-select');
+                showModal('modify-homework-modal');
+            });
+            document.getElementById('delete-homework-btn').addEventListener('click', function() {
+                updateHomeworkItems('delete-subject-select', 'delete-item-select');
+                showModal('delete-homework-modal');
+            });
+
+            // 更新点击外部关闭逻辑
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        hideModal(this.id);
+                    }
+                });
+            });
+
+            // 更新键盘事件
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const openModals = document.querySelectorAll('.modal.show');
+                    if (openModals.length > 0) {
+                        hideModal(openModals[openModals.length - 1].id);
+                    }
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
