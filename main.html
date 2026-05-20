@@ -431,7 +431,9 @@
                 font-size: 1.15rem;
                 color: #333;
                 min-height: 32px;
-                max-width: 900px;
+                width: clamp(280px, 92vw, 900px);
+                max-width: 100%;
+                box-sizing: border-box;
                 word-break: break-all;
                 white-space: pre-wrap;
                 border: 1px solid rgba(255, 255, 255, 0.2);
@@ -732,6 +734,10 @@
                     // 恢复公告默认位置
                     noticeDisplay.style.position = '';
                     noticeDisplay.style.bottom = '';
+                    noticeDisplay.style.left = '';
+                    noticeDisplay.style.right = '';
+                    noticeDisplay.style.width = '';
+                    noticeDisplay.style.zIndex = '';
                     noticeDisplay.style.margin = '18px 0 10px 0';
                 }
             }
@@ -761,6 +767,7 @@
                     // 有作业时，公告位于作业表单上方，保持原来距离
                     noticeDisplay.style.position = '';
                     noticeDisplay.style.bottom = '';
+                    noticeDisplay.style.width = '';
                     noticeDisplay.style.margin = '18px 0 10px 0';
                 } else {
                     // 没有作业时，公告靠下显示，位置与作业表单一致
@@ -768,6 +775,7 @@
                     noticeDisplay.style.bottom = '20px';
                     noticeDisplay.style.left = '20px';
                     noticeDisplay.style.right = '20px';
+                    noticeDisplay.style.width = 'auto';
                     noticeDisplay.style.margin = '0';
                     noticeDisplay.style.zIndex = '99'; // 确保在表格上方
                 }
