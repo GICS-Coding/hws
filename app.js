@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.4.1 - JavaScript Application Logic
+ * 作业王 v1.4.2 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -652,7 +652,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.4.1 - 高中作业单\n';
+    var content = '作业王 v1.4.2 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -704,7 +704,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---------- 初始设置 ----------
     applyAdaptiveTextColors();
 
-    var liquidGlassEnabled = localStorage.getItem('liquidGlassEnabled') !== 'false';
+    var liquidGlassEnabled = localStorage.getItem('liquidGlassEnabled') === 'true';
     var bottomDisplayEnabled = localStorage.getItem('bottomDisplayEnabled') === 'true';
     var adEnabled = localStorage.getItem('adEnabled') === 'true';
 
@@ -751,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         var notice = localStorage.getItem('notice') || '';
         document.getElementById('notice-textarea').value = notice;
-        document.getElementById('notice-count').textContent = notice.length + '/1000';
+        document.getElementById('notice-count').textContent = notice.length + '/3000';
         showModal('notice-modal');
         document.getElementById('notice-textarea').focus();
     });
@@ -770,7 +770,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateNoticeDisplay();
     });
     document.getElementById('notice-textarea').addEventListener('input', function () {
-        document.getElementById('notice-count').textContent = this.value.length + '/1000';
+        document.getElementById('notice-count').textContent = this.value.length + '/3000';
     });
 
     // ---------- 保存按钮 ----------
@@ -846,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('op-manage').addEventListener('click', function () {
         hideModal('operation-modal');
         var adEnabledVal = localStorage.getItem('adEnabled') === 'true';
-        var liquidGlassVal = localStorage.getItem('liquidGlassEnabled') !== 'false';
+        var liquidGlassVal = localStorage.getItem('liquidGlassEnabled') === 'true';
         var bottomDisplayVal = localStorage.getItem('bottomDisplayEnabled') === 'true';
         var dailyClearVal = localStorage.getItem('dailyClearEnabled') !== 'false';
         var easterEggVal = localStorage.getItem('easterEggEnabled') === 'true';
