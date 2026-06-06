@@ -21,6 +21,7 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* ===== 作业表格 ===== */
 .homework-table {
     width: 100%;
     border-collapse: collapse;
@@ -103,6 +104,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
+/* ===== 按钮容器 ===== */
 .button-container {
     position: fixed;
     left: 20px;
@@ -140,6 +142,10 @@ body {
     background: rgba(231, 76, 60, 0.7);
 }
 
+.manage-button {
+    background: rgba(149, 165, 166, 0.7);
+}
+
 .action-button:hover {
     transform: scale(1.05);
     background: rgba(255, 255, 255, 0.3);
@@ -158,6 +164,11 @@ body {
     background: rgba(192, 57, 43, 0.8);
 }
 
+.manage-button:hover {
+    background: rgba(127, 140, 141, 0.8);
+}
+
+/* ===== 模态框通用 ===== */
 .modal {
     display: none;
     position: fixed;
@@ -256,6 +267,9 @@ body {
     color: #333;
     transition: all 0.3s ease;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-group select {
     appearance: none;
     -webkit-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8.5L1.5 4h9L6 8.5z'/%3E%3C/svg%3E");
@@ -263,6 +277,12 @@ body {
     background-position: right 16px center;
     background-size: 12px;
     padding-right: 40px;
+}
+
+.form-group input {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: none;
 }
 
 .form-group select:focus, .form-group input:focus {
@@ -296,7 +316,7 @@ body {
     color: white;
 }
 
-/* 复选框样式 - 匹配全局玻璃效果 */
+/* 复选框样式 */
 .form-group input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
@@ -339,21 +359,6 @@ body {
 .form-group input[type="checkbox"]:focus {
     outline: none;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* 纯白背景模式下的复选框样式 */
-body.liquid-glass-disabled .form-group input[type="checkbox"] {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.3);
-}
-
-body.liquid-glass-disabled .form-group input[type="checkbox"]:checked {
-    background: rgba(52, 152, 219, 0.8);
-    border-color: rgba(52, 152, 219, 0.9);
-}
-
-body.liquid-glass-disabled .form-group input[type="checkbox"]:checked::before {
-    color: white;
 }
 
 .modal-footer {
@@ -450,24 +455,349 @@ body.liquid-glass-disabled .form-group input[type="checkbox"]:checked::before {
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
+/* ===== 顶部按钮区域 ===== */
+#top-btns {
+    position: fixed;
+    top: 24px;
+    right: 38px;
+    display: flex;
+    gap: 18px;
+    z-index: 1020;
+}
+
+#save-btn {
+    color: #333;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    font-size: 1.25rem;
+    font-weight: bold;
+    padding: 8px 22px;
+    border-radius: 22px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+#save-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== 左下角公告按钮 ===== */
+#bottom-notice-btn {
+    position: fixed;
+    left: 32px;
+    bottom: 32px;
+    color: #333;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    font-size: 1.25rem;
+    font-weight: bold;
+    padding: 8px 22px;
+    border-radius: 22px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    z-index: 1020;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+#bottom-notice-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== 公告展示区 ===== */
+#notice-display {
+    margin: 18px 0 10px 0;
+    padding: 14px 22px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-left: 5px solid rgba(52, 152, 219, 0.7);
+    border-radius: 12px;
+    font-size: 1.15rem;
+    color: #333;
+    min-height: 32px;
+    width: clamp(280px, 92vw, 900px);
+    max-width: 100%;
+    box-sizing: border-box;
+    word-break: break-all;
+    white-space: pre-wrap;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    line-height: 1.6;
+}
+
+/* Markdown 元素在公告展示区 / 居中弹窗中的样式 */
+#notice-display h1, #notice-display h2, #notice-display h3,
+#notice-display h4, #notice-display h5, #notice-display h6,
+#notice-center-text h1, #notice-center-text h2, #notice-center-text h3,
+#notice-center-text h4, #notice-center-text h5, #notice-center-text h6 {
+    margin: 0.6em 0 0.3em 0;
+    font-weight: bold;
+    line-height: 1.3;
+}
+
+#notice-display h1, #notice-center-text h1 { font-size: 1.6em; }
+#notice-display h2, #notice-center-text h2 { font-size: 1.4em; }
+#notice-display h3, #notice-center-text h3 { font-size: 1.25em; }
+#notice-display h4, #notice-center-text h4 { font-size: 1.1em; }
+#notice-display h5, #notice-center-text h5 { font-size: 1em; }
+#notice-display h6, #notice-center-text h6 { font-size: 0.9em; }
+
+#notice-display p, #notice-center-text p {
+    margin: 0.4em 0;
+}
+
+#notice-display ul, #notice-display ol,
+#notice-center-text ul, #notice-center-text ol {
+    margin: 0.4em 0;
+    padding-left: 1.8em;
+}
+
+#notice-display li, #notice-center-text li {
+    margin: 0.15em 0;
+}
+
+#notice-display blockquote, #notice-center-text blockquote {
+    margin: 0.4em 0;
+    padding: 0.3em 0.8em;
+    border-left: 3px solid rgba(52, 152, 219, 0.6);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#notice-display code, #notice-center-text code {
+    background: rgba(0, 0, 0, 0.08);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+#notice-display pre, #notice-center-text pre {
+    margin: 0.5em 0;
+    padding: 0.6em 0.9em;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+#notice-display pre code, #notice-center-text pre code {
+    background: none;
+    padding: 0;
+}
+
+#notice-display a, #notice-center-text a {
+    color: rgba(41, 128, 185, 0.9);
+    text-decoration: underline;
+}
+
+#notice-display hr, #notice-center-text hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 0.6em 0;
+}
+
+#notice-display strong, #notice-center-text strong {
+    font-weight: bold;
+}
+
+#notice-display em, #notice-center-text em {
+    font-style: italic;
+}
+
+#notice-display del, #notice-center-text del {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* ===== 公告编辑模态框 ===== */
+#notice-modal .modal-content {
+    min-width: 320px;
+    max-width: 480px;
+    min-height: 260px;
+}
+
+#notice-textarea {
+    box-sizing: border-box;
+}
+
+/* ===== 公告居中弹窗 ===== */
+#notice-center-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#notice-center-modal.show {
+    opacity: 1;
+    align-items: center;
+}
+
+#notice-center-modal .modal-content {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    box-shadow: none;
+    padding: 0;
+    min-width: 320px;
+    max-width: 90vw;
+    position: relative;
+    transform: translateY(100vh);
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+#notice-center-modal .modal-content.is-static {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+#notice-center-modal.show .modal-content {
+    transform: translateY(0);
+}
+
+#notice-center-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    font-size: 1.7rem;
+    transition: color 0.2s;
+}
+
+#notice-center-close:hover {
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* ===== 悬浮球 ===== */
+#floating-ball {
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    width: 60px;
+    height: 60px;
+    background: rgba(149, 165, 166, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1010;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+#floating-ball:hover {
+    transform: scale(1.18);
+    background: rgba(149, 165, 166, 0.8);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+#floating-ball::after {
+    content: '搞';
+    font-size: 2.2rem;
+    color: #333;
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== 操作选择模态框 ===== */
+#operation-modal .modal-content {
+    min-width: 320px;
+}
+
+/* ===== 快捷预设按钮 ===== */
+.quick-preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.preset-button {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    font-size: 0.95rem;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.preset-button:hover {
+    background: rgba(52, 152, 219, 0.6);
+    border-color: rgba(255, 255, 255, 0.8);
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.preset-button:active {
+    transform: scale(0.96);
+    background: rgba(41, 128, 185, 0.7);
+}
+
+/* ===== 响应式 ===== */
 @media (max-height: 900px) {
     .homework-table td {
         max-height: 120px;
         overflow-y: auto;
     }
-    
+
     .compact .homework-items-container {
         white-space: nowrap;
         overflow-x: auto;
     }
 }
 
-/* 表格行样式 */
+/* ===== 表格行隐藏 ===== */
 .homework-table tr {
-    transition: all 0.3s ease; /* 添加过渡效果 */
+    transition: all 0.3s ease;
 }
 
-/* 隐藏行时完全不占用空间 */
 .homework-table tr.hidden {
     display: none !important;
     height: 0 !important;
@@ -475,11 +805,11 @@ body.liquid-glass-disabled .form-group input[type="checkbox"]:checked::before {
     margin: 0 !important;
     border: none !important;
     line-height: 0 !important;
-    visibility: collapse; /* 表格特有的隐藏属性 */
+    visibility: collapse;
     opacity: 0;
 }
 
-/* Liquid Glass 背景控制 */
+/* ===== Liquid Glass 背景控制 ===== */
 body.liquid-glass-disabled {
     background: #ffffff !important;
     background-size: auto !important;
@@ -505,7 +835,7 @@ body.liquid-glass-enabled::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.3); /* 降低透明度为30% */
+    background: rgba(255, 255, 255, 0.3);
     z-index: -1;
 }
 
@@ -521,20 +851,33 @@ body.liquid-glass-disabled .modal-content p {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* 确保表单输入框在纯白背景模式下显示黑色文字 */
 body.liquid-glass-disabled .form-group select,
 body.liquid-glass-disabled .form-group input,
 body.liquid-glass-disabled .form-group textarea {
     color: #333333 !important;
 }
 
-/* 确保表单输入框占位符文字在纯白背景模式下显示灰色 */
 body.liquid-glass-disabled .form-group input::placeholder,
 body.liquid-glass-disabled .form-group textarea::placeholder {
     color: #666666 !important;
 }
 
-/* 靠下显示样式 */
+/* 纯白背景模式下的复选框样式 */
+body.liquid-glass-disabled .form-group input[type="checkbox"] {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+body.liquid-glass-disabled .form-group input[type="checkbox"]:checked {
+    background: rgba(52, 152, 219, 0.8);
+    border-color: rgba(52, 152, 219, 0.9);
+}
+
+body.liquid-glass-disabled .form-group input[type="checkbox"]:checked::before {
+    color: white;
+}
+
+/* ===== 靠下显示 ===== */
 .homework-table.bottom-display {
     position: fixed;
     bottom: 20px;
@@ -559,7 +902,6 @@ body.liquid-glass-disabled .form-group textarea::placeholder {
     font-size: 0.95rem;
 }
 
-/* 靠下显示时的紧凑模式 */
 .homework-table.bottom-display.compact .homework-items-container {
     max-height: 80px;
     overflow-y: auto;
