@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.4.2 - JavaScript Application Logic
+ * 作业王 v1.4.3 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -652,7 +652,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.4.2 - 高中作业单\n';
+    var content = '作业王 v1.4.3 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
