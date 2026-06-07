@@ -1042,6 +1042,147 @@ document.addEventListener('DOMContentLoaded', function () {
         input.focus();
     });
 
+    // ---------- Markdown示例弹窗 ----------
+    var markdownExampleBtn = document.getElementById('markdown-example-btn');
+    var markdownExampleClose = document.getElementById('markdown-example-close');
+    var markdownExampleTextarea = document.querySelector('#markdown-example-modal textarea');
+    var markdownExampleRight = document.querySelector('#markdown-example-modal .markdown-example-right');
+
+    // Markdown 样例文本
+    var SAMPLE_MARKDOWN = '# 一级标题\n' +
+        '## 二级标题\n' +
+        '### 三级标题\n\n' +
+        '**粗体**  *斜体*  ~~删除线~~\n\n' +
+        '1. 有序列表第一项\n' +
+        '2. 有序列表第二项\n\n' +
+        '- 无序列表项\n' +
+        '- 无序列表子项\n\n' +
+        '> 这里是引用文字\n\n' +
+        '行内代码: `console.log("hello")`\n\n' +
+        '```js\n' +
+        'function hello() {\n' +
+        '  return "world";\n' +
+        '}\n' +
+        '```\n\n' +
+        '---\n\n' +
+        '[链接示例](https://example.com)';
+
+    // 简易 Markdown 渲染函数
+    function renderSimpleMarkdown(md) {
+        var placeholders = [];
+        var idx = 0;
+
+        // 1) 保护代码块：```...```
+        md = md.replace(/```[\s\S]*?```/g, function (match) {
+            var codeContent = match.replace(/^```[\w]*\n?/, '').replace(/```$/, '');
+            var escaped = codeContent.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
+            var ph = '<!--PH' + (idx++) + '-->';
+            placeholders.push('<pre><code>' + escaped + '</code></pre>');
+            return ph;
+        });
+        // 保护行内代码：`...`
+        md = md.replace(/`([^`]+)`/g, function (match, code) {
+            var escaped = code.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
+            var ph = '<!--PH' + (idx++) + '-->';
+            placeholders.push('<code>' + escaped + '</code>');
+            return ph;
+        });
+
+        var html = md;
+
+        // 2) 标题
+        html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+        html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+        html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+        html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+        // 3) 水平线
+        html = html.replace(/^---$/gm, '<hr>');
+        html = html.replace(/^\*\*\*$/gm, '<hr>');
+
+        // 4) 引用
+        html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+
+        // 5) 列表（逐行处理，包裹 <ol> / <ul>）
+        var lines = html.split('\n');
+        var inListType = '';
+        var processed = [];
+        for (var li = 0; li < lines.length; li++) {
+            var line = lines[li];
+            var olMatch = line.match(/^(\d+)\. (.+)$/);
+            var ulMatch = line.match(/^- (.+)$/);
+            if (olMatch) {
+                if (inListType !== 'ol') {
+                    if (inListType) processed.push('</' + inListType + '>');
+                    processed.push('<ol>');
+                    inListType = 'ol';
+                }
+                processed.push('<li>' + olMatch[2] + '</li>');
+            } else if (ulMatch) {
+                if (inListType !== 'ul') {
+                    if (inListType) processed.push('</' + inListType + '>');
+                    processed.push('<ul>');
+                    inListType = 'ul';
+                }
+                processed.push('<li>' + ulMatch[1] + '</li>');
+            } else {
+                if (inListType) {
+                    processed.push('</' + inListType + '>');
+                    inListType = '';
+                }
+                processed.push(line);
+            }
+        }
+        if (inListType) {
+            processed.push('</' + inListType + '>');
+        }
+        html = processed.join('\n');
+
+        // 6) 粗体+斜体
+        html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+        // 粗体
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        // 斜体
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        // 删除线
+        html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
+
+        // 7) 链接
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+        // 8) 段落：非标签行
+        html = html.replace(/^(?!<[a-z]|\s*$)(.+)$/gm, '<p>$1</p>');
+
+        // 9) 清理多余空行
+        html = html.replace(/<p>\s*<\/p>/g, '');
+
+        // 10) 还原占位符
+        for (var i = 0; i < placeholders.length; i++) {
+            html = html.replace('<!--PH' + i + '-->', placeholders[i]);
+        }
+
+        return html;
+    }
+
+    // 打开弹窗时填充内容并渲染
+    function openMarkdownExample() {
+        markdownExampleTextarea.value = SAMPLE_MARKDOWN;
+        markdownExampleRight.innerHTML = renderSimpleMarkdown(SAMPLE_MARKDOWN);
+        showModal('markdown-example-modal');
+    }
+
+    function closeMarkdownExample() {
+        hideModal('markdown-example-modal');
+    }
+
+    markdownExampleBtn.addEventListener('click', openMarkdownExample);
+    markdownExampleClose.addEventListener('click', closeMarkdownExample);
+    document.getElementById('markdown-example-modal').addEventListener('click', function (e) {
+        if (e.target === document.getElementById('markdown-example-modal')) {
+            closeMarkdownExample();
+        }
+    });
+
     // ---------- 窗口 resize ----------
     window.addEventListener('resize', checkCompactView);
 

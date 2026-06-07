@@ -72,19 +72,37 @@
     <div id="bottom-notice-btn">公告</div>
     <!-- 公告写字板模态框 -->
     <div class="modal" id="notice-modal">
-        <div class="modal-content" style="width:420px;min-height:320px;max-width:480px;">
+        <div class="modal-content" style="width:640px;min-height:400px;max-width:700px;">
             <div class="modal-header">
-                <h2 class="modal-title">公告编辑</h2>
+                <h2 class="modal-title" style="flex:1;">公告编辑</h2>
+                <button class="markdown-example-btn" id="markdown-example-btn">Markdown示例</button>
                 <button class="close-button" id="notice-close">&times;</button>
             </div>
             <div class="form-group">
                 <label for="notice-textarea">公告内容（最多3000字符）</label>
-                <textarea id="notice-textarea" maxlength="3000" style="width:100%;height:120px;resize:vertical;font-size:1.1rem;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);color:white;"></textarea>
+                <textarea id="notice-textarea" maxlength="3000" style="width:100%;height:200px;resize:vertical;font-size:1.1rem;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);color:white;"></textarea>
                 <div id="notice-count" style="text-align:right;color:rgba(255,255,255,0.7);font-size:0.95rem;margin-top:4px;text-shadow:0 1px 2px rgba(0,0,0,0.3);">0/3000</div>
             </div>
             <div class="modal-footer">
                 <button class="submit-button" id="notice-save">保存公告</button>
                 <button class="cancel-button" id="notice-cancel">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Markdown示例弹窗 -->
+    <div class="modal" id="markdown-example-modal">
+        <div class="modal-content" style="width:780px;min-height:460px;max-width:95vw;">
+            <div class="modal-header">
+                <h2 class="modal-title">Markdown示例</h2>
+                <button class="close-button" id="markdown-example-close">&times;</button>
+            </div>
+            <div class="markdown-example-container">
+                <div class="markdown-example-left">
+                    <textarea readonly style="width:100%;height:420px;font-family:Consolas,monospace;font-size:0.95rem;padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);color:#e0f0ff;resize:none;"></textarea>
+                </div>
+                <div class="markdown-example-right" style="padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);color:white;overflow-y:auto;height:420px;">
+                </div>
             </div>
         </div>
     </div>
