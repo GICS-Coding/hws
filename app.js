@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.4.3 - JavaScript Application Logic
+ * 作业王 v1.4.8 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -281,6 +281,11 @@ function s2t(text) {
     return result;
 }
 
+/** 大乱炖模式全局池：{ 'chinese': [...], 'math': [...], ... } */
+var messyStewPool = {};
+/** 大乱炖模式是否激活 */
+var messyStewActive = false;
+
 /** 判断某科是否触发彩蛋，返回效果名称或 null */
 function checkEasterEgg(subject) {
     if (localStorage.getItem('easterEggEnabled') !== 'true') return null;
@@ -294,6 +299,7 @@ function checkEasterEgg(subject) {
             case 'chinese': return 'chinese';
             case 'english': return 'english';
             case 'biology': return 'biology';
+            case 'history': return 'history';
             case 'other':   return 'other';
             default:        return null;
         }
@@ -306,7 +312,91 @@ var easterEggResults = {};
 
 function computeAllEasterEggs() {
     easterEggResults = {};
-    ['chinese', 'english', 'biology', 'other'].forEach(function (subject) {
+    messyStewActive = false;
+    messyStewPool = {};
+
+    if (localStorage.getItem('easterEggEnabled') !== 'true') return;
+
+    var messyStew = localStorage.getItem('messyStewEnabled') === 'true';
+
+    if (messyStew) {
+        // 大乱炖模式：判断所有科目作业总数是否 >= 5
+        var totalCount = 0;
+        SUBJECTS.forEach(function (sub) {
+            var hw = JSON.parse(localStorage.getItem(sub) || '[]');
+            totalCount += hw.length;
+        });
+        if (totalCount >= 5) {
+            messyStewActive = true;
+            // 1. 收集所有科目条目并做繁体、💩、❤️预处理
+            var allItems = []; // { subject, text }
+            SUBJECTS.forEach(function (sub) {
+                var hw = JSON.parse(localStorage.getItem(sub) || '[]');
+                hw.forEach(function (text) {
+                    // 繁体
+                    var t = s2t(text);
+                    // 随机插入 💩 (1~4个)
+                    var poopCount = Math.floor(Math.random() * 4) + 1;
+                    var chars = Array.from(t);
+                    for (var p = 0; p < poopCount; p++) {
+                        var pos = Math.floor(Math.random() * (chars.length + 1));
+                        chars.splice(pos, 0, '\uD83D\uDCA9');
+                    }
+                    // 随机插入 ❤️ (1~4个)
+                    var heartCount = Math.floor(Math.random() * 4) + 1;
+                    for (var h = 0; h < heartCount; h++) {
+                        var pos2 = Math.floor(Math.random() * (chars.length + 1));
+                        chars.splice(pos2, 0, '\u2764\uFE0F');
+                    }
+                    allItems.push({ subject: sub, text: chars.join('') });
+                });
+            });
+
+            // 2. 跨学科交叉互换（全局）
+            var crossoverCount = Math.floor(Math.random() * (allItems.length * 3)) + allItems.length;
+            if (allItems.length >= 2) {
+                for (var cross = 0; cross < crossoverCount; cross++) {
+                    var i1 = Math.floor(Math.random() * allItems.length);
+                    var i2 = (i1 + 1 + Math.floor(Math.random() * (allItems.length - 1))) % allItems.length;
+                    var s1 = allItems[i1].text;
+                    var s2 = allItems[i2].text;
+                    if (s1.length > 0 && s2.length > 0) {
+                        var cut1 = Math.floor(Math.random() * s1.length);
+                        var cut2 = Math.floor(Math.random() * s2.length);
+                        var len1 = Math.floor(Math.random() * (s1.length - cut1)) + 1;
+                        var len2 = Math.floor(Math.random() * (s2.length - cut2)) + 1;
+                        var seg1 = s1.slice(cut1, cut1 + len1);
+                        var seg2 = s2.slice(cut2, cut2 + len2);
+                        s1 = s1.slice(0, cut1) + seg2 + s1.slice(cut1 + len1);
+                        s2 = s2.slice(0, cut2) + seg1 + s2.slice(cut2 + len2);
+                        allItems[i1].text = s1;
+                        allItems[i2].text = s2;
+                    }
+                }
+            }
+
+            // 3. 易位（全字符串逐字打乱）
+            allItems.forEach(function (item) {
+                item.text = shuffleString(item.text);
+            });
+
+            // 4. 按科目分配回 messyStewPool，并为所有10科设置 effect
+            SUBJECTS.forEach(function (sub) {
+                messyStewPool[sub] = [];
+                easterEggResults[sub] = 'messyStew';
+            });
+            allItems.forEach(function (item) {
+                messyStewPool[item.subject].push(item.text);
+            });
+            return;
+        }
+        // 大乱炖开启但总数不足5条：不触发任何彩蛋
+        return;
+    }
+
+    // 普通模式：仅5科
+    var subjects = ['chinese', 'english', 'biology', 'history', 'other'];
+    subjects.forEach(function (subject) {
         easterEggResults[subject] = checkEasterEgg(subject);
     });
 }
@@ -323,37 +413,55 @@ function shuffleString(str) {
     return arr.join('');
 }
 
-/** 应用彩蛋效果到显示数据，返回 { displayList, subjectNameOverride } */
+/** 应用彩蛋效果到显示数据，返回 { displayList, subjectNameOverride, perCharColor } */
 function applyEasterEgg(subject, homeworks) {
     var effect = easterEggResults[subject];
     var displayList = homeworks.slice(); // shallow copy
     var subjectNameOverride = null;
+    var perCharColor = false;
 
-    if (!effect) return { displayList: displayList, subjectNameOverride: null };
+    if (!effect) return { displayList: displayList, subjectNameOverride: null, perCharColor: false };
+
+    // 大乱炖模式：从预计算池获取
+    if (effect === 'messyStew') {
+        displayList = messyStewPool[subject] || [];
+        if (subject === 'english') subjectNameOverride = '勾石';
+        if (subject === 'history') subjectNameOverride = '妈妈';
+        perCharColor = true;
+        return { displayList: displayList, subjectNameOverride: subjectNameOverride, perCharColor: perCharColor };
+    }
 
     if (effect === 'chinese') {
         displayList = displayList.map(function (h) { return s2t(h); });
     } else if (effect === 'english') {
         subjectNameOverride = '勾石';
         displayList = displayList.map(function (h) {
-            // 随机位置插入随机数量的 💩
-            var count = Math.floor(Math.random() * 4) + 1; // 1~4 个
-            var s = h;
+            var count = Math.floor(Math.random() * 4) + 1;
+            var chars = Array.from(h);
             for (var k = 0; k < count; k++) {
-                var pos = Math.floor(Math.random() * (s.length + 1));
-                s = s.slice(0, pos) + '\uD83D\uDCA9' + s.slice(pos);
+                var pos = Math.floor(Math.random() * (chars.length + 1));
+                chars.splice(pos, 0, '\uD83D\uDCA9');
             }
-            return s;
+            return chars.join('');
+        });
+    } else if (effect === 'history') {
+        subjectNameOverride = '妈妈';
+        displayList = displayList.map(function (h) {
+            var count = Math.floor(Math.random() * 4) + 1;
+            var chars = Array.from(h);
+            for (var k = 0; k < count; k++) {
+                var pos = Math.floor(Math.random() * (chars.length + 1));
+                chars.splice(pos, 0, '\u2764\uFE0F');
+            }
+            return chars.join('');
         });
     } else if (effect === 'biology') {
-        // 每条内部打乱：先按3~5字符分组再打乱组顺序
         displayList = displayList.map(function (h) {
             var chunkSize = Math.floor(Math.random() * 3) + 3; // 3~5
             var chunks = [];
             for (var ci = 0; ci < h.length; ci += chunkSize) {
                 chunks.push(h.slice(ci, ci + chunkSize));
             }
-            // 打乱组顺序
             for (var si = chunks.length - 1; si > 0; si--) {
                 var sj = Math.floor(Math.random() * (si + 1));
                 var tmp = chunks[si];
@@ -362,7 +470,6 @@ function applyEasterEgg(subject, homeworks) {
             }
             return chunks.join('');
         });
-        // 染色体交叉互换：次数范围 [1, 条数*2]
         var maxCrossovers = displayList.length * 2;
         var crossoverCount = Math.floor(Math.random() * maxCrossovers) + 1;
         if (displayList.length >= 2) {
@@ -386,10 +493,10 @@ function applyEasterEgg(subject, homeworks) {
             }
         }
     } else if (effect === 'other') {
-        displayList = displayList; // handled per-character in render
+        perCharColor = true;
     }
 
-    return { displayList: displayList, subjectNameOverride: subjectNameOverride };
+    return { displayList: displayList, subjectNameOverride: subjectNameOverride, perCharColor: perCharColor };
 }
 
 // ============================================================
@@ -428,8 +535,8 @@ function renderHomework(subject) {
         var homeworkItem = document.createElement('div');
         homeworkItem.className = 'homework-item';
 
-        // 其他彩蛋：每字随机颜色
-        if (easterEggResults[subject] === 'other') {
+        // 彩蛋：每字随机颜色（other 效果 或 大乱炖模式）
+        if (eggResult.perCharColor) {
             homeworkItem.textContent = '';
             var prefix = (index + 1) + '. ';
             var prefixSpan = document.createElement('span');
@@ -652,7 +759,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.4.3 - 高中作业单\n';
+    var content = '作业王 v1.4.8 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -698,6 +805,47 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
 // ============================================================
 // 初始化 —— DOMContentLoaded
 // ============================================================
+
+// ============================================================
+// Service Worker 注册与缓存管理
+// ============================================================
+
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js', { scope: './' }).then(function (reg) {
+            if (reg.installing) {
+                console.log('Service Worker 安装中');
+            }
+            // 监听 SW 更新
+            reg.addEventListener('updatefound', function () {
+                var newWorker = reg.installing;
+                newWorker.addEventListener('statechange', function () {
+                    if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                        console.log('新版本 Service Worker 已激活');
+                    }
+                });
+            });
+        }).catch(function (err) {
+            console.log('Service Worker 注册失败:', err);
+        });
+    }
+}
+
+function checkCacheExpiry() {
+    var today = new Date().toDateString();
+    var cacheDate = localStorage.getItem('cacheDate');
+    if (cacheDate !== today) {
+        // 新的一天：清除旧缓存，强制重新拉取
+        localStorage.setItem('cacheDate', today);
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' });
+        }
+    }
+}
+
+// ---------- 注册 Service Worker ----------
+registerServiceWorker();
+checkCacheExpiry();
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -850,12 +998,17 @@ document.addEventListener('DOMContentLoaded', function () {
         var bottomDisplayVal = localStorage.getItem('bottomDisplayEnabled') === 'true';
         var dailyClearVal = localStorage.getItem('dailyClearEnabled') !== 'false';
         var easterEggVal = localStorage.getItem('easterEggEnabled') === 'true';
+        var messyStewVal = localStorage.getItem('messyStewEnabled') === 'true';
 
         document.getElementById('manage-ad-toggle-checkbox').checked = adEnabledVal;
         document.getElementById('manage-liquid-glass-toggle-checkbox').checked = liquidGlassVal;
         document.getElementById('manage-bottom-display-checkbox').checked = bottomDisplayVal;
         document.getElementById('manage-daily-clear-checkbox').checked = dailyClearVal;
         document.getElementById('manage-easter-egg-checkbox').checked = easterEggVal;
+        document.getElementById('manage-messy-stew-checkbox').checked = messyStewVal;
+
+        // 如果彩蛋已勾选则显示大乱炖，否则隐藏
+        document.getElementById('manage-messy-stew-group').style.display = easterEggVal ? 'block' : 'none';
 
         setTimeout(function () { showModal('manage-modal'); }, 300);
     });
@@ -873,12 +1026,14 @@ document.addEventListener('DOMContentLoaded', function () {
         var bottomDisplayVal = document.getElementById('manage-bottom-display-checkbox').checked;
         var dailyClearVal = document.getElementById('manage-daily-clear-checkbox').checked;
         var easterEggVal = document.getElementById('manage-easter-egg-checkbox').checked;
+        var messyStewVal = document.getElementById('manage-messy-stew-checkbox').checked;
 
         localStorage.setItem('adEnabled', adEnabledVal);
         localStorage.setItem('liquidGlassEnabled', liquidGlassVal);
         localStorage.setItem('bottomDisplayEnabled', bottomDisplayVal);
         localStorage.setItem('dailyClearEnabled', dailyClearVal);
         localStorage.setItem('easterEggEnabled', easterEggVal);
+        localStorage.setItem('messyStewEnabled', messyStewVal);
 
         if (adEnabledVal) {
             startAdRotation();
@@ -893,6 +1048,11 @@ document.addEventListener('DOMContentLoaded', function () {
         hideModal('manage-modal');
     });
 
+    // ---------- 彩蛋复选框联动大乱炖显示 ----------
+    document.getElementById('manage-easter-egg-checkbox').addEventListener('change', function () {
+        document.getElementById('manage-messy-stew-group').style.display = this.checked ? 'block' : 'none';
+    });
+
     // ---------- 添加作业 ----------
     document.getElementById('submit-homework').addEventListener('click', function () {
         var subject = document.getElementById('subject-select').value;
@@ -903,7 +1063,11 @@ document.addEventListener('DOMContentLoaded', function () {
             var homeworks = JSON.parse(localStorage.getItem(subject));
             homeworks.push(homeworkText);
             localStorage.setItem(subject, JSON.stringify(homeworks));
-            easterEggResults[subject] = checkEasterEgg(subject);
+            if (localStorage.getItem('messyStewEnabled') === 'true') {
+                computeAllEasterEggs();
+            } else {
+                easterEggResults[subject] = checkEasterEgg(subject);
+            }
             renderHomework(subject);
             homeworkInput.value = '';
             hideModal('add-homework-modal');
@@ -934,7 +1098,11 @@ document.addEventListener('DOMContentLoaded', function () {
             var homeworks = JSON.parse(localStorage.getItem(subject));
             homeworks[index] = newHomework;
             localStorage.setItem(subject, JSON.stringify(homeworks));
-            easterEggResults[subject] = checkEasterEgg(subject);
+            if (localStorage.getItem('messyStewEnabled') === 'true') {
+                computeAllEasterEggs();
+            } else {
+                easterEggResults[subject] = checkEasterEgg(subject);
+            }
             renderHomework(subject);
             hideModal('modify-homework-modal');
             adjustNoticePosition();
@@ -953,7 +1121,11 @@ document.addEventListener('DOMContentLoaded', function () {
             var homeworks = JSON.parse(localStorage.getItem(subject));
             homeworks.splice(index, 1);
             localStorage.setItem(subject, JSON.stringify(homeworks));
-            easterEggResults[subject] = checkEasterEgg(subject);
+            if (localStorage.getItem('messyStewEnabled') === 'true') {
+                computeAllEasterEggs();
+            } else {
+                easterEggResults[subject] = checkEasterEgg(subject);
+            }
             renderHomework(subject);
             hideModal('delete-homework-modal');
             checkCompactView();

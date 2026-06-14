@@ -1135,3 +1135,8 @@ body.liquid-glass-disabled .markdown-example-btn {
 body.liquid-glass-disabled .markdown-example-btn:hover {
     color: white !important;
 }
+
+/* 大乱炖选项（默认隐藏，彩蛋勾选后JS显示） */
+#manage-messy-stew-group {
+    display: none;
+}
