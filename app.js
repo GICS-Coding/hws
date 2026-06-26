@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.4.9 - JavaScript Application Logic
+ * 作业王 v1.4.11 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -759,7 +759,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.4.9 - 高中作业单\n';
+    var content = '作业王 v1.4.11 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -1011,6 +1011,29 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('manage-messy-stew-group').style.display = easterEggVal ? 'block' : 'none';
 
         setTimeout(function () { showModal('manage-modal'); }, 300);
+    });
+
+    document.getElementById('op-clear-cache').addEventListener('click', function () {
+        hideModal('operation-modal');
+        setTimeout(function () { showModal('clear-cache-modal'); }, 300);
+    });
+
+    // ---------- 清空缓存确认弹窗 ----------
+    document.getElementById('clear-cache-close').addEventListener('click', function () {
+        hideModal('clear-cache-modal');
+    });
+    document.getElementById('clear-cache-cancel').addEventListener('click', function () {
+        hideModal('clear-cache-modal');
+    });
+    document.getElementById('clear-cache-confirm').addEventListener('click', function () {
+        // 1. 清空所有 localStorage
+        localStorage.clear();
+        // 2. 通知 Service Worker 清除所有缓存
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' });
+        }
+        // 3. 刷新页面（跳过缓存，从网络重新拉取）
+        window.location.reload(true);
     });
 
     // ---------- 管理对话框 ----------

@@ -1,7 +1,7 @@
-// Service Worker for 作业王 v1.4.9 - 永久缓存管理
-// 永久缓存静态资源，仅在版本更新时刷新
+// Service Worker for 作业王 v1.4.11 - 缓存管理
+// Cache-First 策略，后台静默更新
 
-const CACHE_NAME = 'homework-king-v1.4.9';
+const CACHE_NAME = 'homework-king-v1.4.11';
 
 // 需要预缓存的资源列表
 const PRECACHE_URLS = [
@@ -48,7 +48,7 @@ self.addEventListener('activate', function (event) {
     );
 });
 
-// 请求拦截：Cache-First（永久缓存），后台更新
+// 请求拦截：Cache-First，后台静默更新
 self.addEventListener('fetch', function (event) {
     var requestUrl = new URL(event.request.url);
 
@@ -61,23 +61,18 @@ self.addEventListener('fetch', function (event) {
     event.respondWith(
         caches.open(CACHE_NAME).then(function (cache) {
             return cache.match(event.request).then(function (cachedResponse) {
-                // 后台发起网络请求，静默更新缓存（有更新就更新）
+                // 后台静默更新缓存
                 fetch(event.request).then(function (networkResponse) {
                     if (networkResponse && networkResponse.status === 200) {
                         if (!networkResponse.url.startsWith('blob:')) {
                             cache.put(event.request, networkResponse.clone());
                         }
                     }
-                }).catch(function () {
-                    // 网络失败，忽略
-                });
+                }).catch(function () {});
 
-                // 优先返回缓存
                 return cachedResponse || fetch(event.request).then(function (networkResponse) {
                     if (networkResponse && networkResponse.status === 200) {
-                        if (!networkResponse.url.startsWith('blob:')) {
-                            cache.put(event.request, networkResponse.clone());
-                        }
+                        cache.put(event.request, networkResponse.clone());
                     }
                     return networkResponse;
                 });
@@ -89,8 +84,12 @@ self.addEventListener('fetch', function (event) {
 // 监听主线程消息，支持手动清除缓存
 self.addEventListener('message', function (event) {
     if (event.data && event.data.type === 'CLEAR_CACHE') {
-        caches.delete(CACHE_NAME).then(function () {
-            // 通知所有客户端刷新
+        // 删除所有缓存
+        caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (key) {
+                return caches.delete(key);
+            }));
+        }).then(function () {
             return self.clients.matchAll().then(function (clients) {
                 clients.forEach(function (client) {
                     client.postMessage({ type: 'CACHE_CLEARED' });

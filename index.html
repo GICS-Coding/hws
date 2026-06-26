@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.4.9</title>
+    <title>作业王v1.4.11</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">作业王v1.4.9-大家的最爱</div>
+    <div class="header">作业王v1.4.11-大家的最爱</div>
     <!-- 公告展示区 -->
     <div id="notice-display" style="display:none;"></div>
     <!-- 公告居中弹窗 -->
@@ -122,6 +122,7 @@
                 <button class="action-button modify-button" id="op-modify">修改作业</button>
                 <button class="action-button delete-button" id="op-delete">删除作业</button>
                 <button class="action-button manage-button" id="op-manage">管理</button>
+                <button class="action-button clear-cache-button" id="op-clear-cache" style="background:rgba(255,100,50,0.7);">清空缓存</button>
             </div>
         </div>
     </div>
@@ -338,6 +339,23 @@
             <div class="modal-footer">
                 <button class="cancel-button" id="delete-cancel-button">取消</button>
                 <button class="delete-confirm-button" id="confirm-delete">删除作业</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 清空缓存确认弹窗 -->
+    <div class="modal" id="clear-cache-modal">
+        <div class="modal-content" style="width:360px;">
+            <div class="modal-header">
+                <h2 class="modal-title">清空缓存确认</h2>
+                <button class="close-button" id="clear-cache-close">&times;</button>
+            </div>
+            <div class="form-group" style="text-align:center;padding:20px 0;">
+                <p style="font-size:1.1rem;color:white;margin:0;text-shadow:0 1px 2px rgba(0,0,0,0.3);">确定要清空所有缓存吗？<br>(包括所有作业、公告、设置)</p>
+            </div>
+            <div class="modal-footer" style="flex-direction:row;justify-content:center;gap:20px;">
+                <button class="cancel-button" id="clear-cache-cancel">取消</button>
+                <button class="delete-confirm-button" id="clear-cache-confirm">确定清空</button>
             </div>
         </div>
     </div>
