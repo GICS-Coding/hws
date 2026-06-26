@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.4.8 - JavaScript Application Logic
+ * 作业王 v1.4.9 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -759,7 +759,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.4.8 - 高中作业单\n';
+    var content = '作业王 v1.4.9 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -1046,6 +1046,23 @@ document.addEventListener('DOMContentLoaded', function () {
         computeAllEasterEggs();
         SUBJECTS.forEach(function (s) { renderHomework(s); });
         hideModal('manage-modal');
+    });
+
+    // ---------- 关于/友链弹窗 ----------
+    document.getElementById('about-link').addEventListener('click', function (e) {
+        e.preventDefault();
+        showModal('about-modal');
+    });
+    document.getElementById('about-close').addEventListener('click', function () {
+        hideModal('about-modal');
+    });
+    document.getElementById('about-ok').addEventListener('click', function () {
+        hideModal('about-modal');
+    });
+    document.getElementById('about-modal').addEventListener('click', function (e) {
+        if (e.target === document.getElementById('about-modal')) {
+            hideModal('about-modal');
+        }
     });
 
     // ---------- 彩蛋复选框联动大乱炖显示 ----------

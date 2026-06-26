@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.4.8</title>
+    <title>作业王v1.4.9</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">作业王v1.4.8-大家的最爱</div>
+    <div class="header">作业王v1.4.9-大家的最爱</div>
     <!-- 公告展示区 -->
     <div id="notice-display" style="display:none;"></div>
     <!-- 公告居中弹窗 -->
@@ -130,7 +130,7 @@
     <div class="modal" id="manage-modal">
         <div class="modal-content" style="width:420px;min-height:320px;max-width:480px;">
             <div class="modal-header">
-                <h2 class="modal-title">管理设置</h2>
+                <h2 class="modal-title">管理设置 <a href="javascript:void(0)" id="about-link" style="font-size:0.75rem;font-weight:normal;color:rgba(255,255,255,0.6);text-decoration:none;margin-left:8px;">关于</a></h2>
                 <button class="close-button" id="manage-close">&times;</button>
             </div>
             <div class="form-group" style="margin-top:15px;">
@@ -338,6 +338,24 @@
             <div class="modal-footer">
                 <button class="cancel-button" id="delete-cancel-button">取消</button>
                 <button class="delete-confirm-button" id="confirm-delete">删除作业</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关于/友链弹窗 -->
+    <div class="modal" id="about-modal">
+        <div class="modal-content" style="width:400px;">
+            <div class="modal-header">
+                <h2 class="modal-title">关于</h2>
+                <button class="close-button" id="about-close">&times;</button>
+            </div>
+            <div class="form-group" style="padding:20px 0;">
+                <p style="color:white;font-size:1.05rem;margin-bottom:16px;text-shadow:0 1px 2px rgba(0,0,0,0.3);">友链</p>
+                <p style="margin-bottom:12px;"><a href="https://hglp.lhdyx.top" target="_blank" style="color:#4da6ff;text-decoration:none;font-size:1rem;">小游戏</a></p>
+                <p style="margin-bottom:12px;"><a href="https://78.91vip.tv/home.html" target="_blank" style="color:#4da6ff;text-decoration:none;font-size:1rem;">窑子开张了</a></p>
+            </div>
+            <div class="modal-footer">
+                <button class="submit-button" id="about-ok">确定</button>
             </div>
         </div>
     </div>
