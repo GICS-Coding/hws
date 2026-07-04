@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.4.12 - JavaScript Application Logic
+ * 作业王 v1.4.13 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -266,7 +266,7 @@ function hideCenterNotice() {
 
 var SUBJECTS = [
     'chinese', 'math', 'english', 'physics', 'chemistry',
-    'biology', 'politics', 'history', 'geography', 'other'
+    'biology', 'politics', 'history', 'geography', 'technology', 'other'
 ];
 
 var SUBJECT_NAMES = {
@@ -279,6 +279,7 @@ var SUBJECT_NAMES = {
     'politics': '政治',
     'history': '历史',
     'geography': '地理',
+    'technology': '技术',
     'other': '其他'
 };
 
@@ -843,7 +844,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.4.12 - 高中作业单\n';
+    var content = '作业王 v1.4.13 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -1040,6 +1041,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---------- 悬浮球 → 操作选择对话框 ----------
     document.getElementById('floating-ball').addEventListener('click', function () {
         showModal('operation-modal');
+    });
+    document.getElementById('floating-ball').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            showModal('operation-modal');
+        }
     });
     document.getElementById('operation-close').addEventListener('click', function () {
         hideModal('operation-modal');

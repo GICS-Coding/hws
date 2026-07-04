@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.4.12</title>
+    <title>作业王v1.4.13</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">作业王v1.4.12-大家的最爱</div>
+    <div class="header">作业王v1.4.13-大家的最爱</div>
     <!-- 公告展示区 -->
     <div id="notice-display" style="display:none;"></div>
     <!-- 公告居中弹窗 -->
-    <div id="notice-center-modal">
-        <div class="modal-content" style="padding:32px 28px;max-width:480px;">
-            <button id="notice-center-close" style="position:absolute;top:18px;right:18px;">&times;</button>
-            <h2 style="font-size:1.35rem;color:white;margin-bottom:18px;text-shadow:0 2px 4px rgba(0,0,0,0.3);">公告</h2>
-            <div id="notice-center-text" style="font-size:1.15rem;color:white;word-break:break-all;white-space:pre-wrap;text-shadow:0 1px 2px rgba(0,0,0,0.3);"></div>
+    <div id="notice-center-modal" role="dialog" aria-modal="true" aria-labelledby="notice-center-title">
+        <div class="modal-content notice-center-content">
+            <button id="notice-center-close" aria-label="关闭公告" class="notice-center-close-btn">&times;</button>
+            <h2 id="notice-center-title" class="notice-center-title">公告</h2>
+            <div id="notice-center-text" class="notice-center-text"></div>
         </div>
     </div>
     <!-- 右上角保存按钮 -->
@@ -25,13 +25,13 @@
     </div>
     
     <!-- 保存选择对话框 -->
-    <div class="modal" id="save-select-modal">
-        <div class="modal-content" style="width:340px;">
+    <div class="modal" id="save-select-modal" role="dialog" aria-modal="true" aria-labelledby="save-select-title">
+        <div class="modal-content modal-content-sm">
             <div class="modal-header">
-                <h2 class="modal-title">保存选项</h2>
-                <button class="close-button" id="save-select-close">&times;</button>
+                <h2 class="modal-title" id="save-select-title">保存选项</h2>
+                <button class="close-button" id="save-select-close" aria-label="关闭保存选项">&times;</button>
             </div>
-            <div class="form-group" style="padding:15px 0;">
+            <div class="form-group save-options-group">
                 <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
                     <input type="checkbox" id="save-homework-checkbox" checked style="width:18px;height:18px;">
                     <span>保存作业内容</span>
@@ -45,7 +45,7 @@
                     <span>保存后清空</span>
                 </label>
             </div>
-            <div class="modal-footer" style="flex-direction:row;justify-content:center;gap:20px;">
+            <div class="modal-footer modal-footer-center-row">
                 <button class="cancel-button" id="save-select-cancel">取消</button>
                 <button class="submit-button" id="save-select-confirm">确定保存</button>
             </div>
@@ -55,17 +55,17 @@
     <!-- 左下角公告按钮 -->
     <div id="bottom-notice-btn">公告</div>
     <!-- 公告写字板模态框 -->
-    <div class="modal" id="notice-modal">
-        <div class="modal-content" style="width:640px;min-height:400px;max-width:700px;">
+    <div class="modal" id="notice-modal" role="dialog" aria-modal="true" aria-labelledby="notice-modal-title">
+        <div class="modal-content notice-modal-content">
             <div class="modal-header">
-                <h2 class="modal-title" style="flex:1;">公告编辑</h2>
-                <button class="markdown-example-btn" id="markdown-example-btn">Markdown示例</button>
-                <button class="close-button" id="notice-close">&times;</button>
+                <h2 class="modal-title modal-title-flex" id="notice-modal-title">公告编辑</h2>
+                <button class="markdown-example-btn" id="markdown-example-btn" aria-label="查看 Markdown 示例">Markdown示例</button>
+                <button class="close-button" id="notice-close" aria-label="关闭公告编辑">&times;</button>
             </div>
             <div class="form-group">
                 <label for="notice-textarea">公告内容（最多3000字符）</label>
-                <textarea id="notice-textarea" maxlength="3000" style="width:100%;height:200px;resize:vertical;font-size:1.1rem;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);color:white;"></textarea>
-                <div id="notice-count" style="text-align:right;color:rgba(255,255,255,0.7);font-size:0.95rem;margin-top:4px;text-shadow:0 1px 2px rgba(0,0,0,0.3);">0/3000</div>
+                <textarea id="notice-textarea" maxlength="3000" class="notice-textarea"></textarea>
+                <div id="notice-count" class="notice-count">0/3000</div>
             </div>
             <div class="modal-footer">
                 <button class="submit-button" id="notice-save">保存公告</button>
@@ -75,33 +75,33 @@
     </div>
 
     <!-- Markdown示例弹窗 -->
-    <div class="modal" id="markdown-example-modal">
-        <div class="modal-content" style="width:780px;min-height:460px;max-width:95vw;">
+    <div class="modal" id="markdown-example-modal" role="dialog" aria-modal="true" aria-labelledby="markdown-example-title">
+        <div class="modal-content markdown-example-content markdown-example-content-wide">
             <div class="modal-header">
-                <h2 class="modal-title">Markdown示例</h2>
-                <button class="close-button" id="markdown-example-close">&times;</button>
+                <h2 class="modal-title" id="markdown-example-title">Markdown示例</h2>
+                <button class="close-button" id="markdown-example-close" aria-label="关闭 Markdown 示例">&times;</button>
             </div>
             <div class="markdown-example-container">
                 <div class="markdown-example-left">
-                    <textarea readonly title="Markdown示例源码" style="width:100%;height:420px;font-family:Consolas,monospace;font-size:0.95rem;padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);color:#e0f0ff;resize:none;"></textarea>
+                    <textarea readonly title="Markdown示例源码" class="markdown-example-source"></textarea>
                 </div>
-                <div class="markdown-example-right" style="padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);color:white;overflow-y:auto;height:420px;">
+                <div class="markdown-example-right markdown-example-preview">
                 </div>
             </div>
         </div>
     </div>
 
     <!-- 悬浮球 -->
-    <div id="floating-ball"></div>
+    <div id="floating-ball" role="button" tabindex="0" aria-label="打开操作菜单"></div>
 
     <!-- 操作选择对话框 -->
-    <div class="modal" id="operation-modal">
-        <div class="modal-content" style="width:340px;">
+    <div class="modal" id="operation-modal" role="dialog" aria-modal="true" aria-labelledby="operation-modal-title">
+        <div class="modal-content operation-modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">选择操作</h2>
-                <button class="close-button" id="operation-close">&times;</button>
+                <h2 class="modal-title" id="operation-modal-title">选择操作</h2>
+                <button class="close-button" id="operation-close" aria-label="关闭操作菜单">&times;</button>
             </div>
-            <div class="modal-footer" style="flex-direction:column;align-items:stretch;gap:15px;">
+            <div class="modal-footer modal-footer-column-stretch">
                 <button class="action-button add-button" id="op-add">添加作业</button>
                 <button class="action-button modify-button" id="op-modify">修改作业</button>
                 <button class="action-button delete-button" id="op-delete">删除作业</button>
@@ -112,11 +112,11 @@
     </div>
 
     <!-- 管理对话框 -->
-    <div class="modal" id="manage-modal">
-        <div class="modal-content" style="width:420px;min-height:320px;max-width:480px;">
+    <div class="modal" id="manage-modal" role="dialog" aria-modal="true" aria-labelledby="manage-modal-title">
+        <div class="modal-content manage-modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">管理设置 <a href="javascript:void(0)" id="about-link" style="font-size:0.75rem;font-weight:normal;color:rgba(255,255,255,0.6);text-decoration:none;margin-left:8px;">关于</a></h2>
-                <button class="close-button" id="manage-close">&times;</button>
+                <h2 class="modal-title" id="manage-modal-title">管理设置 <a href="#" id="about-link" style="font-size:0.75rem;font-weight:normal;color:rgba(255,255,255,0.6);text-decoration:none;margin-left:8px;">关于</a></h2>
+                <button class="close-button" id="manage-close" aria-label="关闭管理设置">&times;</button>
             </div>
             <div class="form-group" style="margin-top:15px;">
                 <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
@@ -203,6 +203,10 @@
             <td id="geography-homework" class="homework-items-container"></td>
         </tr>
         <tr>
+            <td class="subject-cell">技术</td>
+            <td id="technology-homework" class="homework-items-container"></td>
+        </tr>
+        <tr>
             <td class="subject-cell">其他</td>
             <td id="other-homework" class="homework-items-container"></td>
         </tr>
@@ -215,11 +219,11 @@
     </div>
     
     <!-- 添加作业模态框 -->
-    <div class="modal" id="add-homework-modal">
+    <div class="modal" id="add-homework-modal" role="dialog" aria-modal="true" aria-labelledby="add-homework-title">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">添加新作业</h2>
-                <button class="close-button">&times;</button>
+                <h2 class="modal-title" id="add-homework-title">添加新作业</h2>
+                <button class="close-button" aria-label="关闭添加作业">&times;</button>
             </div>
             <div class="form-group">
                 <label for="subject-select">选择科目</label>
@@ -233,6 +237,7 @@
                     <option value="politics">政治</option>
                     <option value="history">历史</option>
                     <option value="geography">地理</option>
+                    <option value="technology">技术</option>
                     <option value="other">其他</option>
                 </select>
             </div>
@@ -258,11 +263,11 @@
     </div>
     
     <!-- 修改作业模态框 -->
-    <div class="modal" id="modify-homework-modal">
+    <div class="modal" id="modify-homework-modal" role="dialog" aria-modal="true" aria-labelledby="modify-homework-title">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">修改作业</h2>
-                <button class="close-button">&times;</button>
+                <h2 class="modal-title" id="modify-homework-title">修改作业</h2>
+                <button class="close-button" aria-label="关闭修改作业">&times;</button>
             </div>
             <div class="form-group">
                 <label for="modify-subject-select">选择科目</label>
@@ -276,6 +281,7 @@
                     <option value="politics">政治</option>
                     <option value="history">历史</option>
                     <option value="geography">地理</option>
+                    <option value="technology">技术</option>
                     <option value="other">其他</option>
                 </select>
             </div>
@@ -295,11 +301,11 @@
     </div>
     
     <!-- 删除作业模态框 -->
-    <div class="modal" id="delete-homework-modal">
+    <div class="modal" id="delete-homework-modal" role="dialog" aria-modal="true" aria-labelledby="delete-homework-title">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">删除作业</h2>
-                <button class="close-button">&times;</button>
+                <h2 class="modal-title" id="delete-homework-title">删除作业</h2>
+                <button class="close-button" aria-label="关闭删除作业">&times;</button>
             </div>
             <div class="form-group">
                 <label for="delete-subject-select">选择科目</label>
@@ -313,6 +319,7 @@
                     <option value="politics">政治</option>
                     <option value="history">历史</option>
                     <option value="geography">地理</option>
+                    <option value="technology">技术</option>
                     <option value="other">其他</option>
                 </select>
             </div>
@@ -328,16 +335,16 @@
     </div>
 
     <!-- 清空缓存确认弹窗 -->
-    <div class="modal" id="clear-cache-modal">
-        <div class="modal-content" style="width:360px;">
+    <div class="modal" id="clear-cache-modal" role="dialog" aria-modal="true" aria-labelledby="clear-cache-title">
+        <div class="modal-content clear-cache-content">
             <div class="modal-header">
-                <h2 class="modal-title">清空缓存确认</h2>
-                <button class="close-button" id="clear-cache-close">&times;</button>
+                <h2 class="modal-title" id="clear-cache-title">清空缓存确认</h2>
+                <button class="close-button" id="clear-cache-close" aria-label="关闭清空缓存确认">&times;</button>
             </div>
-            <div class="form-group" style="text-align:center;padding:20px 0;">
+            <div class="form-group modal-text-center-group">
                 <p style="font-size:1.1rem;color:white;margin:0;text-shadow:0 1px 2px rgba(0,0,0,0.3);">确定要清空所有缓存吗？<br>(包括所有作业、公告、设置)</p>
             </div>
-            <div class="modal-footer" style="flex-direction:row;justify-content:center;gap:20px;">
+            <div class="modal-footer modal-footer-center-row">
                 <button class="cancel-button" id="clear-cache-cancel">取消</button>
                 <button class="delete-confirm-button" id="clear-cache-confirm">确定清空</button>
             </div>
@@ -345,13 +352,13 @@
     </div>
 
     <!-- 关于/友链弹窗 -->
-    <div class="modal" id="about-modal">
-        <div class="modal-content" style="width:400px;">
+    <div class="modal" id="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title">
+        <div class="modal-content about-modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">关于</h2>
-                <button class="close-button" id="about-close">&times;</button>
+                <h2 class="modal-title" id="about-title">关于</h2>
+                <button class="close-button" id="about-close" aria-label="关闭关于弹窗">&times;</button>
             </div>
-            <div class="form-group" style="padding:20px 0;">
+            <div class="form-group about-links-group">
                 <p style="color:white;font-size:1.05rem;margin-bottom:16px;text-shadow:0 1px 2px rgba(0,0,0,0.3);">友链</p>
                 <p style="margin-bottom:12px;"><a href="https://hglp.lhdyx.top" target="_blank" rel="noopener noreferrer" style="color:#4da6ff;text-decoration:none;font-size:1rem;">小游戏</a></p>
                 <p style="margin-bottom:12px;"><a href="https://78.91vip.tv/home.html" target="_blank" rel="noopener noreferrer" style="color:#4da6ff;text-decoration:none;font-size:1rem;">窑子开张了</a></p>

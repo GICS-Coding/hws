@@ -12,6 +12,150 @@ body {
     position: relative;
 }
 
+.notice-center-content {
+    padding: 32px 28px;
+    max-width: 480px;
+}
+
+.notice-center-close-btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+}
+
+.notice-center-title {
+    font-size: 1.35rem;
+    color: white;
+    margin-bottom: 18px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.notice-center-text {
+    font-size: 1.15rem;
+    color: white;
+    word-break: break-all;
+    white-space: pre-wrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content-sm {
+    width: 340px;
+}
+
+.operation-modal-content {
+    width: 340px;
+}
+
+.markdown-example-content-wide {
+    width: 780px;
+    min-height: 460px;
+    max-width: 95vw;
+}
+
+.manage-modal-content {
+    width: 420px;
+    min-height: 320px;
+    max-width: 480px;
+}
+
+.clear-cache-content {
+    width: 360px;
+}
+
+.about-modal-content {
+    width: 400px;
+}
+
+.notice-modal-content {
+    width: 640px;
+    min-height: 400px;
+    max-width: 700px;
+}
+
+.markdown-example-content {
+    width: 780px;
+    min-height: 460px;
+    max-width: 95vw;
+}
+
+.modal-title-flex {
+    flex: 1;
+}
+
+.save-options-group {
+    padding: 15px 0;
+}
+
+.about-links-group {
+    padding: 20px 0;
+}
+
+.modal-text-center-group {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.modal-footer-center-row {
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+}
+
+.modal-footer-column-stretch {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+}
+
+.notice-textarea {
+    width: 100%;
+    height: 200px;
+    resize: vertical;
+    font-size: 1.1rem;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: white;
+}
+
+.notice-count {
+    text-align: right;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem;
+    margin-top: 4px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.markdown-example-source {
+    width: 100%;
+    height: 420px;
+    font-family: Consolas, monospace;
+    font-size: 0.95rem;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #e0f0ff;
+    resize: none;
+}
+
+.markdown-example-preview {
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: white;
+    overflow-y: auto;
+    height: 420px;
+}
+
 .header {
     font-size: 2.5rem;
     font-weight: bold;
@@ -946,6 +1090,17 @@ body.liquid-glass-disabled #notice-center-text hr {
     margin-bottom: 1px;
     padding: 1px 3px;
     font-size: 0.9rem;
+}
+
+#operation-modal .operation-modal-content {
+    width: 340px;
+    min-width: 320px;
+}
+
+#markdown-example-modal .markdown-example-content-wide {
+    width: 780px;
+    min-height: 460px;
+    max-width: 95vw;
 }
 
 /* ===== Markdown示例按钮 ===== */
