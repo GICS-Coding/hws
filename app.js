@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.4.11 - JavaScript Application Logic
+ * 作业王 v1.4.12 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -98,11 +98,30 @@ function hideModal(modalId) {
 // ============================================================
 
 function escapeHtml(text) {
-    return text
-        .replace(/&/g, '&')
-        .replace(/</g, '<')
-        .replace(/>/g, '>')
-        .replace(/"/g, '"');
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function isSafeLinkUrl(url) {
+    try {
+        var parsed = new URL(url, window.location.href);
+        return ['http:', 'https:', 'mailto:'].indexOf(parsed.protocol) !== -1;
+    } catch (e) {
+        return false;
+    }
+}
+
+function renderSafeLink(label, url) {
+    var safeLabel = escapeHtml(label);
+    var safeUrl = escapeHtml(url);
+    if (!isSafeLinkUrl(url)) {
+        return safeLabel;
+    }
+    return '<a href="' + safeUrl + '" target="_blank" rel="noopener noreferrer">' + safeLabel + '</a>';
 }
 
 function renderInlineMarkdown(text) {
@@ -123,7 +142,9 @@ function renderInlineMarkdown(text) {
     // 5. 删除线
     text = text.replace(/~~(.+?)~~/g, '<del>$1</del>');
     // 6. 链接
-    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (match, label, url) {
+        return renderSafeLink(label, url);
+    });
     // 7. 还原行内代码
     text = text.replace(/\u0000C(\d+)\u0000/g, function (match, idx) {
         return codeSpans[parseInt(idx)];
@@ -216,7 +237,7 @@ function renderMarkdown(text) {
 // ============================================================
 
 function updateNoticeDisplay() {
-    var notice = localStorage.getItem('notice') || '';
+    var notice = getStorageItem('notice', '');
     var display = document.getElementById('notice-display');
     if (notice.trim()) {
         display.innerHTML = renderMarkdown(notice);
@@ -228,7 +249,7 @@ function updateNoticeDisplay() {
 }
 
 function showCenterNotice() {
-    var notice = localStorage.getItem('notice') || '';
+    var notice = getStorageItem('notice', '');
     if (notice.trim()) {
         document.getElementById('notice-center-text').innerHTML = renderMarkdown(notice);
         showModal('notice-center-modal');
@@ -261,6 +282,69 @@ var SUBJECT_NAMES = {
     'other': '其他'
 };
 
+var APP_SETTING_KEYS = [
+    'notice',
+    'adEnabled',
+    'liquidGlassEnabled',
+    'bottomDisplayEnabled',
+    'dailyClearEnabled',
+    'easterEggEnabled',
+    'messyStewEnabled',
+    'lastClearDate',
+    'cacheDate'
+];
+
+function getStorageItem(key, fallback) {
+    var value = localStorage.getItem(key);
+    return value === null ? fallback : value;
+}
+
+function setStorageItem(key, value) {
+    localStorage.setItem(key, value);
+}
+
+function getBooleanSetting(key, defaultValue) {
+    var value = localStorage.getItem(key);
+    if (value === null) return defaultValue;
+    return value === 'true';
+}
+
+function setBooleanSetting(key, value) {
+    localStorage.setItem(key, String(value));
+}
+
+function getJsonStorageItem(key, fallback) {
+    try {
+        var rawValue = localStorage.getItem(key);
+        if (rawValue === null) return fallback;
+        return JSON.parse(rawValue);
+    } catch (e) {
+        return fallback;
+    }
+}
+
+function setJsonStorageItem(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getSubjectHomeworks(subject) {
+    var value = getJsonStorageItem(subject, []);
+    return Array.isArray(value) ? value : [];
+}
+
+function setSubjectHomeworks(subject, homeworks) {
+    setJsonStorageItem(subject, Array.isArray(homeworks) ? homeworks : []);
+}
+
+function removeAppStorageData() {
+    SUBJECTS.forEach(function (subject) {
+        localStorage.removeItem(subject);
+    });
+    APP_SETTING_KEYS.forEach(function (key) {
+        localStorage.removeItem(key);
+    });
+}
+
 // ============================================================
 // 彩蛋系统
 // ============================================================
@@ -288,8 +372,8 @@ var messyStewActive = false;
 
 /** 判断某科是否触发彩蛋，返回效果名称或 null */
 function checkEasterEgg(subject) {
-    if (localStorage.getItem('easterEggEnabled') !== 'true') return null;
-    var homeworks = JSON.parse(localStorage.getItem(subject) || '[]');
+    if (!getBooleanSetting('easterEggEnabled', false)) return null;
+    var homeworks = getSubjectHomeworks(subject);
     var n = homeworks.length;
     if (n <= 2) return null;
     var probability = (n - 2) * 0.25;
@@ -315,15 +399,15 @@ function computeAllEasterEggs() {
     messyStewActive = false;
     messyStewPool = {};
 
-    if (localStorage.getItem('easterEggEnabled') !== 'true') return;
+    if (!getBooleanSetting('easterEggEnabled', false)) return;
 
-    var messyStew = localStorage.getItem('messyStewEnabled') === 'true';
+    var messyStew = getBooleanSetting('messyStewEnabled', false);
 
     if (messyStew) {
         // 大乱炖模式：判断所有科目作业总数是否 >= 5
         var totalCount = 0;
         SUBJECTS.forEach(function (sub) {
-            var hw = JSON.parse(localStorage.getItem(sub) || '[]');
+            var hw = getSubjectHomeworks(sub);
             totalCount += hw.length;
         });
         if (totalCount >= 5) {
@@ -331,7 +415,7 @@ function computeAllEasterEggs() {
             // 1. 收集所有科目条目并做繁体、💩、❤️预处理
             var allItems = []; // { subject, text }
             SUBJECTS.forEach(function (sub) {
-                var hw = JSON.parse(localStorage.getItem(sub) || '[]');
+                var hw = getSubjectHomeworks(sub);
                 hw.forEach(function (text) {
                     // 繁体
                     var t = s2t(text);
@@ -506,7 +590,7 @@ function applyEasterEgg(subject, homeworks) {
 function renderHomework(subject) {
     var container = document.getElementById(subject + '-homework');
     var row = container.closest('tr');
-    var homeworks = JSON.parse(localStorage.getItem(subject));
+    var homeworks = getSubjectHomeworks(subject);
 
     container.innerHTML = '';
 
@@ -558,7 +642,7 @@ function renderHomework(subject) {
 
 function updateHomeworkItems(subjectSelectId, itemSelectId) {
     var subject = document.getElementById(subjectSelectId).value;
-    var homeworks = JSON.parse(localStorage.getItem(subject));
+    var homeworks = getSubjectHomeworks(subject);
     var itemSelect = document.getElementById(itemSelectId);
 
     itemSelect.innerHTML = '';
@@ -586,7 +670,7 @@ function updateHomeworkItems(subjectSelectId, itemSelectId) {
 
 function updateTableHeader() {
     var hasAnyHomework = SUBJECTS.some(function (subject) {
-        var homeworks = JSON.parse(localStorage.getItem(subject) || '[]');
+        var homeworks = getSubjectHomeworks(subject);
         return homeworks.length > 0;
     });
 
@@ -631,12 +715,12 @@ function setLiquidGlassBackground(enabled) {
 
 function adjustNoticePosition() {
     var noticeDisplay = document.getElementById('notice-display');
-    var bottomDisplayEnabled = localStorage.getItem('bottomDisplayEnabled') === 'true';
+    var bottomDisplayEnabled = getBooleanSetting('bottomDisplayEnabled', false);
 
     if (!bottomDisplayEnabled) return;
 
     var hasHomework = SUBJECTS.some(function (subject) {
-        var homeworks = JSON.parse(localStorage.getItem(subject) || '[]');
+        var homeworks = getSubjectHomeworks(subject);
         return homeworks.length > 0;
     });
 
@@ -689,7 +773,7 @@ var currentAdIndex = 0;
 var adImages = ['ad01.png', 'ad02.png'];
 var adLinks = [
     'https://www.apple.com.cn',
-    'http://playvalorant.com/zh-tw/'
+    'https://playvalorant.com/zh-tw/'
 ];
 var adInterval = null;
 
@@ -701,10 +785,10 @@ function rotateAd() {
     requestAnimationFrame(function () {
         adImage.src = 'img/' + adImages[currentAdIndex];
         adImage.onclick = function () {
-            window.open(adLinks[currentAdIndex], '_blank');
+            window.open(adLinks[currentAdIndex], '_blank', 'noopener,noreferrer');
         };
 
-        var adEnabled = localStorage.getItem('adEnabled') === 'true';
+        var adEnabled = getBooleanSetting('adEnabled', false);
         if (adEnabled) {
             adContainer.style.display = 'flex';
         }
@@ -730,17 +814,17 @@ function stopAdRotation() {
 // ============================================================
 
 function checkAndClearDailyData() {
-    var dailyClearEnabled = localStorage.getItem('dailyClearEnabled') !== 'false';
+    var dailyClearEnabled = getBooleanSetting('dailyClearEnabled', true);
     if (!dailyClearEnabled) return;
 
     var today = new Date().toDateString();
-    var lastClearDate = localStorage.getItem('lastClearDate');
+    var lastClearDate = getStorageItem('lastClearDate', null);
 
     if (lastClearDate !== today) {
         SUBJECTS.forEach(function (subject) {
-            localStorage.setItem(subject, JSON.stringify([]));
+            setSubjectHomeworks(subject, []);
         });
-        localStorage.setItem('lastClearDate', today);
+        setStorageItem('lastClearDate', today);
     }
 }
 
@@ -759,12 +843,12 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.4.11 - 高中作业单\n';
+    var content = '作业王 v1.4.12 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
         SUBJECTS.forEach(function (subject) {
-            var homeworks = JSON.parse(localStorage.getItem(subject));
+            var homeworks = getSubjectHomeworks(subject);
             content += '【' + SUBJECT_NAMES[subject] + '】\n';
             if (homeworks.length === 0) {
                 content += '  暂无作业\n';
@@ -778,7 +862,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     }
 
     if (saveNotice) {
-        var notice = localStorage.getItem('notice') || '';
+        var notice = getStorageItem('notice', '');
         if (notice.trim()) {
             content += '【公告】\n';
             content += '  ' + notice + '\n\n';
@@ -833,10 +917,10 @@ function registerServiceWorker() {
 
 function checkCacheExpiry() {
     var today = new Date().toDateString();
-    var cacheDate = localStorage.getItem('cacheDate');
+    var cacheDate = getStorageItem('cacheDate', null);
     if (cacheDate !== today) {
         // 新的一天：清除旧缓存，强制重新拉取
-        localStorage.setItem('cacheDate', today);
+        setStorageItem('cacheDate', today);
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' });
         }
@@ -852,9 +936,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---------- 初始设置 ----------
     applyAdaptiveTextColors();
 
-    var liquidGlassEnabled = localStorage.getItem('liquidGlassEnabled') === 'true';
-    var bottomDisplayEnabled = localStorage.getItem('bottomDisplayEnabled') === 'true';
-    var adEnabled = localStorage.getItem('adEnabled') === 'true';
+    var liquidGlassEnabled = getBooleanSetting('liquidGlassEnabled', false);
+    var bottomDisplayEnabled = getBooleanSetting('bottomDisplayEnabled', false);
+    var adEnabled = getBooleanSetting('adEnabled', false);
 
     setLiquidGlassBackground(liquidGlassEnabled);
     setBottomDisplay(bottomDisplayEnabled);
@@ -864,8 +948,8 @@ document.addEventListener('DOMContentLoaded', function () {
     computeAllEasterEggs();
 
     SUBJECTS.forEach(function (subject) {
-        if (!localStorage.getItem(subject)) {
-            localStorage.setItem(subject, JSON.stringify([]));
+        if (getStorageItem(subject, null) === null) {
+            setSubjectHomeworks(subject, []);
         }
         renderHomework(subject);
     });
@@ -897,7 +981,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 右键单击公告按钮 → 公告编辑
     document.getElementById('bottom-notice-btn').addEventListener('contextmenu', function (e) {
         e.preventDefault();
-        var notice = localStorage.getItem('notice') || '';
+        var notice = getStorageItem('notice', '');
         document.getElementById('notice-textarea').value = notice;
         document.getElementById('notice-count').textContent = notice.length + '/3000';
         showModal('notice-modal');
@@ -913,7 +997,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     document.getElementById('notice-save').addEventListener('click', function () {
         var val = document.getElementById('notice-textarea').value;
-        localStorage.setItem('notice', val);
+        setStorageItem('notice', val);
         hideModal('notice-modal');
         updateNoticeDisplay();
     });
@@ -941,7 +1025,7 @@ document.addEventListener('DOMContentLoaded', function () {
             saveHomeworkToFile(saveHomework, saveNotice);
             if (clearAfterSave) {
                 SUBJECTS.forEach(function (subject) {
-                    localStorage.setItem(subject, JSON.stringify([]));
+                    setSubjectHomeworks(subject, []);
                     renderHomework(subject);
                 });
                 updateTableHeader();
@@ -951,18 +1035,6 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             alert('请至少选择一项内容进行保存');
         }
-    });
-
-    // ---------- 保存确认对话框 ----------
-    document.getElementById('save-confirm-close').addEventListener('click', function () {
-        hideModal('save-confirm-modal');
-    });
-    document.getElementById('save-cancel-button').addEventListener('click', function () {
-        hideModal('save-confirm-modal');
-    });
-    document.getElementById('save-confirm-button').addEventListener('click', function () {
-        saveHomeworkToFile(true, true);
-        hideModal('save-confirm-modal');
     });
 
     // ---------- 悬浮球 → 操作选择对话框 ----------
@@ -993,12 +1065,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     document.getElementById('op-manage').addEventListener('click', function () {
         hideModal('operation-modal');
-        var adEnabledVal = localStorage.getItem('adEnabled') === 'true';
-        var liquidGlassVal = localStorage.getItem('liquidGlassEnabled') === 'true';
-        var bottomDisplayVal = localStorage.getItem('bottomDisplayEnabled') === 'true';
-        var dailyClearVal = localStorage.getItem('dailyClearEnabled') !== 'false';
-        var easterEggVal = localStorage.getItem('easterEggEnabled') === 'true';
-        var messyStewVal = localStorage.getItem('messyStewEnabled') === 'true';
+        var adEnabledVal = getBooleanSetting('adEnabled', false);
+        var liquidGlassVal = getBooleanSetting('liquidGlassEnabled', false);
+        var bottomDisplayVal = getBooleanSetting('bottomDisplayEnabled', false);
+        var dailyClearVal = getBooleanSetting('dailyClearEnabled', true);
+        var easterEggVal = getBooleanSetting('easterEggEnabled', false);
+        var messyStewVal = getBooleanSetting('messyStewEnabled', false);
 
         document.getElementById('manage-ad-toggle-checkbox').checked = adEnabledVal;
         document.getElementById('manage-liquid-glass-toggle-checkbox').checked = liquidGlassVal;
@@ -1026,14 +1098,14 @@ document.addEventListener('DOMContentLoaded', function () {
         hideModal('clear-cache-modal');
     });
     document.getElementById('clear-cache-confirm').addEventListener('click', function () {
-        // 1. 清空所有 localStorage
-        localStorage.clear();
+        // 1. 仅清空本应用使用的 localStorage key，避免误删同域其他应用数据
+        removeAppStorageData();
         // 2. 通知 Service Worker 清除所有缓存
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' });
         }
         // 3. 刷新页面（跳过缓存，从网络重新拉取）
-        window.location.reload(true);
+        window.location.reload();
     });
 
     // ---------- 管理对话框 ----------
@@ -1051,12 +1123,12 @@ document.addEventListener('DOMContentLoaded', function () {
         var easterEggVal = document.getElementById('manage-easter-egg-checkbox').checked;
         var messyStewVal = document.getElementById('manage-messy-stew-checkbox').checked;
 
-        localStorage.setItem('adEnabled', adEnabledVal);
-        localStorage.setItem('liquidGlassEnabled', liquidGlassVal);
-        localStorage.setItem('bottomDisplayEnabled', bottomDisplayVal);
-        localStorage.setItem('dailyClearEnabled', dailyClearVal);
-        localStorage.setItem('easterEggEnabled', easterEggVal);
-        localStorage.setItem('messyStewEnabled', messyStewVal);
+        setBooleanSetting('adEnabled', adEnabledVal);
+        setBooleanSetting('liquidGlassEnabled', liquidGlassVal);
+        setBooleanSetting('bottomDisplayEnabled', bottomDisplayVal);
+        setBooleanSetting('dailyClearEnabled', dailyClearVal);
+        setBooleanSetting('easterEggEnabled', easterEggVal);
+        setBooleanSetting('messyStewEnabled', messyStewVal);
 
         if (adEnabledVal) {
             startAdRotation();
@@ -1100,10 +1172,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var homeworkText = homeworkInput.value.trim();
 
         if (homeworkText) {
-            var homeworks = JSON.parse(localStorage.getItem(subject));
+            var homeworks = getSubjectHomeworks(subject);
             homeworks.push(homeworkText);
-            localStorage.setItem(subject, JSON.stringify(homeworks));
-            if (localStorage.getItem('messyStewEnabled') === 'true') {
+            setSubjectHomeworks(subject, homeworks);
+            if (getBooleanSetting('messyStewEnabled', false)) {
                 computeAllEasterEggs();
             } else {
                 easterEggResults[subject] = checkEasterEgg(subject);
@@ -1124,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('homework-item-select').addEventListener('change', function () {
         var subject = document.getElementById('modify-subject-select').value;
         var index = this.value;
-        var homeworks = JSON.parse(localStorage.getItem(subject));
+        var homeworks = getSubjectHomeworks(subject);
         if (index !== '' && homeworks.length > 0) {
             document.getElementById('modify-homework-input').value = homeworks[index];
         }
@@ -1135,10 +1207,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var newHomework = document.getElementById('modify-homework-input').value.trim();
 
         if (newHomework && index !== '') {
-            var homeworks = JSON.parse(localStorage.getItem(subject));
+            var homeworks = getSubjectHomeworks(subject);
             homeworks[index] = newHomework;
-            localStorage.setItem(subject, JSON.stringify(homeworks));
-            if (localStorage.getItem('messyStewEnabled') === 'true') {
+            setSubjectHomeworks(subject, homeworks);
+            if (getBooleanSetting('messyStewEnabled', false)) {
                 computeAllEasterEggs();
             } else {
                 easterEggResults[subject] = checkEasterEgg(subject);
@@ -1158,10 +1230,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var index = document.getElementById('delete-item-select').value;
 
         if (index !== '') {
-            var homeworks = JSON.parse(localStorage.getItem(subject));
+            var homeworks = getSubjectHomeworks(subject);
             homeworks.splice(index, 1);
-            localStorage.setItem(subject, JSON.stringify(homeworks));
-            if (localStorage.getItem('messyStewEnabled') === 'true') {
+            setSubjectHomeworks(subject, homeworks);
+            if (getBooleanSetting('messyStewEnabled', false)) {
                 computeAllEasterEggs();
             } else {
                 easterEggResults[subject] = checkEasterEgg(subject);
@@ -1217,9 +1289,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var addModal = document.getElementById('add-homework-modal');
             var modifyModal = document.getElementById('modify-homework-modal');
             var deleteModal = document.getElementById('delete-homework-modal');
-            var noticeModal = document.getElementById('notice-modal');
             var opModal = document.getElementById('operation-modal');
-            var saveConfirmModal = document.getElementById('save-confirm-modal');
             var saveSelectModal = document.getElementById('save-select-modal');
             var manageModal = document.getElementById('manage-modal');
 
@@ -1234,8 +1304,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('confirm-delete').click();
             } else if (opModal.style.display === 'flex') {
                 document.getElementById('op-add').click();
-            } else if (saveConfirmModal.style.display === 'flex') {
-                document.getElementById('save-confirm-button').click();
             } else if (saveSelectModal.style.display === 'flex') {
                 document.getElementById('save-select-confirm').click();
             } else if (manageModal.style.display === 'flex') {
@@ -1279,107 +1347,10 @@ document.addEventListener('DOMContentLoaded', function () {
         '---\n\n' +
         '[链接示例](https://example.com)';
 
-    // 简易 Markdown 渲染函数
-    function renderSimpleMarkdown(md) {
-        var placeholders = [];
-        var idx = 0;
-
-        // 1) 保护代码块：```...```
-        md = md.replace(/```[\s\S]*?```/g, function (match) {
-            var codeContent = match.replace(/^```[\w]*\n?/, '').replace(/```$/, '');
-            var escaped = codeContent.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
-            var ph = '<!--PH' + (idx++) + '-->';
-            placeholders.push('<pre><code>' + escaped + '</code></pre>');
-            return ph;
-        });
-        // 保护行内代码：`...`
-        md = md.replace(/`([^`]+)`/g, function (match, code) {
-            var escaped = code.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
-            var ph = '<!--PH' + (idx++) + '-->';
-            placeholders.push('<code>' + escaped + '</code>');
-            return ph;
-        });
-
-        var html = md;
-
-        // 2) 标题
-        html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
-        html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-        html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-        html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-
-        // 3) 水平线
-        html = html.replace(/^---$/gm, '<hr>');
-        html = html.replace(/^\*\*\*$/gm, '<hr>');
-
-        // 4) 引用
-        html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
-
-        // 5) 列表（逐行处理，包裹 <ol> / <ul>）
-        var lines = html.split('\n');
-        var inListType = '';
-        var processed = [];
-        for (var li = 0; li < lines.length; li++) {
-            var line = lines[li];
-            var olMatch = line.match(/^(\d+)\. (.+)$/);
-            var ulMatch = line.match(/^- (.+)$/);
-            if (olMatch) {
-                if (inListType !== 'ol') {
-                    if (inListType) processed.push('</' + inListType + '>');
-                    processed.push('<ol>');
-                    inListType = 'ol';
-                }
-                processed.push('<li>' + olMatch[2] + '</li>');
-            } else if (ulMatch) {
-                if (inListType !== 'ul') {
-                    if (inListType) processed.push('</' + inListType + '>');
-                    processed.push('<ul>');
-                    inListType = 'ul';
-                }
-                processed.push('<li>' + ulMatch[1] + '</li>');
-            } else {
-                if (inListType) {
-                    processed.push('</' + inListType + '>');
-                    inListType = '';
-                }
-                processed.push(line);
-            }
-        }
-        if (inListType) {
-            processed.push('</' + inListType + '>');
-        }
-        html = processed.join('\n');
-
-        // 6) 粗体+斜体
-        html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-        // 粗体
-        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-        // 斜体
-        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-        // 删除线
-        html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
-
-        // 7) 链接
-        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-
-        // 8) 段落：非标签行
-        html = html.replace(/^(?!<[a-z]|\s*$)(.+)$/gm, '<p>$1</p>');
-
-        // 9) 清理多余空行
-        html = html.replace(/<p>\s*<\/p>/g, '');
-
-        // 10) 还原占位符
-        for (var i = 0; i < placeholders.length; i++) {
-            html = html.replace('<!--PH' + i + '-->', placeholders[i]);
-        }
-
-        return html;
-    }
-
     // 打开弹窗时填充内容并渲染
     function openMarkdownExample() {
         markdownExampleTextarea.value = SAMPLE_MARKDOWN;
-        markdownExampleRight.innerHTML = renderSimpleMarkdown(SAMPLE_MARKDOWN);
+        markdownExampleRight.innerHTML = renderMarkdown(SAMPLE_MARKDOWN);
         showModal('markdown-example-modal');
     }
 

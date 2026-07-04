@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.4.11</title>
+    <title>作业王v1.4.12</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">作业王v1.4.11-大家的最爱</div>
+    <div class="header">作业王v1.4.12-大家的最爱</div>
     <!-- 公告展示区 -->
     <div id="notice-display" style="display:none;"></div>
     <!-- 公告居中弹窗 -->
@@ -52,22 +52,6 @@
         </div>
     </div>
 
-    <!-- 保存确认对话框 -->
-    <div class="modal" id="save-confirm-modal">
-        <div class="modal-content" style="width:340px;">
-            <div class="modal-header">
-                <h2 class="modal-title">保存确认</h2>
-                <button class="close-button" id="save-confirm-close">&times;</button>
-            </div>
-            <div class="form-group" style="text-align:center;padding:20px 0;">
-                <p style="font-size:1.1rem;color:white;margin:0;text-shadow:0 1px 2px rgba(0,0,0,0.3);">确定要保存作业到文件吗？</p>
-            </div>
-            <div class="modal-footer" style="flex-direction:row;justify-content:center;gap:20px;">
-                <button class="cancel-button" id="save-cancel-button">取消</button>
-                <button class="submit-button" id="save-confirm-button">确定保存</button>
-            </div>
-        </div>
-    </div>
     <!-- 左下角公告按钮 -->
     <div id="bottom-notice-btn">公告</div>
     <!-- 公告写字板模态框 -->
@@ -99,7 +83,7 @@
             </div>
             <div class="markdown-example-container">
                 <div class="markdown-example-left">
-                    <textarea readonly style="width:100%;height:420px;font-family:Consolas,monospace;font-size:0.95rem;padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);color:#e0f0ff;resize:none;"></textarea>
+                    <textarea readonly title="Markdown示例源码" style="width:100%;height:420px;font-family:Consolas,monospace;font-size:0.95rem;padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);color:#e0f0ff;resize:none;"></textarea>
                 </div>
                 <div class="markdown-example-right" style="padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);color:white;overflow-y:auto;height:420px;">
                 </div>
@@ -369,8 +353,8 @@
             </div>
             <div class="form-group" style="padding:20px 0;">
                 <p style="color:white;font-size:1.05rem;margin-bottom:16px;text-shadow:0 1px 2px rgba(0,0,0,0.3);">友链</p>
-                <p style="margin-bottom:12px;"><a href="https://hglp.lhdyx.top" target="_blank" style="color:#4da6ff;text-decoration:none;font-size:1rem;">小游戏</a></p>
-                <p style="margin-bottom:12px;"><a href="https://78.91vip.tv/home.html" target="_blank" style="color:#4da6ff;text-decoration:none;font-size:1rem;">窑子开张了</a></p>
+                <p style="margin-bottom:12px;"><a href="https://hglp.lhdyx.top" target="_blank" rel="noopener noreferrer" style="color:#4da6ff;text-decoration:none;font-size:1rem;">小游戏</a></p>
+                <p style="margin-bottom:12px;"><a href="https://78.91vip.tv/home.html" target="_blank" rel="noopener noreferrer" style="color:#4da6ff;text-decoration:none;font-size:1rem;">窑子开张了</a></p>
             </div>
             <div class="modal-footer">
                 <button class="submit-button" id="about-ok">确定</button>
