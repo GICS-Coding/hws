@@ -108,29 +108,8 @@ body {
     width: 340px;
 }
 
-.operation-modal-content {
-    width: 340px;
-}
-
-.markdown-example-content-wide {
-    width: 780px;
-    min-height: 460px;
-    max-width: 95vw;
-}
-
-.manage-modal-content {
-    width: 420px;
-    min-height: 320px;
-    max-width: 480px;
-}
-
 .clear-cache-content {
     width: 360px;
-}
-
-.about-modal-content {
-    width: 620px;
-    max-width: min(94vw, 620px);
 }
 
 .notice-modal-content {
@@ -900,23 +879,6 @@ body {
 #notice-display del, #notice-center-text del {
     text-decoration: line-through;
     opacity: 0.7;
-}
-
-/* ===== Markdown 渲染的 hr ===== */
-#notice-display hr,
-#notice-center-text hr {
-    border: none;
-    border-top: 2px solid rgba(255,255,255,0.5);
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-    height: 0;
-    margin: 16px 0;
-}
-
-/* 白底模式用深色分割线 */
-body.liquid-glass-disabled #notice-display hr,
-body.liquid-glass-disabled #notice-center-text hr {
-    border-top-color: rgba(0,0,0,0.25);
-    border-bottom-color: transparent;
 }
 
 /* ===== 公告编辑模态框（加大） ===== */

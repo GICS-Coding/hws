@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.4.15 - JavaScript Application Logic
+ * 作业王 v1.5.0 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -296,6 +296,18 @@ var APP_SETTING_KEYS = [
     'lastClearDate'
 ];
 
+var LOG_STORAGE_KEY = 'operationLogs';
+var MAX_OPERATION_LOGS = 200;
+
+var SETTING_LABELS = {
+    adEnabled: '广告开关',
+    liquidGlassEnabled: 'liquid glass',
+    bottomDisplayEnabled: '靠下显示',
+    dailyClearEnabled: '每日清空',
+    easterEggEnabled: '彩蛋',
+    messyStewEnabled: '大乱炖'
+};
+
 function getStorageItem(key, fallback) {
     var value = localStorage.getItem(key);
     return value === null ? fallback : value;
@@ -345,6 +357,46 @@ function removeAppStorageData() {
     APP_SETTING_KEYS.forEach(function (key) {
         localStorage.removeItem(key);
     });
+}
+
+function getOperationLogs() {
+    var value = getJsonStorageItem(LOG_STORAGE_KEY, []);
+    return Array.isArray(value) ? value : [];
+}
+
+function setOperationLogs(logs) {
+    setJsonStorageItem(LOG_STORAGE_KEY, Array.isArray(logs) ? logs : []);
+}
+
+function formatLogTimestamp(date) {
+    var year = String(date.getFullYear()).slice(-2);
+    var month = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    var hours = String(date.getHours()).padStart(2, '0');
+    var minutes = String(date.getMinutes()).padStart(2, '0');
+    var seconds = String(date.getSeconds()).padStart(2, '0');
+    return year + month + day + ' ' + hours + ':' + minutes + ':' + seconds;
+}
+
+function appendOperationLog(type, content) {
+    var logs = getOperationLogs();
+    logs.push({
+        type: type,
+        content: content,
+        timestamp: new Date().toISOString()
+    });
+    if (logs.length > MAX_OPERATION_LOGS) {
+        logs = logs.slice(logs.length - MAX_OPERATION_LOGS);
+    }
+    setOperationLogs(logs);
+}
+
+function formatHomeworkLogSubject(subject, index) {
+    return SUBJECT_NAMES[subject] + '.' + index;
+}
+
+function formatToggleValue(enabled) {
+    return enabled ? '开' : '关';
 }
 
 // ============================================================
@@ -823,10 +875,16 @@ function checkAndClearDailyData() {
     var lastClearDate = getStorageItem('lastClearDate', null);
 
     if (lastClearDate !== today) {
+        var hadHomework = SUBJECTS.some(function (subject) {
+            return getSubjectHomeworks(subject).length > 0;
+        });
         SUBJECTS.forEach(function (subject) {
             setSubjectHomeworks(subject, []);
         });
         setStorageItem('lastClearDate', today);
+        if (hadHomework) {
+            appendOperationLog('X', '系统操作：自动清除昨日作业');
+        }
     }
 }
 
@@ -845,7 +903,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.4.15 - 高中作业单\n';
+    var content = '作业王 v1.5.0 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -886,6 +944,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    appendOperationLog('X', '系统操作：导出作业 ' + filename);
 }
 
 // ============================================================
@@ -985,8 +1044,12 @@ document.addEventListener('DOMContentLoaded', function () {
         hideModal('notice-modal');
     });
     document.getElementById('notice-save').addEventListener('click', function () {
+        var previousNotice = getStorageItem('notice', '');
         var val = document.getElementById('notice-textarea').value;
         setStorageItem('notice', val);
+        if (previousNotice !== val) {
+            appendOperationLog('E', '编辑公告：' + previousNotice + '->' + val);
+        }
         hideModal('notice-modal');
         updateNoticeDisplay();
     });
@@ -1017,6 +1080,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     setSubjectHomeworks(subject, []);
                     renderHomework(subject);
                 });
+                appendOperationLog('X', '系统操作：保存后清空作业');
                 updateTableHeader();
                 adjustNoticePosition();
             }
@@ -1095,6 +1159,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('clear-cache-confirm').addEventListener('click', function () {
         // 1. 仅清空本应用使用的 localStorage key，避免误删同域其他应用数据
         removeAppStorageData();
+        setOperationLogs([]);
+        appendOperationLog('X', '系统操作：清空缓存');
         // 2. 通知 Service Worker 清除所有缓存，收到确认后再刷新页面
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             var onCacheCleared = function (event) {
@@ -1125,6 +1191,14 @@ document.addEventListener('DOMContentLoaded', function () {
         var dailyClearVal = document.getElementById('manage-daily-clear-checkbox').checked;
         var easterEggVal = document.getElementById('manage-easter-egg-checkbox').checked;
         var messyStewVal = document.getElementById('manage-messy-stew-checkbox').checked;
+        var previousSettings = {
+            adEnabled: getBooleanSetting('adEnabled', false),
+            liquidGlassEnabled: getBooleanSetting('liquidGlassEnabled', false),
+            bottomDisplayEnabled: getBooleanSetting('bottomDisplayEnabled', false),
+            dailyClearEnabled: getBooleanSetting('dailyClearEnabled', true),
+            easterEggEnabled: getBooleanSetting('easterEggEnabled', false),
+            messyStewEnabled: getBooleanSetting('messyStewEnabled', false)
+        };
 
         setBooleanSetting('adEnabled', adEnabledVal);
         setBooleanSetting('liquidGlassEnabled', liquidGlassVal);
@@ -1132,6 +1206,21 @@ document.addEventListener('DOMContentLoaded', function () {
         setBooleanSetting('dailyClearEnabled', dailyClearVal);
         setBooleanSetting('easterEggEnabled', easterEggVal);
         setBooleanSetting('messyStewEnabled', messyStewVal);
+
+        [
+            ['adEnabled', adEnabledVal],
+            ['liquidGlassEnabled', liquidGlassVal],
+            ['bottomDisplayEnabled', bottomDisplayVal],
+            ['dailyClearEnabled', dailyClearVal],
+            ['easterEggEnabled', easterEggVal],
+            ['messyStewEnabled', messyStewVal]
+        ].forEach(function (entry) {
+            var key = entry[0];
+            var currentValue = entry[1];
+            if (previousSettings[key] !== currentValue) {
+                appendOperationLog('S', '修改设置：' + SETTING_LABELS[key] + ' ' + formatToggleValue(currentValue));
+            }
+        });
 
         if (adEnabledVal) {
             startAdRotation();
@@ -1178,6 +1267,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var homeworks = getSubjectHomeworks(subject);
             homeworks.push(homeworkText);
             setSubjectHomeworks(subject, homeworks);
+            appendOperationLog('A', '添加作业：' + formatHomeworkLogSubject(subject, homeworks.length) + ' ' + homeworkText);
             if (getBooleanSetting('messyStewEnabled', false)) {
                 computeAllEasterEggs();
             } else {
@@ -1211,8 +1301,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (newHomework && index !== '') {
             var homeworks = getSubjectHomeworks(subject);
+            var oldHomework = homeworks[index];
             homeworks[index] = newHomework;
             setSubjectHomeworks(subject, homeworks);
+            appendOperationLog('C', '修改作业：' + formatHomeworkLogSubject(subject, Number(index) + 1) + ' ' + oldHomework + ' -> ' + newHomework);
             if (getBooleanSetting('messyStewEnabled', false)) {
                 computeAllEasterEggs();
             } else {
@@ -1234,8 +1326,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (index !== '') {
             var homeworks = getSubjectHomeworks(subject);
+            var removedHomework = homeworks[index];
             homeworks.splice(index, 1);
             setSubjectHomeworks(subject, homeworks);
+            appendOperationLog('R', '删除作业：' + formatHomeworkLogSubject(subject, Number(index) + 1) + ' ' + removedHomework);
             if (getBooleanSetting('messyStewEnabled', false)) {
                 computeAllEasterEggs();
             } else {

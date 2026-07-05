@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业王v1.5.0 - 操作日志</title>
+    <link rel="icon" href="ico.png" type="image/jpeg">
+    <link rel="stylesheet" href="logs.css">
+</head>
+<body>
+    <header class="logs-topbar">
+        <div class="logs-topbar-title">作业王v1.5.0-操作日志</div>
+        <div class="logs-topbar-actions">
+            <input id="logs-search" type="search" class="logs-topbar-search" placeholder="搜索日志内容" aria-label="搜索日志内容">
+            <button id="logs-export" type="button" class="logs-topbar-button">导出日志</button>
+            <a href="index.html" class="logs-topbar-link">返回主页</a>
+            <button id="logs-clear" type="button" class="logs-topbar-button">清空日志</button>
+        </div>
+    </header>
+
+    <main>
+        <h2>最近操作</h2>
+        <p id="logs-empty-text">暂无日志</p>
+        <div id="logs-list"></div>
+    </main>
+
+    <script src="logs.js"></script>
+</body>
+</html>

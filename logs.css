@@ -1,0 +1,159 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Microsoft YaHei', sans-serif;
+    color: #333;
+    background: #fff;
+}
+
+.logs-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+}
+
+.logs-topbar-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.logs-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logs-topbar-search {
+    width: min(240px, 40vw);
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: 18px;
+    background: #fff;
+    color: #333;
+    font: inherit;
+}
+
+.logs-topbar-search:focus {
+    outline: none;
+    border-color: rgba(0, 0, 0, 0.32);
+}
+
+.logs-topbar-link,
+.logs-topbar-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: 18px;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    font: inherit;
+    cursor: pointer;
+}
+
+.logs-topbar-button {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+main {
+    padding: 20px 24px 32px;
+}
+
+.log-change-arrow {
+    color: #d4a000;
+    font-weight: 700;
+}
+
+.logs-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.logs-row-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.logs-row-main.is-collapsed {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logs-row-toggle {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    line-height: 1.25rem;
+    border: none;
+    background: none;
+    color: #666;
+    font-size: 0.72rem;
+    font-family: 'Microsoft YaHei', sans-serif;
+    cursor: pointer;
+    padding: 0;
+    text-align: center;
+}
+
+.logs-row-toggle.is-expanded {
+    font-size: 1.36rem;
+}
+
+.log-type {
+    display: inline-block;
+    margin: 0 4px 0 0;
+    font-weight: 700;
+}
+
+.log-type-a {
+    color: #2e8b57;
+}
+
+.log-type-c {
+    color: #58a6ff;
+}
+
+.log-type-r {
+    color: #d64545;
+}
+
+.log-type-e {
+    color: #8a5cf6;
+}
+
+.log-type-s {
+    color: #d9862b;
+}
+
+.log-type-x {
+    color: #5f6368;
+}
+
+@media (max-width: 640px) {
+    .logs-topbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .logs-topbar-actions {
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+}
