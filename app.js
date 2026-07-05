@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.4.13 - JavaScript Application Logic
+ * 作业王 v1.4.14 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -241,10 +241,12 @@ function updateNoticeDisplay() {
     var display = document.getElementById('notice-display');
     if (notice.trim()) {
         display.innerHTML = renderMarkdown(notice);
+        display.classList.remove('notice-display-hidden');
         display.style.display = '';
     } else {
         display.innerHTML = '';
-        display.style.display = 'none';
+        display.classList.add('notice-display-hidden');
+        display.style.display = '';
     }
 }
 
@@ -291,8 +293,7 @@ var APP_SETTING_KEYS = [
     'dailyClearEnabled',
     'easterEggEnabled',
     'messyStewEnabled',
-    'lastClearDate',
-    'cacheDate'
+    'lastClearDate'
 ];
 
 function getStorageItem(key, fallback) {
@@ -844,7 +845,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.4.13 - 高中作业单\n';
+    var content = '作业王 v1.4.14 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -892,7 +893,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
 // ============================================================
 
 // ============================================================
-// Service Worker 注册与缓存管理
+// Service Worker 注册
 // ============================================================
 
 function registerServiceWorker() {
@@ -916,21 +917,8 @@ function registerServiceWorker() {
     }
 }
 
-function checkCacheExpiry() {
-    var today = new Date().toDateString();
-    var cacheDate = getStorageItem('cacheDate', null);
-    if (cacheDate !== today) {
-        // 新的一天：清除旧缓存，强制重新拉取
-        setStorageItem('cacheDate', today);
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' });
-        }
-    }
-}
-
 // ---------- 注册 Service Worker ----------
 registerServiceWorker();
-checkCacheExpiry();
 
 document.addEventListener('DOMContentLoaded', function () {
 

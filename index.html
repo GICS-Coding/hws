@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.4.13</title>
+    <title>作业王v1.4.14</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">作业王v1.4.13-大家的最爱</div>
+    <div class="header">作业王v1.4.14-大家的最爱</div>
     <!-- 公告展示区 -->
-    <div id="notice-display" style="display:none;"></div>
+    <div id="notice-display" class="notice-display-hidden"></div>
     <!-- 公告居中弹窗 -->
     <div id="notice-center-modal" role="dialog" aria-modal="true" aria-labelledby="notice-center-title">
         <div class="modal-content notice-center-content">
-            <button id="notice-center-close" aria-label="关闭公告" class="notice-center-close-btn">&times;</button>
-            <h2 id="notice-center-title" class="notice-center-title">公告</h2>
-            <div id="notice-center-text" class="notice-center-text"></div>
+            <div class="modal-header notice-center-header">
+                <h2 id="notice-center-title" class="modal-title notice-center-title">公告</h2>
+                <button id="notice-center-close" aria-label="关闭公告" class="close-button notice-center-close-btn">&times;</button>
+            </div>
+            <div class="notice-center-body">
+                <div id="notice-center-text" class="notice-center-text"></div>
+            </div>
         </div>
     </div>
     <!-- 右上角保存按钮 -->
@@ -32,16 +36,16 @@
                 <button class="close-button" id="save-select-close" aria-label="关闭保存选项">&times;</button>
             </div>
             <div class="form-group save-options-group">
-                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                    <input type="checkbox" id="save-homework-checkbox" checked style="width:18px;height:18px;">
+                <label class="checkbox-row">
+                    <input type="checkbox" id="save-homework-checkbox" checked class="checkbox-input-sm">
                     <span>保存作业内容</span>
                 </label>
-                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:10px;">
-                    <input type="checkbox" id="save-notice-checkbox" checked style="width:18px;height:18px;">
+                <label class="checkbox-row checkbox-row-spaced">
+                    <input type="checkbox" id="save-notice-checkbox" checked class="checkbox-input-sm">
                     <span>保存公告内容</span>
                 </label>
-                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:10px;">
-                    <input type="checkbox" id="save-clear-after-checkbox" style="width:18px;height:18px;">
+                <label class="checkbox-row checkbox-row-spaced">
+                    <input type="checkbox" id="save-clear-after-checkbox" class="checkbox-input-sm">
                     <span>保存后清空</span>
                 </label>
             </div>
@@ -106,7 +110,7 @@
                 <button class="action-button modify-button" id="op-modify">修改作业</button>
                 <button class="action-button delete-button" id="op-delete">删除作业</button>
                 <button class="action-button manage-button" id="op-manage">管理</button>
-                <button class="action-button clear-cache-button" id="op-clear-cache" style="background:rgba(255,100,50,0.7);">清空缓存</button>
+                <button class="action-button clear-cache-button" id="op-clear-cache">清空缓存</button>
             </div>
         </div>
     </div>
@@ -115,41 +119,41 @@
     <div class="modal" id="manage-modal" role="dialog" aria-modal="true" aria-labelledby="manage-modal-title">
         <div class="modal-content manage-modal-content">
             <div class="modal-header">
-                <h2 class="modal-title" id="manage-modal-title">管理设置 <a href="#" id="about-link" style="font-size:0.75rem;font-weight:normal;color:rgba(255,255,255,0.6);text-decoration:none;margin-left:8px;">关于</a></h2>
+                <h2 class="modal-title" id="manage-modal-title">管理设置 <a href="#" id="about-link" class="about-inline-link">关于</a></h2>
                 <button class="close-button" id="manage-close" aria-label="关闭管理设置">&times;</button>
             </div>
-            <div class="form-group" style="margin-top:15px;">
-                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                    <input type="checkbox" id="manage-ad-toggle-checkbox" style="width:18px;height:18px;">
+            <div class="form-group form-group-spaced">
+                <label class="checkbox-row">
+                    <input type="checkbox" id="manage-ad-toggle-checkbox" class="checkbox-input-sm">
                     <span>广告开关</span>
                 </label>
             </div>
-            <div class="form-group" style="margin-top:15px;">
-                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                    <input type="checkbox" id="manage-liquid-glass-toggle-checkbox" style="width:18px;height:18px;">
+            <div class="form-group form-group-spaced">
+                <label class="checkbox-row">
+                    <input type="checkbox" id="manage-liquid-glass-toggle-checkbox" class="checkbox-input-sm">
                     <span>liquid glass开关</span>
                 </label>
             </div>
-            <div class="form-group" style="margin-top:15px;">
-                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                    <input type="checkbox" id="manage-bottom-display-checkbox" style="width:18px;height:18px;">
+            <div class="form-group form-group-spaced">
+                <label class="checkbox-row">
+                    <input type="checkbox" id="manage-bottom-display-checkbox" class="checkbox-input-sm">
                     <span>靠下显示</span>
                 </label>
             </div>
-            <div class="form-group" style="margin-top:15px;">
-                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                    <input type="checkbox" id="manage-daily-clear-checkbox" style="width:18px;height:18px;">
+            <div class="form-group form-group-spaced">
+                <label class="checkbox-row">
+                    <input type="checkbox" id="manage-daily-clear-checkbox" class="checkbox-input-sm">
                     <span>每日清空</span>
                 </label>
             </div>
-            <div class="form-group" style="margin-top:15px;">
-                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                    <input type="checkbox" id="manage-easter-egg-checkbox" style="width:18px;height:18px;">
+            <div class="form-group form-group-spaced">
+                <label class="checkbox-row">
+                    <input type="checkbox" id="manage-easter-egg-checkbox" class="checkbox-input-sm">
                     <span>彩蛋</span>
                 </label>
-                <div id="manage-messy-stew-group" style="margin-top:12px;margin-left:28px;display:none;">
-                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                        <input type="checkbox" id="manage-messy-stew-checkbox" style="width:18px;height:18px;">
+                <div id="manage-messy-stew-group" class="nested-checkbox-group">
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="manage-messy-stew-checkbox" class="checkbox-input-sm">
                         <span>大乱炖</span>
                     </label>
                 </div>
@@ -212,7 +216,7 @@
         </tr>
     </table>
     
-    <div class="button-container" style="display:none;">
+    <div class="button-container button-container-hidden">
         <button class="action-button add-button" id="add-homework-btn">添加作业</button>
         <button class="action-button modify-button" id="modify-homework-btn">修改作业</button>
         <button class="action-button delete-button" id="delete-homework-btn">删除作业</button>
@@ -342,7 +346,7 @@
                 <button class="close-button" id="clear-cache-close" aria-label="关闭清空缓存确认">&times;</button>
             </div>
             <div class="form-group modal-text-center-group">
-                <p style="font-size:1.1rem;color:white;margin:0;text-shadow:0 1px 2px rgba(0,0,0,0.3);">确定要清空所有缓存吗？<br>(包括所有作业、公告、设置)</p>
+                <p class="clear-cache-warning-text">确定要清空所有缓存吗？<br>(包括所有作业、公告、设置)</p>
             </div>
             <div class="modal-footer modal-footer-center-row">
                 <button class="cancel-button" id="clear-cache-cancel">取消</button>
@@ -359,9 +363,19 @@
                 <button class="close-button" id="about-close" aria-label="关闭关于弹窗">&times;</button>
             </div>
             <div class="form-group about-links-group">
-                <p style="color:white;font-size:1.05rem;margin-bottom:16px;text-shadow:0 1px 2px rgba(0,0,0,0.3);">友链</p>
-                <p style="margin-bottom:12px;"><a href="https://hglp.lhdyx.top" target="_blank" rel="noopener noreferrer" style="color:#4da6ff;text-decoration:none;font-size:1rem;">小游戏</a></p>
-                <p style="margin-bottom:12px;"><a href="https://78.91vip.tv/home.html" target="_blank" rel="noopener noreferrer" style="color:#4da6ff;text-decoration:none;font-size:1rem;">窑子开张了</a></p>
+                <p class="about-section-body about-section-body-first">version: 1.4.14</p>
+                <p class="about-section-title">开源协议</p>
+                <p class="about-section-body">Apache License 2.0</p>
+                <p class="about-section-note">允许使用、修改与分发，具体条款以项目根目录 LICENSE 文件为准。</p>
+                <p class="about-section-title">仓库</p>
+                <p class="about-link-row"><a href="https://github.com/LHDyx/hws" target="_blank" rel="noopener noreferrer" class="about-link">https://github.com/LHDyx/hws</a></p>
+                <p class="about-section-title">友链</p>
+                <p class="about-link-row"><a href="https://hglp.lhdyx.top" target="_blank" rel="noopener noreferrer" class="about-link">小游戏</a></p>
+                <p class="about-link-row"><a href="https://78.91vip.tv/home.html" target="_blank" rel="noopener noreferrer" class="about-link">窑子开张了</a></p>
+                <p class="about-section-title">鸣谢</p>
+                <p class="about-section-body about-acknowledgements">deepseek-V3.2 gpt-4o gpt-5.3-codex claude-sonnet-4-6 glm-5.1 gpt-5.4 claude-opus-4.7 deepseek-v4-pro gpt-5.5</p>
+                <p class="about-section-title">更新日志</p>
+                <p class="about-section-placeholder">待补充</p>
             </div>
             <div class="modal-footer">
                 <button class="submit-button" id="about-ok">确定</button>
@@ -369,7 +383,7 @@
         </div>
     </div>
 
-    <div class="footer-image" id="ad-container" style="display:none;">
+    <div class="footer-image footer-image-hidden" id="ad-container">
         <img id="ad-image" alt="广告图片">
     </div>
 
