@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.4.14 - JavaScript Application Logic
+ * 作业王 v1.4.15 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -845,7 +845,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.4.14 - 高中作业单\n';
+    var content = '作业王 v1.4.15 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -1095,12 +1095,20 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('clear-cache-confirm').addEventListener('click', function () {
         // 1. 仅清空本应用使用的 localStorage key，避免误删同域其他应用数据
         removeAppStorageData();
-        // 2. 通知 Service Worker 清除所有缓存
+        // 2. 通知 Service Worker 清除所有缓存，收到确认后再刷新页面
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            var onCacheCleared = function (event) {
+                if (event.data && event.data.type === 'CACHE_CLEARED') {
+                    navigator.serviceWorker.removeEventListener('message', onCacheCleared);
+                    window.location.reload();
+                }
+            };
+            navigator.serviceWorker.addEventListener('message', onCacheCleared);
             navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' });
+        } else {
+            // 兜底：没有可用的 Service Worker 控制器时，直接刷新页面
+            window.location.reload();
         }
-        // 3. 刷新页面（跳过缓存，从网络重新拉取）
-        window.location.reload();
     });
 
     // ---------- 管理对话框 ----------

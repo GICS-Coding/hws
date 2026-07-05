@@ -1,7 +1,7 @@
-// Service Worker for 作业王 v1.4.14 - 缓存管理
+// Service Worker for 作业王 v1.4.15 - 缓存管理
 // HTML 使用 Network-First，静态资源使用 Cache-First
 
-const CACHE_NAME = 'homework-king-v1.4.14';
+const CACHE_NAME = 'homework-king-v1.4.15';
 const CORE_ASSETS = [
     './',
     './index.html',
@@ -108,7 +108,10 @@ self.addEventListener('message', function (event) {
     if (event.data && event.data.type === 'CLEAR_CACHE') {
         caches.keys().then(function (keys) {
             return Promise.all(keys.map(function (key) {
-                return caches.delete(key);
+                if (key === CACHE_NAME || key.indexOf('homework-king-') === 0) {
+                    return caches.delete(key);
+                }
+                return null;
             }));
         }).then(function () {
             return self.clients.matchAll().then(function (clients) {
