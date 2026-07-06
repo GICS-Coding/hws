@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.5.1</title>
+    <title>作业王v1.5.2</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">作业王v1.5.1-大家的最爱</div>
+    <div class="header">作业王v1.5.2-大家的最爱</div>
     <!-- 公告展示区 -->
     <div id="notice-display" class="notice-display-hidden"></div>
     <!-- 公告居中弹窗 -->
@@ -363,7 +363,7 @@
                 <button class="close-button" id="about-close" aria-label="关闭关于弹窗">&times;</button>
             </div>
             <div class="form-group about-links-group">
-                <p class="about-section-body about-section-body-first">version: 1.5.1</p>
+                <p class="about-section-body about-section-body-first">version: 1.5.2</p>
                 <p class="about-section-title">开源协议</p>
                 <p class="about-section-body">Apache License 2.0</p>
                 <p class="about-section-note">允许使用、修改与分发，具体条款以项目根目录 LICENSE 文件为准。</p>
@@ -372,10 +372,132 @@
                 <p class="about-section-title">友链</p>
                 <p class="about-link-row"><a href="https://hglp.lhdyx.top" target="_blank" rel="noopener noreferrer" class="about-link">小游戏</a></p>
                 <p class="about-link-row"><a href="https://78.91vip.tv/home.html" target="_blank" rel="noopener noreferrer" class="about-link">窑子开张了</a></p>
-                <p class="about-section-title">鸣谢</p>
-                <p class="about-section-body about-acknowledgements">deepseek-V3.2 gpt-4o gpt-5.3-codex claude-sonnet-4-6 glm-5.1 gpt-5.4 claude-opus-4.7 deepseek-v4-pro gpt-5.5</p>
+                <p class="about-section-title">鸣谢 <span class="about-section-note-inline">(按时间排序)</span></p>
+                <div class="about-ack-grid" aria-label="鸣谢名单">
+                    <span class="about-ack-item">deepseek-V3.2</span>
+                    <span class="about-ack-item">gpt-4o</span>
+                    <span class="about-ack-item">gpt-5.3-codex</span>
+                    <span class="about-ack-item">claude-sonnet-4-6</span>
+                    <span class="about-ack-item">glm-5.1</span>
+                    <span class="about-ack-item">gpt-5.4</span>
+                    <span class="about-ack-item">claude-opus-4-7</span>
+                    <span class="about-ack-item">deepseek-v4-pro</span>
+                    <span class="about-ack-item">gpt-5.5</span>
+                </div>
                 <p class="about-section-title">更新日志</p>
-                <p class="about-section-placeholder">待补充</p>
+                <div class="about-changelog">
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.5.2</h3>
+                        <ul class="about-changelog-list">
+                            <li>完善关于页内容</li>
+                            <li>优化布局、留白与滚动体验</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.5.1</h3>
+                        <ul class="about-changelog-list">
+                            <li>优化日志系统显示逻辑</li>
+                            <li>修复日志筛选与导出行为不一致的问题</li>
+                            <li>补齐日志页缓存资源，提升离线访问稳定性</li>
+                            <li>调整日志页顶部栏布局</li>
+                            <li>新增日志搜索、类型筛选、导出与展开/收起能力</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.5.0</h3>
+                        <ul class="about-changelog-list">
+                            <li>新增独立日志页</li>
+                            <li>接入操作日志系统</li>
+                            <li>支持记录添加、修改、删除作业，编辑公告，修改设置及系统操作</li>
+                            <li>优化缓存清理逻辑</li>
+                            <li>修复公告弹窗显示与样式问题</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.4.15</h3>
+                        <ul class="about-changelog-list">
+                            <li>优化缓存清理范围</li>
+                            <li>修复公告弹窗问题</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.4.14</h3>
+                        <ul class="about-changelog-list">
+                            <li>修复公告弹窗</li>
+                            <li>优化缓存逻辑</li>
+                            <li>继续剥离内嵌 CSS</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.4.13</h3>
+                        <ul class="about-changelog-list">
+                            <li>优化交互</li>
+                            <li>增加技术科目</li>
+                            <li>剥离部分内嵌 CSS</li>
+                            <li>增强可访问性</li>
+                            <li>优化关于页结构与内容</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.4.12</h3>
+                        <ul class="about-changelog-list">
+                            <li>修复已知问题</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.4.11</h3>
+                        <ul class="about-changelog-list">
+                            <li>优化静默更新</li>
+                            <li>添加删除缓存功能</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.4.9</h3>
+                        <ul class="about-changelog-list">
+                            <li>延长缓存时间</li>
+                            <li>添加友链</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.4.8</h3>
+                        <ul class="about-changelog-list">
+                            <li>缓存测试与微调</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.4.3</h3>
+                        <ul class="about-changelog-list">
+                            <li>修复 Markdown 分割线渲染</li>
+                            <li>添加 Markdown 示例</li>
+                            <li>扩大公告编辑框</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.4.2</h3>
+                        <ul class="about-changelog-list">
+                            <li>补齐图片资源</li>
+                            <li>将 main.html 重命名为 index.html</li>
+                            <li>适配 GitHub Pages</li>
+                            <li>liquid glass 效果默认关闭</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.4.1</h3>
+                        <ul class="about-changelog-list">
+                            <li>优化项目结构</li>
+                            <li>添加彩蛋（语文 / 英语 / 生物 / 其它）</li>
+                            <li>优化存储逻辑</li>
+                            <li>添加作业快捷选项</li>
+                            <li>公告支持 Markdown</li>
+                        </ul>
+                    </section>
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">~1.3.x</h3>
+                        <ul class="about-changelog-list">
+                            <li>我怎么知道</li>
+                        </ul>
+                    </section>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="submit-button" id="about-ok">确定</button>
