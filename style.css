@@ -489,6 +489,8 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     z-index: 1000;
     justify-content: center;
     align-items: flex-end;
@@ -516,8 +518,8 @@ body {
 
 .modal-content.is-static {
     background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     border: 2px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
@@ -571,8 +573,8 @@ body {
     width: 100%;
     padding: 14px 16px;
     background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border: 2px solid rgba(255, 255, 255, 0.8);
     border-radius: 16px;
     font-size: 1.1rem;
@@ -600,8 +602,8 @@ body {
 .form-group select:focus, .form-group input:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 0 25px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
@@ -959,8 +961,6 @@ body {
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
     z-index: 2000;
     justify-content: center;
     align-items: flex-end;
@@ -990,8 +990,8 @@ body {
 
 #notice-center-modal .modal-content.is-static {
     background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     border: 2px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }

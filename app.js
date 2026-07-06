@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.5.2 - JavaScript Application Logic
+ * 作业王 v1.5.3 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -60,6 +60,8 @@ function applyAdaptiveTextColors() {
 // 模态框动画控制
 // ============================================================
 
+var MODAL_CONTENT_TRANSITION_MS = 600;
+
 function showModal(modalId) {
     var modal = document.getElementById(modalId);
     var content = modal.querySelector('.modal-content');
@@ -90,7 +92,7 @@ function hideModal(modalId) {
     modal.classList.remove('show');
     setTimeout(function () {
         modal.style.display = 'none';
-    }, 300);
+    }, MODAL_CONTENT_TRANSITION_MS);
 }
 
 // ============================================================
@@ -978,7 +980,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.5.2 - 高中作业单\n';
+    var content = '作业王 v1.5.3 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -1181,21 +1183,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('op-add').addEventListener('click', function () {
         hideModal('operation-modal');
-        setTimeout(function () { showModal('add-homework-modal'); }, 300);
+        setTimeout(function () { showModal('add-homework-modal'); }, MODAL_CONTENT_TRANSITION_MS);
     });
     document.getElementById('op-modify').addEventListener('click', function () {
         hideModal('operation-modal');
         setTimeout(function () {
             updateHomeworkItems('modify-subject-select', 'homework-item-select');
             showModal('modify-homework-modal');
-        }, 300);
+        }, MODAL_CONTENT_TRANSITION_MS);
     });
     document.getElementById('op-delete').addEventListener('click', function () {
         hideModal('operation-modal');
         setTimeout(function () {
             updateHomeworkItems('delete-subject-select', 'delete-item-select');
             showModal('delete-homework-modal');
-        }, 300);
+        }, MODAL_CONTENT_TRANSITION_MS);
     });
     document.getElementById('op-manage').addEventListener('click', function () {
         hideModal('operation-modal');
@@ -1216,12 +1218,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // 如果彩蛋已勾选则显示大乱炖，否则隐藏
         document.getElementById('manage-messy-stew-group').style.display = easterEggVal ? 'block' : 'none';
 
-        setTimeout(function () { showModal('manage-modal'); }, 300);
+        setTimeout(function () { showModal('manage-modal'); }, MODAL_CONTENT_TRANSITION_MS);
     });
 
     document.getElementById('op-clear-cache').addEventListener('click', function () {
         hideModal('operation-modal');
-        setTimeout(function () { showModal('clear-cache-modal'); }, 300);
+        setTimeout(function () { showModal('clear-cache-modal'); }, MODAL_CONTENT_TRANSITION_MS);
     });
 
     // ---------- 清空缓存确认弹窗 ----------
