@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.5.3 - JavaScript Application Logic
+ * 作业王 v1.5.4 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -298,17 +298,7 @@ var APP_SETTING_KEYS = [
     'lastClearDate'
 ];
 
-var LOG_STORAGE_KEY = 'operationLogs';
-var MAX_OPERATION_LOGS = 200;
-
-var SETTING_LABELS = {
-    adEnabled: '广告开关',
-    liquidGlassEnabled: 'liquid glass',
-    bottomDisplayEnabled: '靠下显示',
-    dailyClearEnabled: '每日清空',
-    easterEggEnabled: '彩蛋',
-    messyStewEnabled: '大乱炖'
-};
+var Logs = window.LogsCore;
 
 function getStorageItem(key, fallback) {
     var value = localStorage.getItem(key);
@@ -359,121 +349,6 @@ function removeAppStorageData() {
     APP_SETTING_KEYS.forEach(function (key) {
         localStorage.removeItem(key);
     });
-}
-
-function getOperationLogs() {
-    var value = getJsonStorageItem(LOG_STORAGE_KEY, []);
-    return Array.isArray(value) ? value : [];
-}
-
-function setOperationLogs(logs) {
-    setJsonStorageItem(LOG_STORAGE_KEY, Array.isArray(logs) ? logs : []);
-}
-
-function formatLogTimestamp(date) {
-    var year = String(date.getFullYear()).slice(-2);
-    var month = String(date.getMonth() + 1).padStart(2, '0');
-    var day = String(date.getDate()).padStart(2, '0');
-    var hours = String(date.getHours()).padStart(2, '0');
-    var minutes = String(date.getMinutes()).padStart(2, '0');
-    var seconds = String(date.getSeconds()).padStart(2, '0');
-    return year + month + day + ' ' + hours + ':' + minutes + ':' + seconds;
-}
-
-function formatHomeworkLogSubject(subject, index) {
-    return SUBJECT_NAMES[subject] + '.' + index;
-}
-
-function formatToggleValue(enabled) {
-    return enabled ? '开' : '关';
-}
-
-function formatAddHomeworkLog(subject, index, homeworkContent) {
-    return {
-        type: 'A',
-        action: 'add-homework',
-        subject: subject,
-        subjectLabel: SUBJECT_NAMES[subject],
-        index: index,
-        homeworkContent: homeworkContent,
-        content: '添加作业：' + formatHomeworkLogSubject(subject, index) + ' ' + homeworkContent
-    };
-}
-
-function formatChangeHomeworkLog(subject, index, oldValue, newValue) {
-    return {
-        type: 'C',
-        action: 'change-homework',
-        subject: subject,
-        subjectLabel: SUBJECT_NAMES[subject],
-        index: index,
-        oldValue: oldValue,
-        newValue: newValue,
-        content: '修改作业：' + formatHomeworkLogSubject(subject, index) + ' ' + oldValue + ' -> ' + newValue
-    };
-}
-
-function formatRemoveHomeworkLog(subject, index, oldValue) {
-    return {
-        type: 'R',
-        action: 'remove-homework',
-        subject: subject,
-        subjectLabel: SUBJECT_NAMES[subject],
-        index: index,
-        oldValue: oldValue,
-        content: '删除作业：' + formatHomeworkLogSubject(subject, index) + ' ' + oldValue
-    };
-}
-
-function formatEditNoticeLog(oldValue, newValue) {
-    return {
-        type: 'E',
-        action: 'edit-notice',
-        oldValue: oldValue,
-        newValue: newValue,
-        content: '编辑公告：' + oldValue + ' -> ' + newValue
-    };
-}
-
-function formatSettingLog(settingKey, oldValue, newValue) {
-    var label = SETTING_LABELS[settingKey] || settingKey;
-    return {
-        type: 'S',
-        action: 'change-setting',
-        settingKey: settingKey,
-        settingLabel: label,
-        oldValue: oldValue,
-        newValue: newValue,
-        content: '修改设置：' + label + ' ' + formatToggleValue(newValue)
-    };
-}
-
-function formatSystemLog(operation, options) {
-    var payload = options || {};
-    var content = '系统操作：' + operation;
-    if (payload.file) {
-        content += ' ' + payload.file;
-    }
-    return {
-        type: 'X',
-        action: 'system-operation',
-        operation: operation,
-        file: payload.file || null,
-        source: payload.source || 'user',
-        content: content
-    };
-}
-
-function appendOperationLog(entry) {
-    var logs = getOperationLogs();
-    var logEntry = Object.assign({
-        timestamp: new Date().toISOString()
-    }, entry || {});
-    logs.push(logEntry);
-    if (logs.length > MAX_OPERATION_LOGS) {
-        logs = logs.slice(logs.length - MAX_OPERATION_LOGS);
-    }
-    setOperationLogs(logs);
 }
 
 // ============================================================
@@ -960,7 +835,7 @@ function checkAndClearDailyData() {
         });
         setStorageItem('lastClearDate', today);
         if (hadHomework) {
-            appendOperationLog(formatSystemLog('自动清除昨日作业', { source: 'system' }));
+            Logs.appendOperationLog(Logs.formatSystemLog('自动清除昨日作业', { source: 'system' }));
         }
     }
 }
@@ -980,7 +855,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.5.3 - 高中作业单\n';
+    var content = '作业王 v1.5.4 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -1021,7 +896,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    appendOperationLog(formatSystemLog('导出作业', { file: filename, source: 'system' }));
+    Logs.appendOperationLog(Logs.formatSystemLog('导出作业', { file: filename, source: 'system' }));
 }
 
 // ============================================================
@@ -1125,7 +1000,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var val = document.getElementById('notice-textarea').value;
         setStorageItem('notice', val);
         if (previousNotice !== val) {
-            appendOperationLog(formatEditNoticeLog(previousNotice, val));
+            Logs.appendOperationLog(Logs.formatEditNoticeLog(previousNotice, val));
         }
         hideModal('notice-modal');
         updateNoticeDisplay();
@@ -1157,7 +1032,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     setSubjectHomeworks(subject, []);
                     renderHomework(subject);
                 });
-                appendOperationLog(formatSystemLog('保存后清空作业'));
+                Logs.appendOperationLog(Logs.formatSystemLog('保存后清空作业'));
                 updateTableHeader();
                 adjustNoticePosition();
             }
@@ -1236,8 +1111,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('clear-cache-confirm').addEventListener('click', function () {
         // 1. 仅清空本应用使用的 localStorage key，避免误删同域其他应用数据
         removeAppStorageData();
-        setOperationLogs([]);
-        appendOperationLog(formatSystemLog('清空缓存'));
+        Logs.setOperationLogs([]);
+        Logs.appendOperationLog(Logs.formatSystemLog('清空缓存'));
         // 2. 通知 Service Worker 清除所有缓存，收到确认后再刷新页面
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             var onCacheCleared = function (event) {
@@ -1295,7 +1170,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var key = entry[0];
             var currentValue = entry[1];
             if (previousSettings[key] !== currentValue) {
-                appendOperationLog(formatSettingLog(key, previousSettings[key], currentValue));
+                Logs.appendOperationLog(Logs.formatSettingLog(key, previousSettings[key], currentValue));
             }
         });
 
@@ -1344,7 +1219,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var homeworks = getSubjectHomeworks(subject);
             homeworks.push(homeworkText);
             setSubjectHomeworks(subject, homeworks);
-            appendOperationLog(formatAddHomeworkLog(subject, homeworks.length, homeworkText));
+            Logs.appendOperationLog(Logs.formatAddHomeworkLog(subject, SUBJECT_NAMES[subject], homeworks.length, homeworkText));
             if (getBooleanSetting('messyStewEnabled', false)) {
                 computeAllEasterEggs();
             } else {
@@ -1381,7 +1256,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var oldHomework = homeworks[index];
             homeworks[index] = newHomework;
             setSubjectHomeworks(subject, homeworks);
-            appendOperationLog(formatChangeHomeworkLog(subject, Number(index) + 1, oldHomework, newHomework));
+            Logs.appendOperationLog(Logs.formatChangeHomeworkLog(subject, SUBJECT_NAMES[subject], Number(index) + 1, oldHomework, newHomework));
             if (getBooleanSetting('messyStewEnabled', false)) {
                 computeAllEasterEggs();
             } else {
@@ -1406,7 +1281,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var removedHomework = homeworks[index];
             homeworks.splice(index, 1);
             setSubjectHomeworks(subject, homeworks);
-            appendOperationLog(formatRemoveHomeworkLog(subject, Number(index) + 1, removedHomework));
+            Logs.appendOperationLog(Logs.formatRemoveHomeworkLog(subject, SUBJECT_NAMES[subject], Number(index) + 1, removedHomework));
             if (getBooleanSetting('messyStewEnabled', false)) {
                 computeAllEasterEggs();
             } else {

@@ -1,5 +1,5 @@
 (function () {
-    var LOG_STORAGE_KEY = 'operationLogs';
+    var Logs = window.LogsCore;
     var LONG_CONTENT_THRESHOLD = 48;
     var searchInput = document.getElementById('logs-search');
     var exportButton = document.getElementById('logs-export');
@@ -8,59 +8,6 @@
     var logsList = document.getElementById('logs-list');
     var emptyText = document.getElementById('logs-empty-text');
     var activeTypeFilter = 'ALL';
-
-    function getOperationLogs() {
-        try {
-            var raw = localStorage.getItem(LOG_STORAGE_KEY);
-            if (raw === null) return [];
-            var value = JSON.parse(raw);
-            return Array.isArray(value) ? value : [];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    function setOperationLogs(logs) {
-        localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(Array.isArray(logs) ? logs : []));
-    }
-
-    function appendOperationLog(entry) {
-        var logs = getOperationLogs();
-        var logEntry = Object.assign({
-            timestamp: new Date().toISOString()
-        }, entry || {});
-        logs.push(logEntry);
-        if (logs.length > 200) {
-            logs = logs.slice(logs.length - 200);
-        }
-        setOperationLogs(logs);
-    }
-
-    function formatLogTimestamp(isoString) {
-        var date = new Date(isoString);
-        if (isNaN(date.getTime())) return '000000 00:00:00';
-        var year = String(date.getFullYear()).slice(-2);
-        var month = String(date.getMonth() + 1).padStart(2, '0');
-        var day = String(date.getDate()).padStart(2, '0');
-        var hours = String(date.getHours()).padStart(2, '0');
-        var minutes = String(date.getMinutes()).padStart(2, '0');
-        var seconds = String(date.getSeconds()).padStart(2, '0');
-        return year + month + day + ' ' + hours + ':' + minutes + ':' + seconds;
-    }
-
-    function getResolvedLogType(log) {
-        return String(log && log.type ? log.type : 'X').toUpperCase();
-    }
-
-    function formatLogLine(log) {
-        var timestamp = '[' + formatLogTimestamp(log.timestamp) + ']';
-        var type = getResolvedLogType(log);
-        return timestamp + '[' + type + '] ' + String(log.content || '');
-    }
-
-    function getTypeClass(type) {
-        return 'log-type-' + String(type || '').toLowerCase();
-    }
 
     function appendStructuredContent(container, log) {
         var content = String(log.content || '');
@@ -104,15 +51,19 @@
         container.appendChild(textSpan);
     }
 
+    function getTypeClass(type) {
+        return 'log-type-' + String(type || '').toLowerCase();
+    }
+
     function isLongLog(log) {
-        return formatLogLine(log).length > LONG_CONTENT_THRESHOLD;
+        return Logs.formatLogLine(log).length > LONG_CONTENT_THRESHOLD;
     }
 
     function createLogRow(log) {
         var row = document.createElement('div');
         row.className = 'logs-row';
         row.setAttribute('data-log-row', '');
-        row.setAttribute('data-log-text', formatLogLine(log).toLowerCase());
+        row.setAttribute('data-log-text', Logs.formatLogLine(log).toLowerCase());
 
         var main = document.createElement('div');
         main.className = 'logs-row-main';
@@ -120,9 +71,9 @@
             main.classList.add('is-collapsed');
         }
 
-        main.appendChild(document.createTextNode('[' + formatLogTimestamp(log.timestamp) + ']'));
+        main.appendChild(document.createTextNode('[' + Logs.formatLogTimestamp(log.timestamp) + ']'));
 
-        var type = getResolvedLogType(log);
+        var type = Logs.getResolvedLogType(log);
         var typeSpan = document.createElement('span');
         typeSpan.className = 'log-type ' + getTypeClass(type);
         typeSpan.textContent = '[' + type + ']';
@@ -151,17 +102,17 @@
     }
 
     function getFilteredLogs() {
-        var logs = getOperationLogs().slice().reverse();
+        var logs = Logs.getOperationLogs().slice().reverse();
         var keyword = searchInput.value.trim().toLowerCase();
         return logs.filter(function (log) {
-            var haystack = formatLogLine(log).toLowerCase();
-            var typeMatches = activeTypeFilter === 'ALL' || getResolvedLogType(log) === activeTypeFilter;
+            var haystack = Logs.formatLogLine(log).toLowerCase();
+            var typeMatches = activeTypeFilter === 'ALL' || Logs.getResolvedLogType(log) === activeTypeFilter;
             return (keyword === '' || haystack.indexOf(keyword) !== -1) && typeMatches;
         });
     }
 
     function renderLogs() {
-        var logs = getOperationLogs().slice().reverse();
+        var logs = Logs.getOperationLogs().slice().reverse();
         var visibleLogs = getFilteredLogs();
 
         logsList.innerHTML = '';
@@ -181,6 +132,12 @@
         }
     }
 
+    function registerLogsPageServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function () {});
+        }
+    }
+
     function exportLogs() {
         var now = new Date();
         var filename = [
@@ -189,7 +146,7 @@
             String(now.getDate()).padStart(2, '0')
         ].join('') + '_logs.txt';
 
-        var lines = getFilteredLogs().slice().reverse().map(formatLogLine);
+        var lines = getFilteredLogs().slice().reverse().map(Logs.formatLogLine);
         var blob = new Blob([lines.join('\n')], { type: 'text/plain' });
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
@@ -199,16 +156,6 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-
-        appendOperationLog({
-            type: 'X',
-            action: 'system-operation',
-            operation: '导出日志',
-            file: filename,
-            source: 'user',
-            content: '系统操作：导出日志 ' + filename
-        });
-        renderLogs();
     }
 
     searchInput.addEventListener('input', renderLogs);
@@ -225,7 +172,7 @@
     });
 
     clearButton.addEventListener('click', function () {
-        setOperationLogs([]);
+        Logs.setOperationLogs([]);
         renderLogs();
     });
 
@@ -233,5 +180,6 @@
         button.disabled = (button.getAttribute('data-type-filter') || 'ALL') === activeTypeFilter;
     });
 
+    registerLogsPageServiceWorker();
     renderLogs();
 })();
