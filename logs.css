@@ -13,8 +13,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
-    padding: 18px 24px;
+    gap: 12px;
+    padding: 10px 18px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(12px);
@@ -24,20 +24,31 @@ body {
 }
 
 .logs-topbar-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
 }
 
 .logs-topbar-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+}
+
+.logs-topbar-filters {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.logs-topbar-filters button {
+    min-height: 30px;
+    padding: 0 8px;
 }
 
 .logs-topbar-search {
-    width: min(240px, 40vw);
-    min-height: 36px;
-    padding: 0 12px;
+    width: min(220px, 34vw);
+    min-height: 30px;
+    padding: 0 10px;
     border: 1px solid rgba(0, 0, 0, 0.16);
     border-radius: 18px;
     background: #fff;
@@ -55,8 +66,8 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 36px;
-    padding: 0 14px;
+    min-height: 30px;
+    padding: 0 10px;
     border: 1px solid rgba(0, 0, 0, 0.16);
     border-radius: 18px;
     background: #fff;
@@ -72,7 +83,7 @@ body {
 }
 
 main {
-    padding: 20px 24px 32px;
+    padding: 14px 18px 24px;
 }
 
 .log-change-arrow {
@@ -84,6 +95,10 @@ main {
     display: flex;
     align-items: flex-start;
     gap: 8px;
+}
+
+.logs-row[hidden] {
+    display: none !important;
 }
 
 .logs-row-main {
