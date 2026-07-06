@@ -112,6 +112,43 @@ body {
     width: 360px;
 }
 
+.data-manage-modal-content {
+    width: 620px;
+    max-width: min(94vw, 620px);
+}
+
+.data-manage-entry-button {
+    width: 100%;
+}
+
+.data-manage-section-title {
+    margin-bottom: 10px;
+}
+
+.data-manage-textarea {
+    width: 100%;
+    min-height: 180px;
+    resize: vertical;
+    font-size: 1rem;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: white;
+}
+
+.data-manage-actions-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.data-manage-actions-row > * {
+    flex: 1;
+}
+
 .notice-modal-content {
     width: 640px;
     min-height: 400px;
@@ -481,6 +518,11 @@ body {
 }
 
 /* ===== 模态框通用 ===== */
+:root {
+    --modal-overlay-transition: 300ms;
+    --modal-content-transition: 600ms;
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -495,12 +537,14 @@ body {
     justify-content: center;
     align-items: flex-end;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    pointer-events: none;
+    transition: opacity var(--modal-overlay-transition) ease;
 }
 
 .modal.show {
     opacity: 1;
     align-items: center;
+    pointer-events: auto;
 }
 
 .modal-content {
@@ -513,7 +557,7 @@ body {
     border: 2px solid transparent;
     box-shadow: none;
     transform: translateY(100vh);
-    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: transform var(--modal-content-transition) cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .modal-content.is-static {
@@ -965,12 +1009,14 @@ body {
     justify-content: center;
     align-items: flex-end;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    pointer-events: none;
+    transition: opacity var(--modal-overlay-transition) ease;
 }
 
 #notice-center-modal.show {
     opacity: 1;
     align-items: center;
+    pointer-events: auto;
 }
 
 #notice-center-modal .modal-content {
@@ -985,7 +1031,7 @@ body {
     max-width: 90vw;
     position: relative;
     transform: translateY(100vh);
-    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: transform var(--modal-content-transition) cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 #notice-center-modal .modal-content.is-static {
@@ -1165,12 +1211,14 @@ body.liquid-glass-disabled .modal-content p {
 
 body.liquid-glass-disabled .form-group select,
 body.liquid-glass-disabled .form-group input,
-body.liquid-glass-disabled .form-group textarea {
+body.liquid-glass-disabled .form-group textarea,
+body.liquid-glass-disabled .data-manage-textarea {
     color: #333333 !important;
 }
 
 body.liquid-glass-disabled .form-group input::placeholder,
-body.liquid-glass-disabled .form-group textarea::placeholder {
+body.liquid-glass-disabled .form-group textarea::placeholder,
+body.liquid-glass-disabled .data-manage-textarea::placeholder {
     color: #666666 !important;
 }
 

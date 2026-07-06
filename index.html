@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.5.4</title>
+    <title>作业王v1.5.5</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">作业王v1.5.4-大家的最爱</div>
+    <div class="header">作业王v1.5.5-大家的最爱</div>
     <!-- 公告展示区 -->
     <div id="notice-display" class="notice-display-hidden"></div>
     <!-- 公告居中弹窗 -->
@@ -110,7 +110,7 @@
                 <button class="action-button modify-button" id="op-modify">修改作业</button>
                 <button class="action-button delete-button" id="op-delete">删除作业</button>
                 <button class="action-button manage-button" id="op-manage">管理</button>
-                <button class="action-button clear-cache-button" id="op-clear-cache">清空缓存</button>
+                <button class="action-button manage-button" id="open-data-manage">数据管理</button>
             </div>
         </div>
     </div>
@@ -158,9 +158,43 @@
                     </label>
                 </div>
             </div>
+            <div class="form-group form-group-spaced">
+                <label class="checkbox-row">
+                    <input type="checkbox" id="manage-fast-animation-checkbox" class="checkbox-input-sm">
+                    <span>加快动画速度</span>
+                </label>
+            </div>
             <div class="modal-footer">
                 <button class="submit-button" id="manage-save">保存设置</button>
                 <button class="cancel-button" id="manage-cancel">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="data-manage-modal" role="dialog" aria-modal="true" aria-labelledby="data-manage-title">
+        <div class="modal-content data-manage-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="data-manage-title">数据管理</h2>
+                <button class="close-button" id="data-manage-close" aria-label="关闭数据管理">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="data-manage-section-title">导出数据</label>
+                <div class="data-manage-actions-row">
+                    <button type="button" class="submit-button" id="copy-data-button">复制</button>
+                    <button type="button" class="submit-button" id="download-data-button">下载</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="data-manage-section-title" for="data-import-textarea">导入数据</label>
+                <textarea id="data-import-textarea" class="data-manage-textarea" placeholder="请粘贴导出的 JSON 数据"></textarea>
+                <input type="file" id="data-import-file" accept=".json,application/json" hidden>
+                <div class="data-manage-actions-row">
+                    <button type="button" class="cancel-button" id="load-data-file-button">从文件导入</button>
+                    <button type="button" class="submit-button" id="apply-import-button">导入</button>
+                </div>
+            </div>
+            <div class="form-group form-group-spaced">
+                <button type="button" class="action-button clear-cache-button data-manage-entry-button" id="op-clear-cache">清空缓存</button>
             </div>
         </div>
     </div>
@@ -363,7 +397,7 @@
                 <button class="close-button" id="about-close" aria-label="关闭关于弹窗">&times;</button>
             </div>
             <div class="form-group about-links-group">
-                <p class="about-section-body about-section-body-first">version: 1.5.4</p>
+                <p class="about-section-body about-section-body-first">version: 1.5.5</p>
                 <p class="about-section-title">开源协议</p>
                 <p class="about-section-body">Apache License 2.0</p>
                 <p class="about-section-note">允许使用、修改与分发，具体条款以项目根目录 LICENSE 文件为准。</p>
@@ -386,6 +420,14 @@
                 </div>
                 <p class="about-section-title">更新日志</p>
                 <div class="about-changelog">
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.5.5</h3>
+                        <ul class="about-changelog-list">
+                            <li>新增“加快动画速度”设置开关</li>
+                            <li>支持在原始与加速两套弹窗动画时序之间切换</li>
+                            <li>修复导入包含加速动画设置时页面未立即同步动画时序的问题</li>
+                        </ul>
+                    </section>
                     <section class="about-changelog-entry">
                         <h3 class="about-changelog-version">1.5.4</h3>
                         <ul class="about-changelog-list">

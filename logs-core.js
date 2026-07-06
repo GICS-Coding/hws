@@ -8,7 +8,8 @@
         bottomDisplayEnabled: '靠下显示',
         dailyClearEnabled: '每日清空',
         easterEggEnabled: '彩蛋',
-        messyStewEnabled: '大乱炖'
+        messyStewEnabled: '大乱炖',
+        fastAnimationEnabled: '加快动画速度'
     };
 
     function getOperationLogs() {

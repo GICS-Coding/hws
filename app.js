@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.5.4 - JavaScript Application Logic
+ * 作业王 v1.5.5 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -60,7 +60,45 @@ function applyAdaptiveTextColors() {
 // 模态框动画控制
 // ============================================================
 
-var MODAL_CONTENT_TRANSITION_MS = 600;
+var DEFAULT_MODAL_OVERLAY_TRANSITION_MS = 300;
+var DEFAULT_MODAL_CONTENT_TRANSITION_MS = 600;
+var DEFAULT_MODAL_SWITCH_DELAY_MS = 600;
+var FAST_MODAL_OVERLAY_TRANSITION_MS = 240;
+var FAST_MODAL_CONTENT_TRANSITION_MS = 480;
+var FAST_MODAL_SWITCH_DELAY_MS = 240;
+var MODAL_OVERLAY_TRANSITION_MS = DEFAULT_MODAL_OVERLAY_TRANSITION_MS;
+var MODAL_CONTENT_TRANSITION_MS = DEFAULT_MODAL_CONTENT_TRANSITION_MS;
+var MODAL_SWITCH_DELAY_MS = DEFAULT_MODAL_SWITCH_DELAY_MS;
+var MODAL_KEEP_PARENT_VISIBLE = {
+    'about-modal': true,
+    'clear-cache-modal': true,
+    'notice-center-modal': true,
+    'markdown-example-modal': true
+};
+var modalParentMap = {};
+
+function getVisibleModalList(excludeModalId) {
+    return Array.prototype.slice.call(document.querySelectorAll('[role="dialog"]')).filter(function (modal) {
+        return modal && modal.id !== excludeModalId && modal.style.display === 'flex' && modal.classList.contains('show');
+    });
+}
+
+function updateModalTimingVariables() {
+    var root = document.documentElement;
+    var fastAnimationEnabled = getBooleanSetting('fastAnimationEnabled', false);
+    if (fastAnimationEnabled) {
+        MODAL_OVERLAY_TRANSITION_MS = FAST_MODAL_OVERLAY_TRANSITION_MS;
+        MODAL_CONTENT_TRANSITION_MS = FAST_MODAL_CONTENT_TRANSITION_MS;
+        MODAL_SWITCH_DELAY_MS = FAST_MODAL_SWITCH_DELAY_MS;
+    } else {
+        MODAL_OVERLAY_TRANSITION_MS = DEFAULT_MODAL_OVERLAY_TRANSITION_MS;
+        MODAL_CONTENT_TRANSITION_MS = DEFAULT_MODAL_CONTENT_TRANSITION_MS;
+        MODAL_SWITCH_DELAY_MS = DEFAULT_MODAL_SWITCH_DELAY_MS;
+    }
+
+    root.style.setProperty('--modal-overlay-transition', MODAL_OVERLAY_TRANSITION_MS + 'ms');
+    root.style.setProperty('--modal-content-transition', MODAL_CONTENT_TRANSITION_MS + 'ms');
+}
 
 function showModal(modalId) {
     var modal = document.getElementById(modalId);
@@ -83,16 +121,64 @@ function showModal(modalId) {
     }
 }
 
-function hideModal(modalId) {
+function restoreParentModal(modalId) {
+    var parentModalId = modalParentMap[modalId];
+    if (!parentModalId) return;
+    delete modalParentMap[modalId];
+    showModal(parentModalId);
+}
+
+function hideModal(modalId, options) {
     var modal = document.getElementById(modalId);
     var content = modal.querySelector('.modal-content');
+    var config = options || {};
+    var hideDelay = typeof config.hideDelay === 'number' ? config.hideDelay : MODAL_CONTENT_TRANSITION_MS;
     if (content) {
         content.classList.remove('is-static');
     }
     modal.classList.remove('show');
     setTimeout(function () {
         modal.style.display = 'none';
-    }, MODAL_CONTENT_TRANSITION_MS);
+        if (config.restoreParent === false) {
+            if (!config.keepParentMapping) {
+                delete modalParentMap[modalId];
+            }
+            return;
+        }
+        restoreParentModal(modalId);
+    }, hideDelay);
+}
+
+function openModalWithParent(modalId, options) {
+    var config = options || {};
+    var currentModal = getVisibleModalList(modalId).slice(-1)[0] || null;
+    var keepParentVisible = config.keepParentVisible;
+    var switchDelay = typeof config.switchDelay === 'number' ? config.switchDelay : MODAL_SWITCH_DELAY_MS;
+    if (typeof keepParentVisible === 'undefined') {
+        keepParentVisible = !!MODAL_KEEP_PARENT_VISIBLE[modalId];
+    }
+
+    if (!keepParentVisible && currentModal) {
+        modalParentMap[modalId] = currentModal.id;
+        hideModal(currentModal.id, {
+            restoreParent: false,
+            keepParentMapping: true,
+            hideDelay: MODAL_CONTENT_TRANSITION_MS
+        });
+        setTimeout(function () {
+            if (typeof config.beforeShow === 'function') {
+                config.beforeShow();
+            }
+            showModal(modalId);
+        }, switchDelay);
+        return;
+    }
+
+    delete modalParentMap[modalId];
+    if (typeof config.beforeShow === 'function') {
+        config.beforeShow();
+    }
+    showModal(modalId);
 }
 
 // ============================================================
@@ -256,12 +342,12 @@ function showCenterNotice() {
     var notice = getStorageItem('notice', '');
     if (notice.trim()) {
         document.getElementById('notice-center-text').innerHTML = renderMarkdown(notice);
-        showModal('notice-center-modal');
+        openModalWithParent('notice-center-modal');
     }
 }
 
-function hideCenterNotice() {
-    hideModal('notice-center-modal');
+function hideCenterNotice(options) {
+    hideModal('notice-center-modal', options);
 }
 
 // ============================================================
@@ -295,6 +381,7 @@ var APP_SETTING_KEYS = [
     'dailyClearEnabled',
     'easterEggEnabled',
     'messyStewEnabled',
+    'fastAnimationEnabled',
     'lastClearDate'
 ];
 
@@ -340,6 +427,117 @@ function getSubjectHomeworks(subject) {
 
 function setSubjectHomeworks(subject, homeworks) {
     setJsonStorageItem(subject, Array.isArray(homeworks) ? homeworks : []);
+}
+
+function getCurrentAppSettings() {
+    return {
+        adEnabled: getBooleanSetting('adEnabled', false),
+        liquidGlassEnabled: getBooleanSetting('liquidGlassEnabled', false),
+        bottomDisplayEnabled: getBooleanSetting('bottomDisplayEnabled', false),
+        dailyClearEnabled: getBooleanSetting('dailyClearEnabled', true),
+        easterEggEnabled: getBooleanSetting('easterEggEnabled', false),
+        messyStewEnabled: getBooleanSetting('messyStewEnabled', false),
+        fastAnimationEnabled: getBooleanSetting('fastAnimationEnabled', false)
+    };
+}
+
+function buildDataBackupPayload() {
+    var homeworks = {};
+    SUBJECTS.forEach(function (subject) {
+        homeworks[subject] = getSubjectHomeworks(subject);
+    });
+
+    return {
+        meta: {
+            app: '作业王',
+            version: '1.5.5',
+            exportedAt: new Date().toISOString(),
+            formatVersion: 1
+        },
+        data: {
+            homeworks: homeworks,
+            notice: getStorageItem('notice', ''),
+            settings: getCurrentAppSettings()
+        }
+    };
+}
+
+function createDataBackupFilename() {
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = String(now.getMonth() + 1).padStart(2, '0');
+    var day = String(now.getDate()).padStart(2, '0');
+    var hours = String(now.getHours()).padStart(2, '0');
+    var minutes = String(now.getMinutes()).padStart(2, '0');
+    var seconds = String(now.getSeconds()).padStart(2, '0');
+    return year + month + day + '_' + hours + minutes + seconds + '_hws_backup.json';
+}
+
+function exportDataAsText() {
+    return JSON.stringify(buildDataBackupPayload(), null, 2);
+}
+
+function downloadDataBackup() {
+    var jsonText = exportDataAsText();
+    var filename = createDataBackupFilename();
+    var blob = new Blob([jsonText], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    Logs.appendOperationLog(Logs.formatSystemLog('导出数据', { file: filename, source: 'user' }));
+}
+
+function parseDataBackup(text) {
+    var parsed = JSON.parse(text);
+    if (!parsed || !parsed.meta || parsed.meta.app !== '作业王' || parsed.meta.formatVersion !== 1 || !parsed.data || typeof parsed.data !== 'object') {
+        throw new Error('不是有效的作业王备份文件');
+    }
+    return parsed;
+}
+
+function applyImportedData(payload) {
+    var imported = payload.data || {};
+    var importedHomeworks = imported.homeworks || {};
+    SUBJECTS.forEach(function (subject) {
+        setSubjectHomeworks(subject, Array.isArray(importedHomeworks[subject]) ? importedHomeworks[subject] : []);
+    });
+
+    setStorageItem('notice', typeof imported.notice === 'string' ? imported.notice : '');
+
+    var settings = imported.settings || {};
+    setBooleanSetting('adEnabled', !!settings.adEnabled);
+    setBooleanSetting('liquidGlassEnabled', !!settings.liquidGlassEnabled);
+    setBooleanSetting('bottomDisplayEnabled', !!settings.bottomDisplayEnabled);
+    setBooleanSetting('dailyClearEnabled', settings.dailyClearEnabled === undefined ? true : !!settings.dailyClearEnabled);
+    setBooleanSetting('easterEggEnabled', !!settings.easterEggEnabled);
+    setBooleanSetting('messyStewEnabled', !!settings.messyStewEnabled);
+    setBooleanSetting('fastAnimationEnabled', !!settings.fastAnimationEnabled);
+
+    setStorageItem('lastClearDate', new Date().toDateString());
+
+    computeAllEasterEggs();
+    SUBJECTS.forEach(function (subject) {
+        renderHomework(subject);
+    });
+    updateTableHeader();
+    updateNoticeDisplay();
+    adjustNoticePosition();
+    checkCompactView();
+
+    var currentSettings = getCurrentAppSettings();
+    updateModalTimingVariables();
+    setLiquidGlassBackground(currentSettings.liquidGlassEnabled);
+    setBottomDisplay(currentSettings.bottomDisplayEnabled);
+    if (currentSettings.adEnabled) {
+        startAdRotation();
+    } else {
+        stopAdRotation();
+    }
 }
 
 function removeAppStorageData() {
@@ -855,7 +1053,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.5.4 - 高中作业单\n';
+    var content = '作业王 v1.5.5 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -934,6 +1132,7 @@ registerServiceWorker();
 document.addEventListener('DOMContentLoaded', function () {
 
     // ---------- 初始设置 ----------
+    updateModalTimingVariables();
     applyAdaptiveTextColors();
 
     var liquidGlassEnabled = getBooleanSetting('liquidGlassEnabled', false);
@@ -969,7 +1168,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---------- 公告居中弹窗 ----------
     document.getElementById('notice-center-close').addEventListener('click', hideCenterNotice);
     document.getElementById('notice-center-modal').addEventListener('click', function (e) {
-        if (e.target === this) hideCenterNotice();
+        if (e.target === this) hideCenterNotice({ restoreParent: false });
     });
 
     // 左下角公告按钮：单击打开居中弹窗
@@ -984,7 +1183,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var notice = getStorageItem('notice', '');
         document.getElementById('notice-textarea').value = notice;
         document.getElementById('notice-count').textContent = notice.length + '/3000';
-        showModal('notice-modal');
+        openModalWithParent('notice-modal');
         document.getElementById('notice-textarea').focus();
     });
 
@@ -1044,12 +1243,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ---------- 悬浮球 → 操作选择对话框 ----------
     document.getElementById('floating-ball').addEventListener('click', function () {
-        showModal('operation-modal');
+        openModalWithParent('operation-modal');
     });
     document.getElementById('floating-ball').addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            showModal('operation-modal');
+            openModalWithParent('operation-modal');
         }
     });
     document.getElementById('operation-close').addEventListener('click', function () {
@@ -1057,48 +1256,51 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.getElementById('op-add').addEventListener('click', function () {
-        hideModal('operation-modal');
-        setTimeout(function () { showModal('add-homework-modal'); }, MODAL_CONTENT_TRANSITION_MS);
+        openModalWithParent('add-homework-modal');
     });
     document.getElementById('op-modify').addEventListener('click', function () {
-        hideModal('operation-modal');
-        setTimeout(function () {
-            updateHomeworkItems('modify-subject-select', 'homework-item-select');
-            showModal('modify-homework-modal');
-        }, MODAL_CONTENT_TRANSITION_MS);
+        openModalWithParent('modify-homework-modal', {
+            beforeShow: function () {
+                updateHomeworkItems('modify-subject-select', 'homework-item-select');
+            }
+        });
     });
     document.getElementById('op-delete').addEventListener('click', function () {
-        hideModal('operation-modal');
-        setTimeout(function () {
-            updateHomeworkItems('delete-subject-select', 'delete-item-select');
-            showModal('delete-homework-modal');
-        }, MODAL_CONTENT_TRANSITION_MS);
+        openModalWithParent('delete-homework-modal', {
+            beforeShow: function () {
+                updateHomeworkItems('delete-subject-select', 'delete-item-select');
+            }
+        });
     });
     document.getElementById('op-manage').addEventListener('click', function () {
-        hideModal('operation-modal');
-        var adEnabledVal = getBooleanSetting('adEnabled', false);
-        var liquidGlassVal = getBooleanSetting('liquidGlassEnabled', false);
-        var bottomDisplayVal = getBooleanSetting('bottomDisplayEnabled', false);
-        var dailyClearVal = getBooleanSetting('dailyClearEnabled', true);
-        var easterEggVal = getBooleanSetting('easterEggEnabled', false);
-        var messyStewVal = getBooleanSetting('messyStewEnabled', false);
+        openModalWithParent('manage-modal', {
+            beforeShow: function () {
+                var adEnabledVal = getBooleanSetting('adEnabled', false);
+                var liquidGlassVal = getBooleanSetting('liquidGlassEnabled', false);
+                var bottomDisplayVal = getBooleanSetting('bottomDisplayEnabled', false);
+                var dailyClearVal = getBooleanSetting('dailyClearEnabled', true);
+                var easterEggVal = getBooleanSetting('easterEggEnabled', false);
+                var messyStewVal = getBooleanSetting('messyStewEnabled', false);
+                var fastAnimationVal = getBooleanSetting('fastAnimationEnabled', false);
 
-        document.getElementById('manage-ad-toggle-checkbox').checked = adEnabledVal;
-        document.getElementById('manage-liquid-glass-toggle-checkbox').checked = liquidGlassVal;
-        document.getElementById('manage-bottom-display-checkbox').checked = bottomDisplayVal;
-        document.getElementById('manage-daily-clear-checkbox').checked = dailyClearVal;
-        document.getElementById('manage-easter-egg-checkbox').checked = easterEggVal;
-        document.getElementById('manage-messy-stew-checkbox').checked = messyStewVal;
+                document.getElementById('manage-ad-toggle-checkbox').checked = adEnabledVal;
+                document.getElementById('manage-liquid-glass-toggle-checkbox').checked = liquidGlassVal;
+                document.getElementById('manage-bottom-display-checkbox').checked = bottomDisplayVal;
+                document.getElementById('manage-daily-clear-checkbox').checked = dailyClearVal;
+                document.getElementById('manage-easter-egg-checkbox').checked = easterEggVal;
+                document.getElementById('manage-messy-stew-checkbox').checked = messyStewVal;
+                document.getElementById('manage-fast-animation-checkbox').checked = fastAnimationVal;
+                document.getElementById('data-import-textarea').value = '';
+                document.getElementById('data-import-file').value = '';
 
-        // 如果彩蛋已勾选则显示大乱炖，否则隐藏
-        document.getElementById('manage-messy-stew-group').style.display = easterEggVal ? 'block' : 'none';
-
-        setTimeout(function () { showModal('manage-modal'); }, MODAL_CONTENT_TRANSITION_MS);
+                // 如果彩蛋已勾选则显示大乱炖，否则隐藏
+                document.getElementById('manage-messy-stew-group').style.display = easterEggVal ? 'block' : 'none';
+            }
+        });
     });
 
     document.getElementById('op-clear-cache').addEventListener('click', function () {
-        hideModal('operation-modal');
-        setTimeout(function () { showModal('clear-cache-modal'); }, MODAL_CONTENT_TRANSITION_MS);
+        openModalWithParent('clear-cache-modal');
     });
 
     // ---------- 清空缓存确认弹窗 ----------
@@ -1143,13 +1345,15 @@ document.addEventListener('DOMContentLoaded', function () {
         var dailyClearVal = document.getElementById('manage-daily-clear-checkbox').checked;
         var easterEggVal = document.getElementById('manage-easter-egg-checkbox').checked;
         var messyStewVal = document.getElementById('manage-messy-stew-checkbox').checked;
+        var fastAnimationVal = document.getElementById('manage-fast-animation-checkbox').checked;
         var previousSettings = {
             adEnabled: getBooleanSetting('adEnabled', false),
             liquidGlassEnabled: getBooleanSetting('liquidGlassEnabled', false),
             bottomDisplayEnabled: getBooleanSetting('bottomDisplayEnabled', false),
             dailyClearEnabled: getBooleanSetting('dailyClearEnabled', true),
             easterEggEnabled: getBooleanSetting('easterEggEnabled', false),
-            messyStewEnabled: getBooleanSetting('messyStewEnabled', false)
+            messyStewEnabled: getBooleanSetting('messyStewEnabled', false),
+            fastAnimationEnabled: getBooleanSetting('fastAnimationEnabled', false)
         };
 
         setBooleanSetting('adEnabled', adEnabledVal);
@@ -1158,6 +1362,7 @@ document.addEventListener('DOMContentLoaded', function () {
         setBooleanSetting('dailyClearEnabled', dailyClearVal);
         setBooleanSetting('easterEggEnabled', easterEggVal);
         setBooleanSetting('messyStewEnabled', messyStewVal);
+        setBooleanSetting('fastAnimationEnabled', fastAnimationVal);
 
         [
             ['adEnabled', adEnabledVal],
@@ -1165,7 +1370,8 @@ document.addEventListener('DOMContentLoaded', function () {
             ['bottomDisplayEnabled', bottomDisplayVal],
             ['dailyClearEnabled', dailyClearVal],
             ['easterEggEnabled', easterEggVal],
-            ['messyStewEnabled', messyStewVal]
+            ['messyStewEnabled', messyStewVal],
+            ['fastAnimationEnabled', fastAnimationVal]
         ].forEach(function (entry) {
             var key = entry[0];
             var currentValue = entry[1];
@@ -1173,6 +1379,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 Logs.appendOperationLog(Logs.formatSettingLog(key, previousSettings[key], currentValue));
             }
         });
+
+        updateModalTimingVariables();
 
         if (adEnabledVal) {
             startAdRotation();
@@ -1190,7 +1398,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---------- 关于/友链弹窗 ----------
     document.getElementById('about-link').addEventListener('click', function (e) {
         e.preventDefault();
-        showModal('about-modal');
+        openModalWithParent('about-modal');
     });
     document.getElementById('about-close').addEventListener('click', function () {
         hideModal('about-modal');
@@ -1198,15 +1406,70 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('about-ok').addEventListener('click', function () {
         hideModal('about-modal');
     });
-    document.getElementById('about-modal').addEventListener('click', function (e) {
-        if (e.target === document.getElementById('about-modal')) {
-            hideModal('about-modal');
-        }
-    });
 
     // ---------- 彩蛋复选框联动大乱炖显示 ----------
     document.getElementById('manage-easter-egg-checkbox').addEventListener('change', function () {
         document.getElementById('manage-messy-stew-group').style.display = this.checked ? 'block' : 'none';
+    });
+
+    document.getElementById('open-data-manage').addEventListener('click', function () {
+        openModalWithParent('data-manage-modal', {
+            beforeShow: function () {
+                document.getElementById('data-import-textarea').value = '';
+                document.getElementById('data-import-file').value = '';
+            }
+        });
+    });
+
+    document.getElementById('data-manage-close').addEventListener('click', function () {
+        hideModal('data-manage-modal');
+    });
+
+    document.getElementById('copy-data-button').addEventListener('click', async function () {
+        var jsonText = exportDataAsText();
+        try {
+            await navigator.clipboard.writeText(jsonText);
+            Logs.appendOperationLog(Logs.formatSystemLog('导出数据', { file: 'clipboard', source: 'user' }));
+        } catch (e) {
+            alert('复制失败，请检查浏览器是否允许访问剪贴板');
+        }
+    });
+
+    document.getElementById('download-data-button').addEventListener('click', function () {
+        downloadDataBackup();
+    });
+
+    document.getElementById('load-data-file-button').addEventListener('click', function () {
+        document.getElementById('data-import-file').click();
+    });
+
+    document.getElementById('data-import-file').addEventListener('change', function () {
+        var file = this.files && this.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+            document.getElementById('data-import-textarea').value = typeof reader.result === 'string' ? reader.result : '';
+        };
+        reader.readAsText(file, 'utf-8');
+    });
+
+    document.getElementById('apply-import-button').addEventListener('click', function () {
+        var importText = document.getElementById('data-import-textarea').value.trim();
+        if (!importText) {
+            alert('请先输入或载入要导入的 JSON 数据');
+            return;
+        }
+
+        try {
+            var payload = parseDataBackup(importText);
+            var fileInput = document.getElementById('data-import-file');
+            var sourceFile = fileInput.files && fileInput.files[0] ? fileInput.files[0].name : 'pasted-json';
+            applyImportedData(payload);
+            Logs.appendOperationLog(Logs.formatSystemLog('导入数据', { file: sourceFile, source: 'user' }));
+            hideModal('data-manage-modal');
+        } catch (e) {
+            alert(e && e.message ? e.message : '导入失败，请检查数据格式');
+        }
     });
 
     // ---------- 添加作业 ----------
@@ -1298,8 +1561,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---------- 通用关闭按钮 ----------
     document.querySelectorAll('.close-button').forEach(function (button) {
         button.addEventListener('click', function () {
-            var modal = this.closest('.modal');
-            hideModal(modal.id);
+            var modal = this.closest('[role="dialog"]');
+            if (modal) {
+                hideModal(modal.id);
+            }
         });
     });
 
@@ -1318,7 +1583,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.modal').forEach(function (modal) {
         modal.addEventListener('click', function (e) {
             if (e.target === this) {
-                hideModal(this.id);
+                hideModal(this.id, { restoreParent: false });
             }
         });
     });
@@ -1327,7 +1592,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('keydown', function (e) {
         // ESC：关闭最上层打开的模态框
         if (e.key === 'Escape') {
-            var openModals = document.querySelectorAll('.modal.show');
+            var openModals = getVisibleModalList();
             if (openModals.length > 0) {
                 hideModal(openModals[openModals.length - 1].id);
             }
@@ -1400,20 +1665,15 @@ document.addEventListener('DOMContentLoaded', function () {
     function openMarkdownExample() {
         markdownExampleTextarea.value = SAMPLE_MARKDOWN;
         markdownExampleRight.innerHTML = renderMarkdown(SAMPLE_MARKDOWN);
-        showModal('markdown-example-modal');
+        openModalWithParent('markdown-example-modal');
     }
 
-    function closeMarkdownExample() {
-        hideModal('markdown-example-modal');
+    function closeMarkdownExample(options) {
+        hideModal('markdown-example-modal', options);
     }
 
     markdownExampleBtn.addEventListener('click', openMarkdownExample);
     markdownExampleClose.addEventListener('click', closeMarkdownExample);
-    document.getElementById('markdown-example-modal').addEventListener('click', function (e) {
-        if (e.target === document.getElementById('markdown-example-modal')) {
-            closeMarkdownExample();
-        }
-    });
 
     // ---------- 窗口 resize ----------
     window.addEventListener('resize', checkCompactView);
