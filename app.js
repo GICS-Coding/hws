@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.5.5 - JavaScript Application Logic
+ * 作业王 v1.5.6 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -450,7 +450,7 @@ function buildDataBackupPayload() {
     return {
         meta: {
             app: '作业王',
-            version: '1.5.5',
+            version: '1.5.6',
             exportedAt: new Date().toISOString(),
             formatVersion: 1
         },
@@ -1053,7 +1053,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.5.5 - 高中作业单\n';
+    var content = '作业王 v1.5.6 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -1466,7 +1466,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var sourceFile = fileInput.files && fileInput.files[0] ? fileInput.files[0].name : 'pasted-json';
             applyImportedData(payload);
             Logs.appendOperationLog(Logs.formatSystemLog('导入数据', { file: sourceFile, source: 'user' }));
-            hideModal('data-manage-modal');
+            hideModal('data-manage-modal', { restoreParent: false });
         } catch (e) {
             alert(e && e.message ? e.message : '导入失败，请检查数据格式');
         }
