@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.5.9</title>
+    <title>作业王v1.6.0</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">作业王v1.5.9-大家的最爱</div>
+    <div class="header">作业王v1.6.0-大家的最爱</div>
     <!-- 公告展示区 -->
     <div id="notice-display" class="notice-display-hidden"></div>
     <!-- 公告居中弹窗 -->
@@ -119,7 +119,7 @@
     <div class="modal" id="manage-modal" role="dialog" aria-modal="true" aria-labelledby="manage-modal-title">
         <div class="modal-content manage-modal-content">
             <div class="modal-header">
-                <h2 class="modal-title" id="manage-modal-title">管理设置 <a href="#" id="about-link" class="about-inline-link">关于</a><a href="logs.html" id="logs-link" class="about-inline-link">日志</a></h2>
+                <h2 class="modal-title" id="manage-modal-title">管理设置 <a href="#" id="about-link" class="about-inline-link">关于</a><a href="logs.html" id="logs-link" class="about-inline-link">日志</a><a href="settings.html" id="settings-link" class="about-inline-link">高级设置</a></h2>
                 <button class="close-button" id="manage-close" aria-label="关闭管理设置">&times;</button>
             </div>
             <div class="form-group form-group-spaced">
@@ -397,7 +397,7 @@
                 <button class="close-button" id="about-close" aria-label="关闭关于弹窗">&times;</button>
             </div>
             <div class="form-group about-links-group">
-                <p class="about-section-body about-section-body-first">version: 1.5.9</p>
+                <p class="about-section-body about-section-body-first">version: 1.6.0</p>
                 <p class="about-section-title">开源协议</p>
                 <p class="about-section-body">Apache License 2.0</p>
                 <p class="about-section-note">允许使用、修改与分发，具体条款以项目根目录 LICENSE 文件为准。</p>
@@ -420,6 +420,13 @@
                 </div>
                 <p class="about-section-title">更新日志</p>
                 <div class="about-changelog">
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.6.0</h3>
+                        <ul class="about-changelog-list">
+                            <li>新增实验性高级设置页面</li>
+                            <li>管理设置入口新增“高级设置”链接</li>
+                        </ul>
+                    </section>
                     <section class="about-changelog-entry">
                         <h3 class="about-changelog-version">1.5.9</h3>
                         <ul class="about-changelog-list">

@@ -1,0 +1,77 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Microsoft YaHei', sans-serif;
+    color: #333;
+    background: #fff;
+}
+
+.settings-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 18px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+}
+
+.settings-topbar-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.settings-badge {
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(217, 134, 43, 0.14);
+    border: 1px solid rgba(217, 134, 43, 0.4);
+    color: #8a5a12;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.settings-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settings-topbar-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: 18px;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    font: inherit;
+    cursor: pointer;
+}
+
+.settings-main {
+    padding: 14px 18px 24px;
+    max-width: 720px;
+}
+
+.settings-empty {
+    padding: 48px 16px;
+    text-align: center;
+    color: #999;
+    font-size: 1.05rem;
+}
