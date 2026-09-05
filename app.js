@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.5.6 - JavaScript Application Logic
+ * 作业王 v1.5.7 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -450,7 +450,7 @@ function buildDataBackupPayload() {
     return {
         meta: {
             app: '作业王',
-            version: '1.5.6',
+            version: '1.5.7',
             exportedAt: new Date().toISOString(),
             formatVersion: 1
         },
@@ -588,6 +588,7 @@ function checkEasterEgg(subject) {
             case 'english': return 'english';
             case 'biology': return 'biology';
             case 'history': return 'history';
+            case 'technology': return 'technology';
             case 'other':   return 'other';
             default:        return null;
         }
@@ -668,6 +669,19 @@ function computeAllEasterEggs() {
                 item.text = shuffleString(item.text);
             });
 
+            // 3.5 技术彩蛋：打乱后插入 🍥 并追加「喵~」（先插符号后补喵，避免喵被拆分）
+            allItems.forEach(function (item) {
+                if (item.subject === 'technology') {
+                    var fishCount = Math.floor(Math.random() * 4) + 1;
+                    var techChars = Array.from(item.text);
+                    for (var tf = 0; tf < fishCount; tf++) {
+                        var tpos = Math.floor(Math.random() * (techChars.length + 1));
+                        techChars.splice(tpos, 0, '🍥');
+                    }
+                    item.text = techChars.join('') + '喵~';
+                }
+            });
+
             // 4. 按科目分配回 messyStewPool，并为所有10科设置 effect
             SUBJECTS.forEach(function (sub) {
                 messyStewPool[sub] = [];
@@ -682,8 +696,8 @@ function computeAllEasterEggs() {
         return;
     }
 
-    // 普通模式：仅5科
-    var subjects = ['chinese', 'english', 'biology', 'history', 'other'];
+    // 普通模式：仅6科
+    var subjects = ['chinese', 'english', 'biology', 'history', 'technology', 'other'];
     subjects.forEach(function (subject) {
         easterEggResults[subject] = checkEasterEgg(subject);
     });
@@ -780,6 +794,16 @@ function applyEasterEgg(subject, homeworks) {
                 }
             }
         }
+    } else if (effect === 'technology') {
+        displayList = displayList.map(function (h) {
+            var count = Math.floor(Math.random() * 4) + 1;
+            var chars = Array.from(h);
+            for (var k = 0; k < count; k++) {
+                var pos = Math.floor(Math.random() * (chars.length + 1));
+                chars.splice(pos, 0, '🍥');
+            }
+            return chars.join('') + '喵~';
+        });
     } else if (effect === 'other') {
         perCharColor = true;
     }
@@ -1053,7 +1077,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.5.6 - 高中作业单\n';
+    var content = '作业王 v1.5.7 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
