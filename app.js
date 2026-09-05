@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.5.8 - JavaScript Application Logic
+ * 作业王 v1.5.9 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -450,7 +450,7 @@ function buildDataBackupPayload() {
     return {
         meta: {
             app: '作业王',
-            version: '1.5.8',
+            version: '1.5.9',
             exportedAt: new Date().toISOString(),
             formatVersion: 1
         },
@@ -623,21 +623,21 @@ function computeAllEasterEggs() {
                 hw.forEach(function (text) {
                     // 繁体
                     var t = s2t(text);
-                    // 随机插入 💩 (1~4个)
-                    var poopCount = Math.floor(Math.random() * 4) + 1;
+                    // 随机插入 💩 (1~2个)
+                    var poopCount = Math.floor(Math.random() * 2) + 1;
                     var chars = Array.from(t);
                     for (var p = 0; p < poopCount; p++) {
                         var pos = Math.floor(Math.random() * (chars.length + 1));
                         chars.splice(pos, 0, '\uD83D\uDCA9');
                     }
-                    // 随机插入 ❤️ (1~4个)
-                    var heartCount = Math.floor(Math.random() * 4) + 1;
+                    // 随机插入 ❤️ (1~2个)
+                    var heartCount = Math.floor(Math.random() * 2) + 1;
                     for (var h = 0; h < heartCount; h++) {
                         var pos2 = Math.floor(Math.random() * (chars.length + 1));
                         chars.splice(pos2, 0, '\u2764\uFE0F');
                     }
-                    // 随机插入 🍥 (1~4个) —— 技术彩蛋，全科目跨科混插
-                    var fishCount = Math.floor(Math.random() * 4) + 1;
+                    // 随机插入 🍥 (1~2个) —— 技术彩蛋，全科目跨科混插
+                    var fishCount = Math.floor(Math.random() * 2) + 1;
                     for (var f = 0; f < fishCount; f++) {
                         var pos3 = Math.floor(Math.random() * (chars.length + 1));
                         chars.splice(pos3, 0, '🍥');
@@ -1078,7 +1078,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.5.8 - 高中作业单\n';
+    var content = '作业王 v1.5.9 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
