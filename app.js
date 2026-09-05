@@ -1,5 +1,5 @@
 /**
- * 作业王 v1.5.7 - JavaScript Application Logic
+ * 作业王 v1.5.8 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
@@ -450,7 +450,7 @@ function buildDataBackupPayload() {
     return {
         meta: {
             app: '作业王',
-            version: '1.5.7',
+            version: '1.5.8',
             exportedAt: new Date().toISOString(),
             formatVersion: 1
         },
@@ -562,10 +562,9 @@ function s2t(text) {
         map[S2T_PAIRS[i]] = S2T_PAIRS[i + 1];
     }
     var result = '';
-    for (var j = 0; j < text.length; j++) {
-        var ch = text[j];
+    Array.from(text).forEach(function (ch) {
         result += map[ch] || ch;
-    }
+    });
     return result;
 }
 
@@ -637,6 +636,12 @@ function computeAllEasterEggs() {
                         var pos2 = Math.floor(Math.random() * (chars.length + 1));
                         chars.splice(pos2, 0, '\u2764\uFE0F');
                     }
+                    // 随机插入 🍥 (1~4个) —— 技术彩蛋，全科目跨科混插
+                    var fishCount = Math.floor(Math.random() * 4) + 1;
+                    for (var f = 0; f < fishCount; f++) {
+                        var pos3 = Math.floor(Math.random() * (chars.length + 1));
+                        chars.splice(pos3, 0, '🍥');
+                    }
                     allItems.push({ subject: sub, text: chars.join('') });
                 });
             });
@@ -650,16 +655,9 @@ function computeAllEasterEggs() {
                     var s1 = allItems[i1].text;
                     var s2 = allItems[i2].text;
                     if (s1.length > 0 && s2.length > 0) {
-                        var cut1 = Math.floor(Math.random() * s1.length);
-                        var cut2 = Math.floor(Math.random() * s2.length);
-                        var len1 = Math.floor(Math.random() * (s1.length - cut1)) + 1;
-                        var len2 = Math.floor(Math.random() * (s2.length - cut2)) + 1;
-                        var seg1 = s1.slice(cut1, cut1 + len1);
-                        var seg2 = s2.slice(cut2, cut2 + len2);
-                        s1 = s1.slice(0, cut1) + seg2 + s1.slice(cut1 + len1);
-                        s2 = s2.slice(0, cut2) + seg1 + s2.slice(cut2 + len2);
-                        allItems[i1].text = s1;
-                        allItems[i2].text = s2;
+                        var swapped = crossoverStrings(s1, s2);
+                        allItems[i1].text = swapped[0];
+                        allItems[i2].text = swapped[1];
                     }
                 }
             }
@@ -669,16 +667,10 @@ function computeAllEasterEggs() {
                 item.text = shuffleString(item.text);
             });
 
-            // 3.5 技术彩蛋：打乱后插入 🍥 并追加「喵~」（先插符号后补喵，避免喵被拆分）
+            // 3.5 技术彩蛋：喵~ 追加在末尾（🍥 已在预处理阶段全科混插）；技术项 100%，其它科目约 40%
             allItems.forEach(function (item) {
-                if (item.subject === 'technology') {
-                    var fishCount = Math.floor(Math.random() * 4) + 1;
-                    var techChars = Array.from(item.text);
-                    for (var tf = 0; tf < fishCount; tf++) {
-                        var tpos = Math.floor(Math.random() * (techChars.length + 1));
-                        techChars.splice(tpos, 0, '🍥');
-                    }
-                    item.text = techChars.join('') + '喵~';
+                if (item.subject === 'technology' || Math.random() < 0.4) {
+                    item.text += '喵~';
                 }
             });
 
@@ -703,9 +695,9 @@ function computeAllEasterEggs() {
     });
 }
 
-/** 字符串随机打乱 */
+/** 字符串随机打乱（按码点，避免切断代理对） */
 function shuffleString(str) {
-    var arr = str.split('');
+    var arr = Array.from(str);
     for (var i = arr.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var tmp = arr[i];
@@ -713,6 +705,21 @@ function shuffleString(str) {
         arr[j] = tmp;
     }
     return arr.join('');
+}
+
+/** 两段文本间随机交换一段子串（按码点切分，避免切断代理对产生乱码） */
+function crossoverStrings(s1, s2) {
+    var c1 = Array.from(s1);
+    var c2 = Array.from(s2);
+    var cut1 = Math.floor(Math.random() * c1.length);
+    var cut2 = Math.floor(Math.random() * c2.length);
+    var len1 = Math.floor(Math.random() * (c1.length - cut1)) + 1;
+    var len2 = Math.floor(Math.random() * (c2.length - cut2)) + 1;
+    var seg1 = c1.slice(cut1, cut1 + len1);
+    var seg2 = c2.slice(cut2, cut2 + len2);
+    var new1 = c1.slice(0, cut1).concat(seg2, c1.slice(cut1 + len1)).join('');
+    var new2 = c2.slice(0, cut2).concat(seg1, c2.slice(cut2 + len2)).join('');
+    return [new1, new2];
 }
 
 /** 应用彩蛋效果到显示数据，返回 { displayList, subjectNameOverride, perCharColor } */
@@ -759,10 +766,11 @@ function applyEasterEgg(subject, homeworks) {
         });
     } else if (effect === 'biology') {
         displayList = displayList.map(function (h) {
+            var hChars = Array.from(h);
             var chunkSize = Math.floor(Math.random() * 3) + 3; // 3~5
             var chunks = [];
-            for (var ci = 0; ci < h.length; ci += chunkSize) {
-                chunks.push(h.slice(ci, ci + chunkSize));
+            for (var ci = 0; ci < hChars.length; ci += chunkSize) {
+                chunks.push(hChars.slice(ci, ci + chunkSize).join(''));
             }
             for (var si = chunks.length - 1; si > 0; si--) {
                 var sj = Math.floor(Math.random() * (si + 1));
@@ -781,16 +789,9 @@ function applyEasterEgg(subject, homeworks) {
                 var s1 = displayList[i1];
                 var s2 = displayList[i2];
                 if (s1.length > 0 && s2.length > 0) {
-                    var cut1 = Math.floor(Math.random() * s1.length);
-                    var cut2 = Math.floor(Math.random() * s2.length);
-                    var len1 = Math.floor(Math.random() * (s1.length - cut1)) + 1;
-                    var len2 = Math.floor(Math.random() * (s2.length - cut2)) + 1;
-                    var seg1 = s1.slice(cut1, cut1 + len1);
-                    var seg2 = s2.slice(cut2, cut2 + len2);
-                    s1 = s1.slice(0, cut1) + seg2 + s1.slice(cut1 + len1);
-                    s2 = s2.slice(0, cut2) + seg1 + s2.slice(cut2 + len2);
-                    displayList[i1] = s1;
-                    displayList[i2] = s2;
+                    var swapped = crossoverStrings(s1, s2);
+                    displayList[i1] = swapped[0];
+                    displayList[i2] = swapped[1];
                 }
             }
         }
@@ -855,12 +856,12 @@ function renderHomework(subject) {
             prefixSpan.textContent = prefix;
             prefixSpan.style.color = ''; // 默认颜色
             homeworkItem.appendChild(prefixSpan);
-            for (var ci = 0; ci < homework.length; ci++) {
+            Array.from(homework).forEach(function (ch) {
                 var span = document.createElement('span');
-                span.textContent = homework[ci];
+                span.textContent = ch;
                 span.style.color = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
                 homeworkItem.appendChild(span);
-            }
+            });
         } else {
             homeworkItem.textContent = (index + 1) + '. ' + homework;
         }
@@ -1077,7 +1078,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.5.7 - 高中作业单\n';
+    var content = '作业王 v1.5.8 - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
