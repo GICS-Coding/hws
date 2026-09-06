@@ -9,7 +9,8 @@
         dailyClearEnabled: '每日清空',
         easterEggEnabled: '彩蛋',
         messyStewEnabled: '大乱炖',
-        fastAnimationEnabled: '加快动画速度'
+        fastAnimationEnabled: '加快动画速度',
+        customTitleRaw: '自定义标题'
     };
 
     function getOperationLogs() {
@@ -138,6 +139,14 @@
 
     function formatSettingLog(settingKey, oldValue, newValue) {
         var label = SETTING_LABELS[settingKey] || settingKey;
+        var valueText;
+        if (typeof newValue === 'boolean') {
+            valueText = formatToggleValue(newValue);
+        } else if (newValue === '' || newValue === null || newValue === undefined) {
+            valueText = '(默认)';
+        } else {
+            valueText = String(newValue);
+        }
         return {
             type: 'S',
             action: 'change-setting',
@@ -145,7 +154,7 @@
             settingLabel: label,
             oldValue: oldValue,
             newValue: newValue,
-            content: '修改设置：' + label + ' ' + formatToggleValue(newValue)
+            content: '修改设置：' + label + ' ' + valueText
         };
     }
 

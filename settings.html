@@ -3,22 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.6.0 - 高级设置</title>
+    <title>作业王v1.6.1 - 高级设置</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="settings.css">
 </head>
 <body>
     <header class="settings-topbar">
-        <div class="settings-topbar-title">作业王v1.6.0-高级设置<span class="settings-badge">实验性</span></div>
+        <div class="settings-topbar-title">作业王v1.6.1-高级设置<span class="settings-badge">实验性</span></div>
         <div class="settings-topbar-actions">
+            <button type="button" class="settings-topbar-link settings-save-btn" id="settings-save">保存</button>
             <a href="index.html" class="settings-topbar-link">返回主页</a>
         </div>
     </header>
 
     <main class="settings-main">
-        <div class="settings-empty" id="settings-empty">设置项待开放</div>
+        <section class="settings-section">
+            <p class="settings-section-note">单个输入框内填写标题并可用标记附加样式；留空即用默认标题（自动带当前版本号），填写后版本更新不会覆盖。
+                标记：<code>&lt;h1&gt;</code>~<code>&lt;h6&gt;</code> 字号、<code>#aabbcc</code> 颜色、
+                <code>&lt;a|url&gt;文字&lt;/a&gt;</code> 超链接、<code>&lt;b&gt;&lt;/b&gt;</code> 加粗、
+                <code>&lt;i&gt;&lt;/i&gt;</code> 斜体、<code>&lt;u&gt;&lt;/u&gt;</code> 下划线、
+                <code>&lt;s&gt;&lt;/s&gt;</code> 删除线；应闭合的标签未闭合则按普通文字，反斜杠 <code>\</code> 转义字面量。</p>
+
+            <div class="settings-preview">
+                <span class="settings-preview-label">预览</span>
+                <div class="settings-preview-box" id="title-preview">作业王v1.6.1-大家的最爱</div>
+            </div>
+
+            <div class="settings-field">
+                <label for="title-raw">自定义标题</label>
+                <input type="text" id="title-raw" placeholder="示例：<h1>#112233 作业王 &lt;a|https://x.com&gt;点我&lt;/a&gt;">
+            </div>
+
+            <div class="settings-actions">
+                <button type="button" class="settings-btn settings-btn-reset" id="settings-reset">恢复默认</button>
+            </div>
+        </section>
     </main>
 
+    <div class="settings-toast" id="settings-toast" hidden></div>
+
+    <script src="logs-core.js"></script>
+    <script src="title-parse.js"></script>
     <script src="settings.js"></script>
 </body>
 </html>

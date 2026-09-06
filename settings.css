@@ -21,6 +21,7 @@ body {
     -webkit-backdrop-filter: blur(12px);
     position: sticky;
     top: 0;
+    z-index: 10;
 }
 
 .settings-topbar-title {
@@ -64,14 +65,160 @@ body {
     cursor: pointer;
 }
 
+/* 顶栏保存按钮：与「返回主页」同款胶囊描边，保留主操作绿色识别 */
+.settings-save-btn {
+    background: rgba(46, 204, 113, 0.85);
+    border: 1px solid rgba(46, 204, 113, 0.6);
+    color: #fff;
+}
+
+.settings-save-btn:hover {
+    background: rgba(39, 174, 96, 0.95);
+}
+
 .settings-main {
     padding: 14px 18px 24px;
     max-width: 720px;
 }
 
-.settings-empty {
-    padding: 48px 16px;
-    text-align: center;
-    color: #999;
-    font-size: 1.05rem;
+.settings-section {
+    padding: 18px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.settings-section-note {
+    margin: 0 0 16px;
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+.settings-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.settings-preview-label {
+    font-size: 0.85rem;
+    color: #888;
+    flex-shrink: 0;
+}
+
+.settings-preview-box {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 18px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    background: #fff;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.settings-preview-box a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 单行表单：标签与输入框同行 */
+.settings-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.settings-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.settings-field label {
+    width: 110px;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.settings-field input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 10px;
+    background: #fff;
+    color: #333;
+    font: inherit;
+}
+
+.settings-field input:focus {
+    outline: none;
+    border-color: rgba(52, 152, 219, 0.7);
+}
+
+.settings-actions {
+    margin-top: 18px;
+}
+
+.settings-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.settings-btn-primary {
+    background: rgba(46, 204, 113, 0.85);
+    color: #fff;
+}
+
+.settings-btn-primary:hover {
+    background: rgba(39, 174, 96, 0.95);
+}
+
+.settings-btn-reset {
+    background: rgba(149, 165, 166, 0.5);
+    color: #333;
+}
+
+.settings-btn-reset:hover {
+    background: rgba(127, 140, 141, 0.7);
+}
+
+.settings-toast {
+    position: fixed;
+    top: 62px;
+    right: 18px;
+    z-index: 50;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: rgba(46, 204, 113, 0.16);
+    border: 1px solid rgba(46, 204, 113, 0.45);
+    color: #1e7e4d;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 520px) {
+    .settings-field {
+        flex-wrap: wrap;
+        gap: 6px 12px;
+    }
+
+    .settings-field label {
+        width: auto;
+    }
+
+    .settings-field input {
+        flex: 1 1 100%;
+    }
 }

@@ -1,7 +1,9 @@
 /**
- * 作业王 v1.6.0 - JavaScript Application Logic
+ * 作业王 v1.6.1 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
+
+var APP_VERSION = '1.6.1';
 
 // ============================================================
 // 工具函数
@@ -382,6 +384,7 @@ var APP_SETTING_KEYS = [
     'easterEggEnabled',
     'messyStewEnabled',
     'fastAnimationEnabled',
+    'customTitleRaw',
     'lastClearDate'
 ];
 
@@ -437,7 +440,8 @@ function getCurrentAppSettings() {
         dailyClearEnabled: getBooleanSetting('dailyClearEnabled', true),
         easterEggEnabled: getBooleanSetting('easterEggEnabled', false),
         messyStewEnabled: getBooleanSetting('messyStewEnabled', false),
-        fastAnimationEnabled: getBooleanSetting('fastAnimationEnabled', false)
+        fastAnimationEnabled: getBooleanSetting('fastAnimationEnabled', false),
+        customTitleRaw: getStorageItem('customTitleRaw', '')
     };
 }
 
@@ -450,7 +454,7 @@ function buildDataBackupPayload() {
     return {
         meta: {
             app: '作业王',
-            version: '1.6.0',
+            version: APP_VERSION,
             exportedAt: new Date().toISOString(),
             formatVersion: 1
         },
@@ -518,6 +522,8 @@ function applyImportedData(payload) {
     setBooleanSetting('messyStewEnabled', !!settings.messyStewEnabled);
     setBooleanSetting('fastAnimationEnabled', !!settings.fastAnimationEnabled);
 
+    setStorageItem('customTitleRaw', typeof settings.customTitleRaw === 'string' ? settings.customTitleRaw : '');
+
     setStorageItem('lastClearDate', new Date().toDateString());
 
     computeAllEasterEggs();
@@ -526,6 +532,7 @@ function applyImportedData(payload) {
     });
     updateTableHeader();
     updateNoticeDisplay();
+    applyCustomTitle();
     adjustNoticePosition();
     checkCompactView();
 
@@ -1078,7 +1085,7 @@ function saveHomeworkToFile(saveHomework, saveNotice) {
     if (saveHomework === undefined) saveHomework = true;
     if (saveNotice === undefined) saveNotice = true;
 
-    var content = '作业王 v1.6.0 - 高中作业单\n';
+    var content = '作业王 v' + APP_VERSION + ' - 高中作业单\n';
     content += '生成时间: ' + new Date().toLocaleString() + '\n\n';
 
     if (saveHomework) {
@@ -1154,11 +1161,40 @@ function registerServiceWorker() {
 // ---------- 注册 Service Worker ----------
 registerServiceWorker();
 
+// ============================================================
+// 自定义标题（高级设置 · 标题设置）
+// ============================================================
+
+/**
+ * 应用自定义标题到主页大标题（整行替换）。
+ * 语法/样式解析委托给 title-parse.js（共享解析器），文本用 textContent 落位、
+ * 颜色/URL 过白名单，绝不内联执行 HTML。
+ * 自动更新规则：留空用默认（带当前版本号，随版本更新）；非空则版本更新不覆盖自定义。
+ */
+function applyCustomTitle() {
+    var header = document.querySelector('.header');
+    if (!header) return;
+    if (!window.TitleParse) return;
+
+    var raw = getStorageItem('customTitleRaw', '').trim();
+    var nodes;
+    if (raw) {
+        nodes = window.TitleParse.parseTitle(raw);
+    } else {
+        // 默认标题（随版本号更新）
+        nodes = [{ type: 'text', text: '作业王v' + APP_VERSION + '-大家的最爱' }];
+    }
+
+    header.textContent = '';
+    window.TitleParse.renderTitle(header, nodes, window.TitleParse.isSafeLinkUrl);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // ---------- 初始设置 ----------
     updateModalTimingVariables();
     applyAdaptiveTextColors();
+    applyCustomTitle();
 
     var liquidGlassEnabled = getBooleanSetting('liquidGlassEnabled', false);
     var bottomDisplayEnabled = getBooleanSetting('bottomDisplayEnabled', false);
