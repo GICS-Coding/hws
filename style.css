@@ -422,6 +422,16 @@ body {
     vertical-align: middle !important;
 }
 
+/* 技术彩蛋：科目名图标（vscode） */
+.subject-cell-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    vertical-align: middle;
+    border-radius: 4px;
+    display: inline-block;
+}
+
 .homework-item {
     margin-bottom: 4px;
     padding: 3px;

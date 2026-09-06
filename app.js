@@ -1,9 +1,9 @@
 /**
- * 作业王 v1.6.1 - JavaScript Application Logic
+ * 作业王 v1.6.2 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
-var APP_VERSION = '1.6.1';
+var APP_VERSION = '1.6.2';
 
 // ============================================================
 // 工具函数
@@ -734,17 +734,19 @@ function applyEasterEgg(subject, homeworks) {
     var effect = easterEggResults[subject];
     var displayList = homeworks.slice(); // shallow copy
     var subjectNameOverride = null;
+    var subjectNameImage = null;
     var perCharColor = false;
 
-    if (!effect) return { displayList: displayList, subjectNameOverride: null, perCharColor: false };
+    if (!effect) return { displayList: displayList, subjectNameOverride: null, subjectNameImage: null, perCharColor: false };
 
     // 大乱炖模式：从预计算池获取
     if (effect === 'messyStew') {
         displayList = messyStewPool[subject] || [];
         if (subject === 'english') subjectNameOverride = '勾石';
         if (subject === 'history') subjectNameOverride = '妈妈';
+        if (subject === 'technology') subjectNameImage = 'img/vscode.jpg';
         perCharColor = true;
-        return { displayList: displayList, subjectNameOverride: subjectNameOverride, perCharColor: perCharColor };
+        return { displayList: displayList, subjectNameOverride: subjectNameOverride, subjectNameImage: subjectNameImage, perCharColor: perCharColor };
     }
 
     if (effect === 'chinese') {
@@ -812,11 +814,13 @@ function applyEasterEgg(subject, homeworks) {
             }
             return chars.join('') + '喵~';
         });
+        // 技术彩蛋：科目名替换为图标
+        subjectNameImage = 'img/vscode.jpg';
     } else if (effect === 'other') {
         perCharColor = true;
     }
 
-    return { displayList: displayList, subjectNameOverride: subjectNameOverride, perCharColor: perCharColor };
+    return { displayList: displayList, subjectNameOverride: subjectNameOverride, subjectNameImage: subjectNameImage, perCharColor: perCharColor };
 }
 
 // ============================================================
@@ -844,11 +848,22 @@ function renderHomework(subject) {
     var eggResult = applyEasterEgg(subject, homeworks);
     var displayList = eggResult.displayList;
     var subjectNameOverride = eggResult.subjectNameOverride;
+    var subjectNameImage = eggResult.subjectNameImage;
 
     // 更新科目名称
     var subjectCell = row.querySelector('.subject-cell');
     if (subjectCell) {
-        subjectCell.textContent = subjectNameOverride || SUBJECT_NAMES[subject];
+        if (subjectNameImage) {
+            // 技术彩蛋：科目名替换为图片
+            subjectCell.textContent = '';
+            var img = document.createElement('img');
+            img.className = 'subject-cell-img';
+            img.src = subjectNameImage;
+            img.alt = SUBJECT_NAMES[subject];
+            subjectCell.appendChild(img);
+        } else {
+            subjectCell.textContent = subjectNameOverride || SUBJECT_NAMES[subject];
+        }
     }
 
     displayList.forEach(function (homework, index) {
