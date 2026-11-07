@@ -1,9 +1,9 @@
 /**
- * 作业王 v1.6.2 - JavaScript Application Logic
+ * 作业王 v1.6.3 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
-var APP_VERSION = '1.6.2';
+var APP_VERSION = '1.6.3';
 
 // ============================================================
 // 工具函数
