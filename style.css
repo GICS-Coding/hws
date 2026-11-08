@@ -735,8 +735,8 @@ body {
 
 .submit-button {
     padding: 10px 20px;
-    background: rgba(46, 204, 113, 0.7);
-    color: #333;
+    background: rgba(52, 152, 219, 0.7);
+    color: #fff;
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -749,9 +749,9 @@ body {
 }
 
 .submit-button:hover {
-    background: rgba(39, 174, 96, 0.8);
+    background: rgba(41, 128, 185, 0.85);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
 }
 
 .cancel-button {
@@ -1397,7 +1397,6 @@ body.liquid-glass-enabled::before {
 body.liquid-glass-disabled .modal-title,
 body.liquid-glass-disabled .form-group label,
 body.liquid-glass-disabled .action-button,
-body.liquid-glass-disabled .submit-button,
 body.liquid-glass-disabled .cancel-button,
 body.liquid-glass-disabled .delete-confirm-button,
 body.liquid-glass-disabled .modal-content p {
@@ -1803,8 +1802,8 @@ body.liquid-glass-disabled .about-inline-link:hover {
     flex-shrink: 0;
     padding: 6px 16px;
     color: #fff;
-    background: rgba(46, 204, 113, 0.85);
-    border: 1px solid rgba(46, 204, 113, 0.9);
+    background: rgba(52, 152, 219, 0.85);
+    border: 1px solid rgba(52, 152, 219, 0.9);
     border-radius: 16px;
     font-size: 0.95rem;
     font-weight: bold;
@@ -1814,9 +1813,9 @@ body.liquid-glass-disabled .about-inline-link:hover {
 }
 
 .update-banner-dismiss:hover {
-    background: rgba(39, 174, 96, 1);
+    background: rgba(41, 128, 185, 1);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
 .update-banner-dismiss:active {
@@ -1858,4 +1857,162 @@ body.liquid-glass-disabled .update-banner-details {
 
 body.liquid-glass-disabled .update-banner-details summary {
     color: rgba(51, 51, 51, 0.8);
+}
+
+/* ===== 操作面板：修改公告 / 添加成功 / 快捷标签 ===== */
+.operation-pane-heading-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.operation-pane-heading {
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: #333333;
+}
+
+#operation-modal .notice-textarea {
+    background: #f5f7fa;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    color: #333333;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+#operation-modal .notice-textarea:focus {
+    outline: none;
+    background: #f5f7fa;
+    border-color: rgba(52, 152, 219, 0.7);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+#operation-modal .notice-count {
+    color: #666666;
+    text-shadow: none;
+}
+
+#operation-modal .manage-preset-textarea {
+    width: 100%;
+    min-height: 90px;
+    resize: vertical;
+    font-size: 1rem;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #f5f7fa;
+    color: #333333;
+    font-family: inherit;
+}
+
+#operation-modal .manage-preset-textarea:focus {
+    outline: none;
+    background: #f5f7fa;
+    border-color: rgba(52, 152, 219, 0.7);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+.operation-add-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    min-height: 300px;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.operation-add-success[hidden] {
+    display: none;
+}
+
+.operation-add-success-text {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #333333;
+    line-height: 1.6;
+}
+
+.operation-add-success-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* ===== Markdown 示例：纯白底 + 浅灰内容区 ===== */
+#markdown-example-modal .markdown-example-content,
+#markdown-example-modal .markdown-example-content.is-static {
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+#markdown-example-modal .modal-header {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+#markdown-example-modal .close-button {
+    color: #888888;
+}
+
+#markdown-example-modal .close-button:hover {
+    color: #333333;
+    text-shadow: none;
+}
+
+#markdown-example-modal .markdown-example-source,
+#markdown-example-modal .markdown-example-preview {
+    background: #f5f7fa;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #333333;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+#markdown-example-modal .markdown-example-right h1,
+#markdown-example-modal .markdown-example-right h2,
+#markdown-example-modal .markdown-example-right h3,
+#markdown-example-modal .markdown-example-right h4,
+#markdown-example-modal .markdown-example-right h5,
+#markdown-example-modal .markdown-example-right h6 {
+    color: #333333;
+    text-shadow: none;
+}
+
+#markdown-example-modal .markdown-example-right p,
+#markdown-example-modal .markdown-example-right li {
+    color: #333333;
+}
+
+#markdown-example-modal .markdown-example-right blockquote {
+    background: rgba(52, 152, 219, 0.08);
+    color: #333333;
+}
+
+#markdown-example-modal .markdown-example-right code {
+    background: rgba(0, 0, 0, 0.06);
+    color: #1f6fa8;
+}
+
+#markdown-example-modal .markdown-example-right pre {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+#markdown-example-modal .markdown-example-right strong {
+    color: #333333;
+}
+
+#markdown-example-modal .markdown-example-right hr {
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    border-bottom: none;
+}
+
+/* Markdown 示例从操作面板内打开，需要盖在操作面板之上 */
+#markdown-example-modal {
+    z-index: 1500;
 }

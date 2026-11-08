@@ -1,9 +1,9 @@
 /**
- * 作业王 v1.6.5 - JavaScript Application Logic
+ * 作业王 v1.6.6 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
-var APP_VERSION = '1.6.5';
+var APP_VERSION = '1.6.6';
 
 // ============================================================
 // 工具函数
@@ -34,12 +34,14 @@ function applyAdaptiveTextColors() {
     elements.forEach(function (element) {
         var textColor;
 
-        if (isWhiteBackground) {
+        if (element.classList.contains('submit-button')) {
+            // 确定按钮统一为主题蓝底，文字固定白色
+            textColor = '#ffffff';
+        } else if (isWhiteBackground) {
             if (
                 element.classList.contains('modal-title') ||
                 element.closest('.form-group') ||
                 element.classList.contains('action-button') ||
-                element.classList.contains('submit-button') ||
                 element.classList.contains('cancel-button') ||
                 element.classList.contains('delete-confirm-button')
             ) {
@@ -385,6 +387,7 @@ var APP_SETTING_KEYS = [
     'messyStewEnabled',
     'fastAnimationEnabled',
     'customTitleRaw',
+    'quickPresetTags',
     'lastClearDate',
     'lastSeenUpdateVersion'
 ];
@@ -431,6 +434,51 @@ function getSubjectHomeworks(subject) {
 
 function setSubjectHomeworks(subject, homeworks) {
     setJsonStorageItem(subject, Array.isArray(homeworks) ? homeworks : []);
+}
+
+// ============================================================
+// 作业快捷标签
+// ============================================================
+
+var QUICK_PRESET_TAGS_KEY = 'quickPresetTags';
+var DEFAULT_QUICK_PRESET_TAGS = ['选考', '学考', '全品', '高效作业', '步步高', '大本', '小本', '赢在微点'];
+
+function sanitizeQuickPresetTags(list) {
+    if (!Array.isArray(list)) return [];
+    var seen = {};
+    var result = [];
+    list.forEach(function (tag) {
+        if (typeof tag !== 'string') return;
+        var text = tag.trim().slice(0, 20);
+        if (!text || seen[text]) return;
+        seen[text] = true;
+        result.push(text);
+    });
+    return result.slice(0, 20);
+}
+
+function getQuickPresetTags() {
+    var stored = getJsonStorageItem(QUICK_PRESET_TAGS_KEY, null);
+    if (!Array.isArray(stored)) return DEFAULT_QUICK_PRESET_TAGS.slice();
+    return sanitizeQuickPresetTags(stored);
+}
+
+function setQuickPresetTags(tags) {
+    setJsonStorageItem(QUICK_PRESET_TAGS_KEY, sanitizeQuickPresetTags(tags));
+}
+
+function renderQuickPresetTags() {
+    var container = document.getElementById('quick-preset-buttons');
+    if (!container) return;
+    container.textContent = '';
+    getQuickPresetTags().forEach(function (text) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'preset-button';
+        button.setAttribute('data-text', text);
+        button.textContent = text;
+        container.appendChild(button);
+    });
 }
 
 // ============================================================
@@ -548,7 +596,8 @@ function getCurrentAppSettings() {
         easterEggEnabled: getBooleanSetting('easterEggEnabled', false),
         messyStewEnabled: getBooleanSetting('messyStewEnabled', false),
         fastAnimationEnabled: getBooleanSetting('fastAnimationEnabled', false),
-        customTitleRaw: getStorageItem('customTitleRaw', '')
+        customTitleRaw: getStorageItem('customTitleRaw', ''),
+        quickPresetTags: getQuickPresetTags()
     };
 }
 
@@ -630,6 +679,7 @@ function applyImportedData(payload) {
     setBooleanSetting('fastAnimationEnabled', !!settings.fastAnimationEnabled);
 
     setStorageItem('customTitleRaw', typeof settings.customTitleRaw === 'string' ? settings.customTitleRaw : '');
+    setQuickPresetTags(Array.isArray(settings.quickPresetTags) ? settings.quickPresetTags : DEFAULT_QUICK_PRESET_TAGS);
 
     setStorageItem('lastClearDate', new Date().toDateString());
 
@@ -637,6 +687,7 @@ function applyImportedData(payload) {
     SUBJECTS.forEach(function (subject) {
         renderHomework(subject);
     });
+    renderQuickPresetTags();
     updateTableHeader();
     updateNoticeDisplay();
     applyCustomTitle();
@@ -1338,6 +1389,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     updateTableHeader();
     updateNoticeDisplay();
+    renderQuickPresetTags();
     adjustNoticePosition();
     checkCompactView();
 
@@ -1360,22 +1412,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 公告展示区点击打开居中弹窗
     document.getElementById('notice-display').addEventListener('click', showCenterNotice);
 
-    // 右键单击公告按钮 → 公告编辑
-    document.getElementById('bottom-notice-btn').addEventListener('contextmenu', function (e) {
-        e.preventDefault();
-        var notice = getStorageItem('notice', '');
-        document.getElementById('notice-textarea').value = notice;
-        document.getElementById('notice-count').textContent = notice.length + '/3000';
-        openModalWithParent('notice-modal');
-        document.getElementById('notice-textarea').focus();
-    });
-
-    // ---------- 公告编辑模态框 ----------
-    document.getElementById('notice-close').addEventListener('click', function () {
-        hideModal('notice-modal');
-    });
+    // ---------- 公告编辑（操作面板内） ----------
     document.getElementById('notice-cancel').addEventListener('click', function () {
-        hideModal('notice-modal');
+        hideModal('operation-modal');
     });
     document.getElementById('notice-save').addEventListener('click', function () {
         var previousNotice = getStorageItem('notice', '');
@@ -1384,7 +1423,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (previousNotice !== val) {
             Logs.appendOperationLog(Logs.formatEditNoticeLog(previousNotice, val));
         }
-        hideModal('notice-modal');
+        hideModal('operation-modal');
         updateNoticeDisplay();
     });
     document.getElementById('notice-textarea').addEventListener('input', function () {
@@ -1449,6 +1488,16 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('manage-messy-stew-group').style.display = easterEggVal ? 'block' : 'none';
     }
 
+    function showAddFormView() {
+        document.getElementById('add-form-view').hidden = false;
+        document.getElementById('add-success-view').hidden = true;
+    }
+
+    function showAddSuccessView() {
+        document.getElementById('add-form-view').hidden = true;
+        document.getElementById('add-success-view').hidden = false;
+    }
+
     function activateOperationPane(paneKey) {
         operationTabs.forEach(function (tab) {
             var isActive = tab.getAttribute('data-panel') === paneKey;
@@ -1459,12 +1508,20 @@ document.addEventListener('DOMContentLoaded', function () {
             pane.classList.toggle('is-active', pane.getAttribute('data-pane') === paneKey);
         });
 
-        if (paneKey === 'modify') {
+        if (paneKey === 'add') {
+            showAddFormView();
+        } else if (paneKey === 'modify') {
             updateHomeworkItems('modify-subject-select', 'homework-item-select');
         } else if (paneKey === 'delete') {
             updateHomeworkItems('delete-subject-select', 'delete-item-select');
+        } else if (paneKey === 'notice') {
+            var notice = getStorageItem('notice', '');
+            document.getElementById('notice-textarea').value = notice;
+            document.getElementById('notice-count').textContent = notice.length + '/3000';
+            document.getElementById('notice-textarea').focus();
         } else if (paneKey === 'manage') {
             updateOperationManageState();
+            document.getElementById('manage-preset-tags').value = getQuickPresetTags().join('\n');
         } else if (paneKey === 'data') {
             document.getElementById('data-import-textarea').value = '';
             document.getElementById('data-import-file').value = '';
@@ -1536,6 +1593,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var easterEggVal = document.getElementById('manage-easter-egg-checkbox').checked;
         var messyStewVal = document.getElementById('manage-messy-stew-checkbox').checked;
         var fastAnimationVal = document.getElementById('manage-fast-animation-checkbox').checked;
+        var presetTagsVal = document.getElementById('manage-preset-tags').value.split('\n');
         var previousSettings = {
             adEnabled: getBooleanSetting('adEnabled', false),
             liquidGlassEnabled: getBooleanSetting('liquidGlassEnabled', false),
@@ -1553,6 +1611,8 @@ document.addEventListener('DOMContentLoaded', function () {
         setBooleanSetting('easterEggEnabled', easterEggVal);
         setBooleanSetting('messyStewEnabled', messyStewVal);
         setBooleanSetting('fastAnimationEnabled', fastAnimationVal);
+        setQuickPresetTags(presetTagsVal);
+        renderQuickPresetTags();
 
         [
             ['adEnabled', adEnabledVal],
@@ -1669,7 +1729,16 @@ document.addEventListener('DOMContentLoaded', function () {
             checkCompactView();
             updateTableHeader();
             adjustNoticePosition();
+            showAddSuccessView();
         }
+    });
+
+    document.getElementById('add-success-close').addEventListener('click', function () {
+        hideModal('operation-modal');
+    });
+    document.getElementById('add-success-again').addEventListener('click', function () {
+        showAddFormView();
+        document.getElementById('homework-input').focus();
     });
 
     // ---------- 修改作业 ----------

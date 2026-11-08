@@ -1,7 +1,7 @@
-// Service Worker for 作业王 v1.6.5 - 缓存管理
+// Service Worker for 作业王 v1.6.6 - 缓存管理
 // HTML 使用 Network-First，静态资源使用 Cache-First
 
-const CACHE_NAME = 'homework-king-v1.6.5';
+const CACHE_NAME = 'homework-king-v1.6.6';
 const CORE_ASSETS = [
     './',
     './index.html',

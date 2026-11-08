@@ -65,15 +65,15 @@ body {
     cursor: pointer;
 }
 
-/* 顶栏保存按钮：与「返回主页」同款胶囊描边，保留主操作绿色识别 */
+/* 顶栏保存按钮：与「返回主页」同款胶囊描边，沿用主表单主题色 */
 .settings-save-btn {
-    background: rgba(46, 204, 113, 0.85);
-    border: 1px solid rgba(46, 204, 113, 0.6);
+    background: rgba(52, 152, 219, 0.85);
+    border: 1px solid rgba(52, 152, 219, 0.6);
     color: #fff;
 }
 
 .settings-save-btn:hover {
-    background: rgba(39, 174, 96, 0.95);
+    background: rgba(41, 128, 185, 0.95);
 }
 
 .settings-main {
@@ -178,12 +178,12 @@ body {
 }
 
 .settings-btn-primary {
-    background: rgba(46, 204, 113, 0.85);
+    background: rgba(52, 152, 219, 0.85);
     color: #fff;
 }
 
 .settings-btn-primary:hover {
-    background: rgba(39, 174, 96, 0.95);
+    background: rgba(41, 128, 185, 0.95);
 }
 
 .settings-btn-reset {

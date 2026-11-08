@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.6.5</title>
+    <title>作业王v1.6.6</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="intro/intro.css">
@@ -11,7 +11,7 @@
 <body>
     <!-- 刷新动画：黑幕 + 书法字，放在 body 最前面避免首帧闪出页面 -->
     <script src="intro/intro.js" data-auto data-logo="intro/assets/tingyuge.png" data-z-index="10000"></script>
-    <div class="header">作业王v1.6.5-大家的最爱</div>
+    <div class="header">作业王v1.6.6-大家的最爱</div>
     <!-- 版本更新提示条 -->
     <div id="update-banner" class="update-banner update-banner-hidden" role="region" aria-label="版本更新提示" aria-live="polite">
         <div class="update-banner-main">
@@ -72,25 +72,6 @@
 
     <!-- 左下角公告按钮 -->
     <div id="bottom-notice-btn">公告</div>
-    <!-- 公告写字板模态框 -->
-    <div class="modal" id="notice-modal" role="dialog" aria-modal="true" aria-labelledby="notice-modal-title">
-        <div class="modal-content notice-modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title modal-title-flex" id="notice-modal-title">公告编辑</h2>
-                <button class="markdown-example-btn" id="markdown-example-btn" aria-label="查看 Markdown 示例">Markdown示例</button>
-                <button class="close-button" id="notice-close" aria-label="关闭公告编辑">&times;</button>
-            </div>
-            <div class="form-group">
-                <label for="notice-textarea">公告内容（最多3000字符）</label>
-                <textarea id="notice-textarea" maxlength="3000" class="notice-textarea"></textarea>
-                <div id="notice-count" class="notice-count">0/3000</div>
-            </div>
-            <div class="modal-footer">
-                <button class="submit-button" id="notice-save">保存公告</button>
-                <button class="cancel-button" id="notice-cancel">取消</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Markdown示例弹窗 -->
     <div class="modal" id="markdown-example-modal" role="dialog" aria-modal="true" aria-labelledby="markdown-example-title">
@@ -124,45 +105,46 @@
                     <button type="button" class="operation-tab is-active" role="tab" id="operation-tab-add" data-panel="add" aria-selected="true" aria-controls="operation-pane-add">添加作业</button>
                     <button type="button" class="operation-tab" role="tab" id="operation-tab-modify" data-panel="modify" aria-selected="false" aria-controls="operation-pane-modify">修改作业</button>
                     <button type="button" class="operation-tab" role="tab" id="operation-tab-delete" data-panel="delete" aria-selected="false" aria-controls="operation-pane-delete">删除作业</button>
+                    <button type="button" class="operation-tab" role="tab" id="operation-tab-notice" data-panel="notice" aria-selected="false" aria-controls="operation-pane-notice">修改公告</button>
                     <button type="button" class="operation-tab" role="tab" id="operation-tab-manage" data-panel="manage" aria-selected="false" aria-controls="operation-pane-manage">管理</button>
                     <button type="button" class="operation-tab" role="tab" id="operation-tab-data" data-panel="data" aria-selected="false" aria-controls="operation-pane-data">数据管理</button>
                 </nav>
                 <div class="operation-panel-panes">
                     <!-- 添加作业 -->
                     <section class="operation-pane is-active" id="operation-pane-add" data-pane="add" role="tabpanel" aria-labelledby="operation-tab-add">
-                        <div class="form-group">
-                            <label for="subject-select">选择科目</label>
-                            <select id="subject-select">
-                                <option value="chinese">语文</option>
-                                <option value="math">数学</option>
-                                <option value="english">英语</option>
-                                <option value="physics">物理</option>
-                                <option value="chemistry">化学</option>
-                                <option value="biology">生物</option>
-                                <option value="politics">政治</option>
-                                <option value="history">历史</option>
-                                <option value="geography">地理</option>
-                                <option value="technology">技术</option>
-                                <option value="other">其他</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="homework-input">作业内容</label>
-                            <input type="text" id="homework-input" placeholder="请输入作业内容">
-                            <div class="quick-preset-buttons" id="quick-preset-buttons">
-                                <button class="preset-button" data-text="选考">选考</button>
-                                <button class="preset-button" data-text="学考">学考</button>
-                                <button class="preset-button" data-text="全品">全品</button>
-                                <button class="preset-button" data-text="高效作业">高效作业</button>
-                                <button class="preset-button" data-text="步步高">步步高</button>
-                                <button class="preset-button" data-text="大本">大本</button>
-                                <button class="preset-button" data-text="小本">小本</button>
-                                <button class="preset-button" data-text="赢在微点">赢在微点</button>
+                        <div id="add-form-view">
+                            <div class="form-group">
+                                <label for="subject-select">选择科目</label>
+                                <select id="subject-select">
+                                    <option value="chinese">语文</option>
+                                    <option value="math">数学</option>
+                                    <option value="english">英语</option>
+                                    <option value="physics">物理</option>
+                                    <option value="chemistry">化学</option>
+                                    <option value="biology">生物</option>
+                                    <option value="politics">政治</option>
+                                    <option value="history">历史</option>
+                                    <option value="geography">地理</option>
+                                    <option value="technology">技术</option>
+                                    <option value="other">其他</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="homework-input">作业内容</label>
+                                <input type="text" id="homework-input" placeholder="请输入作业内容">
+                                <div class="quick-preset-buttons" id="quick-preset-buttons"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="cancel-button" id="add-cancel-button">取消</button>
+                                <button class="submit-button" id="submit-homework">确定</button>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button class="cancel-button" id="add-cancel-button">取消</button>
-                            <button class="submit-button" id="submit-homework">确定</button>
+                        <div class="operation-add-success" id="add-success-view" hidden>
+                            <p class="operation-add-success-text">恭喜你，又为同学们加了一条作业！</p>
+                            <div class="operation-add-success-actions">
+                                <button type="button" class="cancel-button" id="add-success-close">关闭</button>
+                                <button type="button" class="submit-button" id="add-success-again">再来一条</button>
+                            </div>
                         </div>
                     </section>
                     <!-- 修改作业 -->
@@ -223,6 +205,22 @@
                             <button class="delete-confirm-button" id="confirm-delete">删除作业</button>
                         </div>
                     </section>
+                    <!-- 修改公告 -->
+                    <section class="operation-pane" id="operation-pane-notice" data-pane="notice" role="tabpanel" aria-labelledby="operation-tab-notice">
+                        <div class="operation-pane-heading-row">
+                            <span class="operation-pane-heading">公告编辑</span>
+                            <button type="button" class="markdown-example-btn" id="markdown-example-btn" aria-label="查看 Markdown 示例">Markdown示例</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="notice-textarea">公告内容（最多3000字符）</label>
+                            <textarea id="notice-textarea" maxlength="3000" class="notice-textarea"></textarea>
+                            <div id="notice-count" class="notice-count">0/3000</div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="submit-button" id="notice-save">保存公告</button>
+                            <button type="button" class="cancel-button" id="notice-cancel">取消</button>
+                        </div>
+                    </section>
                     <!-- 管理 -->
                     <section class="operation-pane" id="operation-pane-manage" data-pane="manage" role="tabpanel" aria-labelledby="operation-tab-manage">
                         <div class="operation-pane-links">
@@ -271,6 +269,10 @@
                                 <input type="checkbox" id="manage-fast-animation-checkbox" class="checkbox-input-sm">
                                 <span>加快动画速度</span>
                             </label>
+                        </div>
+                        <div class="form-group form-group-spaced">
+                            <label for="manage-preset-tags">作业快捷标签（每行一个，最多20个）</label>
+                            <textarea id="manage-preset-tags" class="manage-preset-textarea" rows="4" placeholder="选考&#10;学考&#10;全品"></textarea>
                         </div>
                         <div class="modal-footer">
                             <button class="submit-button" id="manage-save">保存设置</button>
@@ -387,7 +389,7 @@
                 <button class="close-button" id="about-close" aria-label="关闭关于弹窗">&times;</button>
             </div>
             <div class="form-group about-links-group">
-                <p class="about-section-body about-section-body-first">version: 1.6.5</p>
+                <p class="about-section-body about-section-body-first">version: 1.6.6</p>
                 <p class="about-section-title">开源协议</p>
                 <p class="about-section-body">Apache License 2.0</p>
                 <p class="about-section-note">允许使用、修改与分发，具体条款以项目根目录 LICENSE 文件为准。</p>
@@ -410,6 +412,16 @@
                 </div>
                 <p class="about-section-title">更新日志</p>
                 <div class="about-changelog">
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.6.6</h3>
+                        <ul class="about-changelog-list">
+                            <li>输入框下方快捷标签支持自定义</li>
+                            <li>添加作业成功后显示提示，可「再来一条」</li>
+                            <li>修改公告入口移入操作面板，位于删除作业与管理之间</li>
+                            <li>Markdown 示例与公告编辑改为纯白、浅灰配色</li>
+                            <li>确定按钮统一为主表单主题色</li>
+                        </ul>
+                    </section>
                     <section class="about-changelog-entry">
                         <h3 class="about-changelog-version">1.6.5</h3>
                         <ul class="about-changelog-list">
