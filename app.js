@@ -1,9 +1,9 @@
 /**
- * 作业王 v1.6.3 - JavaScript Application Logic
+ * 作业王 v1.6.4 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
-var APP_VERSION = '1.6.3';
+var APP_VERSION = '1.6.4';
 
 // ============================================================
 // 工具函数
@@ -385,7 +385,8 @@ var APP_SETTING_KEYS = [
     'messyStewEnabled',
     'fastAnimationEnabled',
     'customTitleRaw',
-    'lastClearDate'
+    'lastClearDate',
+    'lastSeenUpdateVersion'
 ];
 
 var Logs = window.LogsCore;
@@ -430,6 +431,112 @@ function getSubjectHomeworks(subject) {
 
 function setSubjectHomeworks(subject, homeworks) {
     setJsonStorageItem(subject, Array.isArray(homeworks) ? homeworks : []);
+}
+
+// ============================================================
+// 本地更新检测（update.json）
+// ============================================================
+
+var UPDATE_DATA_URL = './update.json';
+var UPDATE_SEEN_KEY = 'lastSeenUpdateVersion';
+var currentUpdateInfo = null;
+
+/** 将版本号解析为数字段数组；非法版本返回 null */
+function parseVersion(value) {
+    if (typeof value !== 'string') return null;
+    var text = value.trim().replace(/^v/i, '');
+    if (!/^\d+(\.\d+){0,3}$/.test(text)) return null;
+    return text.split('.').map(function (part) { return parseInt(part, 10); });
+}
+
+/** 比较版本：返回 1 表示 a 更新，0 相等，-1 表示 a 更旧；非法版本按相等处理 */
+function compareVersions(a, b) {
+    var left = parseVersion(a);
+    var right = parseVersion(b);
+    if (!left || !right) return 0;
+    var length = Math.max(left.length, right.length);
+    for (var i = 0; i < length; i++) {
+        var x = left[i] || 0;
+        var y = right[i] || 0;
+        if (x !== y) return x > y ? 1 : -1;
+    }
+    return 0;
+}
+
+function normalizeUpdateNotes(raw) {
+    var list = Array.isArray(raw) ? raw : (typeof raw === 'string' ? raw.split('\n') : []);
+    return list.filter(function (note) {
+        return typeof note === 'string' && note.trim();
+    }).slice(0, 20).map(function (note) {
+        return note.trim().slice(0, 500);
+    });
+}
+
+function showUpdateBanner(update, isNewer) {
+    var banner = document.getElementById('update-banner');
+    var text = document.getElementById('update-banner-text');
+    var notesList = document.getElementById('update-banner-notes');
+    var details = document.getElementById('update-banner-details');
+    if (!banner || !text || !notesList || !details) return;
+
+    currentUpdateInfo = update;
+    text.textContent = isNewer
+        ? '发现新版本 v' + update.version + '（当前 v' + APP_VERSION + '）'
+        : '已更新到 v' + update.version;
+
+    notesList.textContent = '';
+    update.notes.forEach(function (note) {
+        var item = document.createElement('li');
+        item.textContent = note;
+        notesList.appendChild(item);
+    });
+    details.hidden = update.notes.length === 0;
+    banner.classList.remove('update-banner-hidden');
+}
+
+function hideUpdateBanner() {
+    var banner = document.getElementById('update-banner');
+    if (banner) banner.classList.add('update-banner-hidden');
+}
+
+function dismissUpdateBanner() {
+    if (currentUpdateInfo && currentUpdateInfo.version) {
+        setStorageItem(UPDATE_SEEN_KEY, currentUpdateInfo.version);
+    }
+    hideUpdateBanner();
+}
+
+/** 静默检查同源 update.json；失败、离线或格式错误均不打扰用户 */
+function checkForUpdate() {
+    var controller = ('AbortController' in window) ? new AbortController() : null;
+    var timer = controller ? setTimeout(function () { controller.abort(); }, 5000) : null;
+
+    fetch(UPDATE_DATA_URL + '?_=' + Date.now(), {
+        cache: 'no-store',
+        credentials: 'same-origin',
+        signal: controller ? controller.signal : undefined
+    }).then(function (response) {
+        if (!response || !response.ok) throw new Error('update.json unavailable');
+        return response.json();
+    }).then(function (data) {
+        if (!data || typeof data !== 'object') return;
+        var remoteVersion = typeof data.version === 'string' ? data.version.trim().replace(/^v/i, '') : '';
+        if (!parseVersion(remoteVersion)) return;
+        if (compareVersions(remoteVersion, APP_VERSION) < 0) return;
+
+        var seenVersion = getStorageItem(UPDATE_SEEN_KEY, '');
+        if (parseVersion(seenVersion) && compareVersions(remoteVersion, seenVersion) <= 0) return;
+
+        var isNewer = compareVersions(remoteVersion, APP_VERSION) > 0;
+        showUpdateBanner({
+            version: remoteVersion,
+            notes: normalizeUpdateNotes(data.notes)
+        }, isNewer);
+    }).catch(function (error) {
+        console.warn('检查更新失败:', error && error.message ? error.message : error);
+    }).then(function () {
+        if (timer) clearTimeout(timer);
+    });
 }
 
 function getCurrentAppSettings() {
@@ -1753,6 +1860,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ---------- 窗口 resize ----------
     window.addEventListener('resize', checkCompactView);
+
+    // ---------- 本地更新检测 ----------
+    document.getElementById('update-banner-dismiss').addEventListener('click', dismissUpdateBanner);
+    checkForUpdate();
 
     // ---------- 定时自动保存（每分钟检查） ----------
     setInterval(checkAutoSave, 60000);

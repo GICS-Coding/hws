@@ -3,12 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作业王v1.6.3</title>
+    <title>作业王v1.6.4</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">作业王v1.6.3-大家的最爱</div>
+    <div class="header">作业王v1.6.4-大家的最爱</div>
+    <!-- 版本更新提示条 -->
+    <div id="update-banner" class="update-banner update-banner-hidden" role="region" aria-label="版本更新提示" aria-live="polite">
+        <div class="update-banner-main">
+            <span class="update-banner-text" id="update-banner-text"></span>
+            <button type="button" class="update-banner-dismiss" id="update-banner-dismiss">知道了</button>
+        </div>
+        <details class="update-banner-details" id="update-banner-details">
+            <summary>查看更新内容</summary>
+            <ul class="update-banner-notes" id="update-banner-notes"></ul>
+        </details>
+    </div>
     <!-- 公告展示区 -->
     <div id="notice-display" class="notice-display-hidden"></div>
     <!-- 公告居中弹窗 -->
@@ -397,7 +408,7 @@
                 <button class="close-button" id="about-close" aria-label="关闭关于弹窗">&times;</button>
             </div>
             <div class="form-group about-links-group">
-                <p class="about-section-body about-section-body-first">version: 1.6.3</p>
+                <p class="about-section-body about-section-body-first">version: 1.6.4</p>
                 <p class="about-section-title">开源协议</p>
                 <p class="about-section-body">Apache License 2.0</p>
                 <p class="about-section-note">允许使用、修改与分发，具体条款以项目根目录 LICENSE 文件为准。</p>
@@ -420,6 +431,14 @@
                 </div>
                 <p class="about-section-title">更新日志</p>
                 <div class="about-changelog">
+                    <section class="about-changelog-entry">
+                        <h3 class="about-changelog-version">1.6.4</h3>
+                        <ul class="about-changelog-list">
+                            <li>新增本地更新检测与 update.json 版本公告</li>
+                            <li>新增顶部更新提示条，展示更新内容</li>
+                            <li>每个版本只提示一次，清空缓存后重新提示</li>
+                        </ul>
+                    </section>
                     <section class="about-changelog-entry">
                         <h3 class="about-changelog-version">1.6.3</h3>
                         <ul class="about-changelog-list">

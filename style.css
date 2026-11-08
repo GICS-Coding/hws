@@ -1573,3 +1573,104 @@ body.liquid-glass-disabled .about-inline-link:hover {
 #manage-messy-stew-group {
     display: none;
 }
+
+/* ===== 版本更新提示条 ===== */
+.update-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 0 18px 0;
+    padding: 12px 18px;
+    width: clamp(280px, 92vw, 900px);
+    max-width: 100%;
+    box-sizing: border-box;
+    color: #333;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-left: 5px solid rgba(52, 152, 219, 0.85);
+    border-radius: 14px;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.update-banner-hidden {
+    display: none;
+}
+
+.update-banner-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.update-banner-text {
+    flex: 1 1 220px;
+    min-width: 0;
+    font-size: 1.05rem;
+    font-weight: bold;
+    word-break: break-word;
+}
+
+.update-banner-dismiss {
+    flex-shrink: 0;
+    padding: 6px 16px;
+    color: #fff;
+    background: rgba(46, 204, 113, 0.85);
+    border: 1px solid rgba(46, 204, 113, 0.9);
+    border-radius: 16px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.update-banner-dismiss:hover {
+    background: rgba(39, 174, 96, 1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+}
+
+.update-banner-dismiss:active {
+    transform: scale(0.97);
+}
+
+.update-banner-details {
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 8px;
+    font-size: 0.95rem;
+}
+
+.update-banner-details summary {
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.85);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.update-banner-notes {
+    margin: 8px 0 0;
+    padding-left: 1.4em;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+/* 纯白背景模式 */
+body.liquid-glass-disabled .update-banner {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.12);
+    border-left-color: rgba(52, 152, 219, 0.9);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    color: #333333;
+}
+
+body.liquid-glass-disabled .update-banner-details {
+    border-top-color: rgba(0, 0, 0, 0.12);
+}
+
+body.liquid-glass-disabled .update-banner-details summary {
+    color: rgba(51, 51, 51, 0.8);
+}
