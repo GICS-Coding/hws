@@ -1,9 +1,9 @@
 /**
- * 作业王 v1.6.4 - JavaScript Application Logic
+ * 作业王 v1.6.5 - JavaScript Application Logic
  * 高中作业管理单页应用
  */
 
-var APP_VERSION = '1.6.4';
+var APP_VERSION = '1.6.5';
 
 // ============================================================
 // 工具函数
@@ -1424,62 +1424,72 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // ---------- 悬浮球 → 操作选择对话框 ----------
-    document.getElementById('floating-ball').addEventListener('click', function () {
+    // ---------- 悬浮球 → hws操作面板 ----------
+    var operationTabs = Array.prototype.slice.call(document.querySelectorAll('.operation-tab'));
+    var operationPanes = Array.prototype.slice.call(document.querySelectorAll('.operation-pane'));
+
+    function updateOperationManageState() {
+        var adEnabledVal = getBooleanSetting('adEnabled', false);
+        var liquidGlassVal = getBooleanSetting('liquidGlassEnabled', false);
+        var bottomDisplayVal = getBooleanSetting('bottomDisplayEnabled', false);
+        var dailyClearVal = getBooleanSetting('dailyClearEnabled', true);
+        var easterEggVal = getBooleanSetting('easterEggEnabled', false);
+        var messyStewVal = getBooleanSetting('messyStewEnabled', false);
+        var fastAnimationVal = getBooleanSetting('fastAnimationEnabled', false);
+
+        document.getElementById('manage-ad-toggle-checkbox').checked = adEnabledVal;
+        document.getElementById('manage-liquid-glass-toggle-checkbox').checked = liquidGlassVal;
+        document.getElementById('manage-bottom-display-checkbox').checked = bottomDisplayVal;
+        document.getElementById('manage-daily-clear-checkbox').checked = dailyClearVal;
+        document.getElementById('manage-easter-egg-checkbox').checked = easterEggVal;
+        document.getElementById('manage-messy-stew-checkbox').checked = messyStewVal;
+        document.getElementById('manage-fast-animation-checkbox').checked = fastAnimationVal;
+
+        // 如果彩蛋已勾选则显示大乱炖，否则隐藏
+        document.getElementById('manage-messy-stew-group').style.display = easterEggVal ? 'block' : 'none';
+    }
+
+    function activateOperationPane(paneKey) {
+        operationTabs.forEach(function (tab) {
+            var isActive = tab.getAttribute('data-panel') === paneKey;
+            tab.classList.toggle('is-active', isActive);
+            tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        operationPanes.forEach(function (pane) {
+            pane.classList.toggle('is-active', pane.getAttribute('data-pane') === paneKey);
+        });
+
+        if (paneKey === 'modify') {
+            updateHomeworkItems('modify-subject-select', 'homework-item-select');
+        } else if (paneKey === 'delete') {
+            updateHomeworkItems('delete-subject-select', 'delete-item-select');
+        } else if (paneKey === 'manage') {
+            updateOperationManageState();
+        } else if (paneKey === 'data') {
+            document.getElementById('data-import-textarea').value = '';
+            document.getElementById('data-import-file').value = '';
+        }
+    }
+
+    function openOperationPanel() {
+        activateOperationPane('add');
         openModalWithParent('operation-modal');
-    });
+    }
+
+    document.getElementById('floating-ball').addEventListener('click', openOperationPanel);
     document.getElementById('floating-ball').addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            openModalWithParent('operation-modal');
+            openOperationPanel();
         }
+    });
+    operationTabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+            activateOperationPane(this.getAttribute('data-panel'));
+        });
     });
     document.getElementById('operation-close').addEventListener('click', function () {
         hideModal('operation-modal');
-    });
-
-    document.getElementById('op-add').addEventListener('click', function () {
-        openModalWithParent('add-homework-modal');
-    });
-    document.getElementById('op-modify').addEventListener('click', function () {
-        openModalWithParent('modify-homework-modal', {
-            beforeShow: function () {
-                updateHomeworkItems('modify-subject-select', 'homework-item-select');
-            }
-        });
-    });
-    document.getElementById('op-delete').addEventListener('click', function () {
-        openModalWithParent('delete-homework-modal', {
-            beforeShow: function () {
-                updateHomeworkItems('delete-subject-select', 'delete-item-select');
-            }
-        });
-    });
-    document.getElementById('op-manage').addEventListener('click', function () {
-        openModalWithParent('manage-modal', {
-            beforeShow: function () {
-                var adEnabledVal = getBooleanSetting('adEnabled', false);
-                var liquidGlassVal = getBooleanSetting('liquidGlassEnabled', false);
-                var bottomDisplayVal = getBooleanSetting('bottomDisplayEnabled', false);
-                var dailyClearVal = getBooleanSetting('dailyClearEnabled', true);
-                var easterEggVal = getBooleanSetting('easterEggEnabled', false);
-                var messyStewVal = getBooleanSetting('messyStewEnabled', false);
-                var fastAnimationVal = getBooleanSetting('fastAnimationEnabled', false);
-
-                document.getElementById('manage-ad-toggle-checkbox').checked = adEnabledVal;
-                document.getElementById('manage-liquid-glass-toggle-checkbox').checked = liquidGlassVal;
-                document.getElementById('manage-bottom-display-checkbox').checked = bottomDisplayVal;
-                document.getElementById('manage-daily-clear-checkbox').checked = dailyClearVal;
-                document.getElementById('manage-easter-egg-checkbox').checked = easterEggVal;
-                document.getElementById('manage-messy-stew-checkbox').checked = messyStewVal;
-                document.getElementById('manage-fast-animation-checkbox').checked = fastAnimationVal;
-                document.getElementById('data-import-textarea').value = '';
-                document.getElementById('data-import-file').value = '';
-
-                // 如果彩蛋已勾选则显示大乱炖，否则隐藏
-                document.getElementById('manage-messy-stew-group').style.display = easterEggVal ? 'block' : 'none';
-            }
-        });
     });
 
     document.getElementById('op-clear-cache').addEventListener('click', function () {
@@ -1514,12 +1524,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // ---------- 管理对话框 ----------
+    // ---------- 管理设置 ----------
     document.getElementById('manage-cancel').addEventListener('click', function () {
-        hideModal('manage-modal');
-    });
-    document.getElementById('manage-close').addEventListener('click', function () {
-        hideModal('manage-modal');
+        hideModal('operation-modal');
     });
     document.getElementById('manage-save').addEventListener('click', function () {
         var adEnabledVal = document.getElementById('manage-ad-toggle-checkbox').checked;
@@ -1575,7 +1582,6 @@ document.addEventListener('DOMContentLoaded', function () {
         setBottomDisplay(bottomDisplayVal);
         computeAllEasterEggs();
         SUBJECTS.forEach(function (s) { renderHomework(s); });
-        hideModal('manage-modal');
     });
 
     // ---------- 关于/友链弹窗 ----------
@@ -1593,19 +1599,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---------- 彩蛋复选框联动大乱炖显示 ----------
     document.getElementById('manage-easter-egg-checkbox').addEventListener('change', function () {
         document.getElementById('manage-messy-stew-group').style.display = this.checked ? 'block' : 'none';
-    });
-
-    document.getElementById('open-data-manage').addEventListener('click', function () {
-        openModalWithParent('data-manage-modal', {
-            beforeShow: function () {
-                document.getElementById('data-import-textarea').value = '';
-                document.getElementById('data-import-file').value = '';
-            }
-        });
-    });
-
-    document.getElementById('data-manage-close').addEventListener('click', function () {
-        hideModal('data-manage-modal');
     });
 
     document.getElementById('copy-data-button').addEventListener('click', async function () {
@@ -1649,7 +1642,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var sourceFile = fileInput.files && fileInput.files[0] ? fileInput.files[0].name : 'pasted-json';
             applyImportedData(payload);
             Logs.appendOperationLog(Logs.formatSystemLog('导入数据', { file: sourceFile, source: 'user' }));
-            hideModal('data-manage-modal', { restoreParent: false });
+            hideModal('operation-modal', { restoreParent: false });
         } catch (e) {
             alert(e && e.message ? e.message : '导入失败，请检查数据格式');
         }
@@ -1673,7 +1666,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             renderHomework(subject);
             homeworkInput.value = '';
-            hideModal('add-homework-modal');
             checkCompactView();
             updateTableHeader();
             adjustNoticePosition();
@@ -1709,7 +1701,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 easterEggResults[subject] = checkEasterEgg(subject);
             }
             renderHomework(subject);
-            hideModal('modify-homework-modal');
             adjustNoticePosition();
         }
     });
@@ -1734,7 +1725,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 easterEggResults[subject] = checkEasterEgg(subject);
             }
             renderHomework(subject);
-            hideModal('delete-homework-modal');
+            updateHomeworkItems('delete-subject-select', 'delete-item-select');
             checkCompactView();
             updateTableHeader();
             adjustNoticePosition();
@@ -1751,15 +1742,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ---------- 取消按钮（add/modify/delete 独立模态框） ----------
-    document.getElementById('add-cancel-button').addEventListener('click', function () {
-        hideModal('add-homework-modal');
-    });
-    document.getElementById('modify-cancel-button').addEventListener('click', function () {
-        hideModal('modify-homework-modal');
-    });
-    document.getElementById('delete-cancel-button').addEventListener('click', function () {
-        hideModal('delete-homework-modal');
+    // ---------- 操作面板内各页签的取消按钮 ----------
+    ['add-cancel-button', 'modify-cancel-button', 'delete-cancel-button'].forEach(function (buttonId) {
+        document.getElementById(buttonId).addEventListener('click', function () {
+            hideModal('operation-modal');
+        });
     });
 
     // ---------- 点击模态框外部关闭 ----------
@@ -1783,28 +1770,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Enter：触发当前打开模态框的主操作
         if (e.key === 'Enter') {
-            var addModal = document.getElementById('add-homework-modal');
-            var modifyModal = document.getElementById('modify-homework-modal');
-            var deleteModal = document.getElementById('delete-homework-modal');
             var opModal = document.getElementById('operation-modal');
             var saveSelectModal = document.getElementById('save-select-modal');
-            var manageModal = document.getElementById('manage-modal');
 
             // 公告编辑框内 Enter 应为换行，不做触发
             if (document.activeElement === document.getElementById('notice-textarea')) return;
 
-            if (addModal.style.display === 'flex') {
-                document.getElementById('submit-homework').click();
-            } else if (modifyModal.style.display === 'flex') {
-                document.getElementById('submit-modify').click();
-            } else if (deleteModal.style.display === 'flex') {
-                document.getElementById('confirm-delete').click();
-            } else if (opModal.style.display === 'flex') {
-                document.getElementById('op-add').click();
-            } else if (saveSelectModal.style.display === 'flex') {
+            if (saveSelectModal.style.display === 'flex') {
                 document.getElementById('save-select-confirm').click();
-            } else if (manageModal.style.display === 'flex') {
-                document.getElementById('manage-save').click();
+            } else if (opModal.style.display === 'flex' &&
+                       getVisibleModalList().slice(-1)[0] === opModal) {
+                var activeTab = document.querySelector('.operation-tab.is-active');
+                var paneKey = activeTab ? activeTab.getAttribute('data-panel') : 'add';
+                if (paneKey === 'add') {
+                    document.getElementById('submit-homework').click();
+                } else if (paneKey === 'modify') {
+                    document.getElementById('submit-modify').click();
+                } else if (paneKey === 'delete') {
+                    document.getElementById('confirm-delete').click();
+                } else if (paneKey === 'manage') {
+                    document.getElementById('manage-save').click();
+                }
             }
         }
     });
