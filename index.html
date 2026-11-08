@@ -6,8 +6,11 @@
     <title>作业王v1.6.5</title>
     <link rel="icon" href="ico.png" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="intro/intro.css">
 </head>
 <body>
+    <!-- 刷新动画：黑幕 + 书法字，放在 body 最前面避免首帧闪出页面 -->
+    <script src="intro/intro.js" data-auto data-logo="intro/assets/tingyuge.png" data-z-index="10000"></script>
     <div class="header">作业王v1.6.5-大家的最爱</div>
     <!-- 版本更新提示条 -->
     <div id="update-banner" class="update-banner update-banner-hidden" role="region" aria-label="版本更新提示" aria-live="polite">
@@ -413,6 +416,7 @@
                             <li>「搞」悬浮球改为 hws 操作面板</li>
                             <li>左侧选择操作、右侧执行操作，纯白双栏布局</li>
                             <li>添加/修改/删除作业、管理、数据管理整合进面板</li>
+                            <li>刷新页面时播放黑幕书法字动画</li>
                         </ul>
                     </section>
                     <section class="about-changelog-entry">

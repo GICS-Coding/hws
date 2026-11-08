@@ -15,7 +15,10 @@ const CORE_ASSETS = [
     './settings.html',
     './settings.css',
     './settings.js',
-    './title-parse.js'
+    './title-parse.js',
+    './intro/intro.css',
+    './intro/intro.js',
+    './intro/assets/tingyuge.png'
 ];
 const OPTIONAL_ASSETS = [
     './img/ad01.png',
